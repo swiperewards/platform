@@ -12,6 +12,10 @@ V0.1
 
 1. Intialized React Application
 2. Update Readme Docs
+3. Added Redux Packages
+4. Added Sass Packages
+5. Added React Routing Package
+6. Setup Packages for React+Redux Framework
 
 ```
 
