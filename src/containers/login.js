@@ -78,7 +78,7 @@ const styles = {
     },
     signupLink:{
         textDecoration: 'none', 
-        color:'#1D7EC6'
+        color:'#3895D8'
     },
     accountTxt:{
         float:'right',
