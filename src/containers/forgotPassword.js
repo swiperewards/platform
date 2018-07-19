@@ -18,14 +18,6 @@ const required = value => value && value.trim() !== "" ? undefined : `Required`
 
 
 const styles = {
-    formContent:{
-        float:'left',
-        paddingTop:'0px', 
-        width:'100%'
-    },
-    formGroup:{
-        marginBottom:'10px'
-    },
     signUpTxt :{
         color:'#424242',
         textDecorator:'none',
@@ -53,11 +45,11 @@ class ForgotPassword extends Component {
                         <div className="logo">
                             <img src="../images/logo1.png" alt="Logo" />
                         </div>
-                        <div style={styles.formContent}>
+                        <div className="formContent">
                             <form size='large' className="form-horizontal" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
                                 <div className="titleLabel">Forgot Password
                                 </div>
-                                <div style={styles.formGroup}>
+                                <div className="formGroup">
                                     <label className="controlLabel">Enter Your Register Email</label>
                                     <InputField name="username" myLabel="Email" myPlaceHolder="Email" component={InputField} validate={required} />
                                 </div>
@@ -65,7 +57,7 @@ class ForgotPassword extends Component {
                                     <RaiseButton style={{display:'inline-block' , float:'none'}} variant="contained" color="primary" label="SENT MAIL"/>
                                 </div>        
                                 <div style={styles.accountTxt}>
-                                        <span style={styles.label}>Don’t have an account?</span><span style={styles.signUpTxt}><Link to='/register' style={styles.signupLink}> Register Now</Link>
+                                        <span className="controlLabel">Don’t have an account?</span><span style={styles.signUpTxt}><Link to='/register' style={styles.signupLink}> Register Now</Link>
                                         </span>
                                 </div>
                             </form>
