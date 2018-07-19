@@ -24,7 +24,7 @@ const styles = theme => ({
     borderRadius: 1,
     boxShadow: 'none',
     textTransform: 'none',
-    fontSize: 12,
+    fontSize: '14px',
     padding: '6px 12px',
     border: '1px solid',
     backgroundColor: '#53c1ff',
@@ -63,6 +63,7 @@ function CustomizedInputs(props) {
       <Button
         variant="contained"
         color="primary"
+        fullWidth={props.isFullWidth}
         disableRipple
         className={classNames(classes.margin, classes.bootstrapRoot)}
       >

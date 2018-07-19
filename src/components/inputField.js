@@ -53,6 +53,7 @@ const styles = theme => ({
     ].join(','),
     '&:focus': {
       borderColor: '#80bdff',
+      boxShadow: '0 0 0 0.1rem rgba(0,123,255,.25)'
     },
   },
   bootstrapFormLabel: {
