@@ -34,10 +34,10 @@ const styles = theme => ({
     backgroundColor: theme.palette.common.white,
     border: '1px solid #ced4da',
     fontSize: 14,
-    color:'#3895D8',
+    color:'#000',
     padding: '10px 12px',
     width: 'calc(100% - 24px)',
-    height: '10px',
+    height: '17px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [
       '-apple-system',

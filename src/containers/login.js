@@ -111,7 +111,7 @@ class Login extends Component {
                                 </div>
                                 <div className="checkbox">
                                     <label style={styles.label}><input type="checkbox" ref="remember" name="remember"/> Remember me</label>                 
-                                    <Link style={styles.forgotTxt} to={'/forgotpassword'}> Forgot Password?</Link> 	
+                                    <Link style={styles.forgotTxt} to={'/resetPassword'}> Forgot Password?</Link> 	
                                 </div>
                                 <div style={{paddingTop:'10px'}}> 
                                     <RaiseButton style={{display:'inline-block' , float:'none'}} variant="contained" color="primary" label="SIGN IN"/>
