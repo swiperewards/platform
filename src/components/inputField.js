@@ -65,8 +65,7 @@ function CustomizedInputs(props) {
   const { classes } = props;
 
   return (
-      <TextField
-        defaultValue=""
+      <TextField {...props.input}
         label=""
         id={props.id}
         type={props.myType}
