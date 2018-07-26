@@ -63,6 +63,7 @@ function CustomizedInputs(props) {
       <Button
         variant="contained"
         color="primary"
+        type={props.type}
         fullWidth={props.isFullWidth}
         disableRipple
         className={classNames(classes.margin, classes.bootstrapRoot)}
