@@ -66,7 +66,7 @@ const styles = theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing.unit * 3,
+    padding: '0px',
   },
   logo:{
      margin: 'auto',
@@ -83,13 +83,21 @@ const styles = theme => ({
     padding:'0px',
   },
   avatarIcon: {
-    margin:'0px',
-    padding:'0px',
+    width:'50px',
+    height:'50px',
   }, 
   avatarSpan: {
     color: Typography.textDarkBlack,
     fontWeight:'bold',
   },  
+  ListItem: {
+    '&:focus': {
+      backgroundColor: '#516072',//theme.palette.primary.main,
+      '& $primary, & $icon': {
+        color: theme.palette.common.white,
+      },
+    },
+  },
 });
 
 class ResponsiveDrawer extends React.Component {
@@ -118,7 +126,7 @@ class ResponsiveDrawer extends React.Component {
 
   render() {
     const { classes, theme } = this.props;
-
+    const children = this.props.children;
     const toolbarStyle = {
         width:'100%',
         padding:'0px',
@@ -144,8 +152,8 @@ class ResponsiveDrawer extends React.Component {
             .sort(((a,b) => a.displayOrder > b.displayOrder))
             .map((value, index) => (
               <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}}>
-                <ListItem button>
-                  <img src={"../images/" + value.iconName + ".svg"} height="20px" alt="" />
+                <ListItem button disableGutters className={classes.ListItem}>
+                  <img src={"../images/" + value.iconName + ".svg"} height="20px" alt="" style={{paddingLeft:'15px'}} />
                   <ListItemText disableTypography primary={value.text} />
                 </ListItem>
               </Link>
@@ -173,7 +181,6 @@ class ResponsiveDrawer extends React.Component {
                 <div style={{float:'right', position:'relative', margin:'0px'}}>
                     <div className={classes.avatarDiv}>
                         <Avatar src={this.props.userData.user.responseData.profilePicUrl}
-                        size={55}
                         className={classes.avatarIcon} />
                     </div>
                     {auth && (
@@ -203,7 +210,7 @@ class ResponsiveDrawer extends React.Component {
                         >
                         <MenuItem onClick={this.handleClose}>Profile</MenuItem>
                         <MenuItem onClick={this.handleClose}>Settings</MenuItem>
-                        <MenuItem>Logout</MenuItem>
+                        <MenuItem><NavLink to="/logout" style={{textDecoration:'none', color:'#000'}}>Logout</NavLink></MenuItem>
                         </Menu>
                     </div>
                     )}
@@ -240,6 +247,7 @@ class ResponsiveDrawer extends React.Component {
         </Hidden>
         <main className={classes.content}>
           <div className={classes.toolbar} />
+          {children}
         </main>
       </div>
     );
