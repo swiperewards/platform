@@ -18,42 +18,6 @@ const required = value => value && value.trim() !== "" ? undefined : `Required`
 
 
 const styles = {
-    loginContainer: {
-        minWidth: 320,
-        maxWidth: 400,
-        height: 'auto',
-        position: 'absolute',
-        top: '10%',
-        left: 0,
-        right: 0,
-        margin: 'auto'
-    },
-    paper: {
-        background:'#fff',
-        padding: '20px 25px',
-        margin: '5px',
-        overflow: 'auto',
-        borderRadius:'1px',
-        boxShadow:'0 0 6px #ccc'
-    },
-    logo:{
-        float:'left', 
-        textAlign: 'center', 
-        width: '100%'
-    },
-    label:{
-        color:'#231f20',
-        fontWeight:'normal',
-        fontSize:'14px'
-    },
-    formContent:{
-        float:'left',
-        paddingTop:'0px', 
-        width:'100%'
-    },
-    formGroup:{
-        marginBottom:'10px'
-    },
     loginTxt:{
         fontFamily: 'open_sansbold',
         paddingBottom:'10px',
@@ -92,31 +56,31 @@ class Login extends Component {
 
         return (
             <div>
-                <div style={styles.loginContainer}>
-                    <Paper style={styles.paper}>
-                        <div style={styles.logo}>
+                <div className="pageContainer">
+                    <Paper className="pagePaper">
+                        <div className="logo">
                             <img src="../images/logo1.png" alt="Logo" />
                         </div>
-                        <div style={styles.formContent}>
+                        <div className="formContent">
                             <form size='large' className="form-horizontal" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
-                                <div className="gradient-text" style={styles.loginTxt}>LOGIN
+                                <div className="titleLabel">LOGIN
                                 </div>
-                                <div style={styles.formGroup}>
-                                    <label style={styles.label}>Username or Email Address</label>
+                                <div className="formGroup">
+                                    <label className="controlLabel">Username or Email Address</label>
                                     <InputField name="username" myLabel="Email" myPlaceHolder="Email" component={InputField} validate={required} />
                                 </div>
-                                <div style={styles.formGroup}>
-                                    <label  style={styles.label}>Password</label>
+                                <div className="formGroup">
+                                    <label  className="controlLabel">Password</label>
                                     <InputField name="password" myType="password" myLabel="password" myPlaceHolder="Password" component={InputField} validate={required} />
                                 </div>
                                 <div className="checkbox">
-                                    <label style={styles.label}><input type="checkbox" ref="remember" name="remember"/> Remember me</label>                 
-                                    <Link style={styles.forgotTxt} to={'/forgotpassword'}> Forgot Password?</Link> 	
+                                    <label className="controlLabel"><input type="checkbox" ref="remember" name="remember"/> Remember me</label>                 
+                                    <Link style={styles.forgotTxt} to={'/resetPassword'}> Forgot Password?</Link> 	
                                 </div>
                                 <div style={{paddingTop:'10px'}}> 
                                     <RaiseButton style={{display:'inline-block' , float:'none'}} variant="contained" color="primary" label="SIGN IN"/>
                                     <div style={styles.accountTxt}>
-                                        <span style={styles.label}>Don’t have an account? </span><span style={styles.signUpTxt}><Link to='/signup' style={styles.signupLink}>Sign Up</Link>
+                                        <span className="controlLabel">Don’t have an account? </span><span style={styles.signUpTxt}><Link to='/register' style={styles.signupLink}>Sign Up</Link>
                                         </span>
                                     </div>
                                 </div>        

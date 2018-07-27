@@ -24,11 +24,11 @@ const styles = theme => ({
     borderRadius: 1,
     boxShadow: 'none',
     textTransform: 'none',
-    fontSize: 12,
+    fontSize: '14px',
     padding: '6px 12px',
     border: '1px solid',
-    backgroundColor: '#1E86D1',
-    borderColor: '#1E86D1',
+    backgroundColor: '#53c1ff',
+    borderColor: '#53c1ff',
     fontFamily: [
       '-apple-system',
       'BlinkMacSystemFont',
@@ -42,13 +42,13 @@ const styles = theme => ({
       '"Segoe UI Symbol"',
     ].join(','),
     '&:hover': {
-      backgroundColor: '#1E86D1',
-      borderColor: '#1E86D1',
+      backgroundColor: '#337ab7',
+      borderColor: '#2e6da4',
     },
     '&:active': {
       boxShadow: 'none',
-      backgroundColor: '#1E86D1',
-      borderColor: '#1E86D1',
+      backgroundColor: '#337ab7',
+      borderColor: '#2e6da4',
     },
     '&:focus': {
       boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
@@ -63,6 +63,7 @@ function CustomizedInputs(props) {
       <Button
         variant="contained"
         color="primary"
+        fullWidth={props.isFullWidth}
         disableRipple
         className={classNames(classes.margin, classes.bootstrapRoot)}
       >
