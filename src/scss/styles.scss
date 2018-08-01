@@ -118,6 +118,16 @@ $primary-Text-Color:#231f20;
     text-transform: uppercase;
   }
 
+  .appTitleLabel{
+    font-family: 'open_sansbold';
+    color: $primary-Text-Color;
+    padding-bottom: 10px;
+    font-size: 14px;
+    margin-top: 0%;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
   .controlLabel{
     color: $primary-Text-Color;
     font-weight: normal;
@@ -152,4 +162,10 @@ $primary-Text-Color:#231f20;
 
   .formGroup{
     margin-bottom: 10px;
+  }
+
+  .row {
+    display: -ms-flexbox;
+    display: flex;
+    margin: 0 5px 10px;
   }

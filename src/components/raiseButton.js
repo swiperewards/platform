@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -58,12 +59,16 @@ const styles = theme => ({
 
 function CustomizedInputs(props) {
   const { classes } = props;
+  const actionUrl = props.actionLink ? props.actionLink : ""
+  const actionLink = props => <Link to={actionUrl} {...props} />
+
 
   return (
       <Button
         variant="contained"
-        color="primary"
+        color={"primary"}
         type={props.type}
+        component={props.type === "button" ? actionLink : undefined}
         fullWidth={props.isFullWidth}
         disableRipple
         className={classNames(classes.margin, classes.bootstrapRoot)}

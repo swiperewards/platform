@@ -51,7 +51,7 @@ class ForgotPassword extends Component {
                                 </div>
                                 <div className="formGroup">
                                     <label className="controlLabel">Enter Your Register Email</label>
-                                    <InputField name="username" myLabel="Email" myPlaceHolder="Email" component={InputField} validate={required} />
+                                    <InputField name="username" myLabel="Email" myPlaceHolder="" fullWidth={true} component={InputField} validate={required} />
                                 </div>
                                 <div style={{paddingTop:'10px', textAlign:'center'}}> 
                                     <RaiseButton style={{display:'inline-block' , float:'none'}} variant="contained" color="primary" label="SENT MAIL"/>

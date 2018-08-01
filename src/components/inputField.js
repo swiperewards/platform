@@ -32,11 +32,10 @@ const styles = theme => ({
   bootstrapInput: {
     borderRadius: 1,
     backgroundColor: theme.palette.common.white,
-    border: '1px solid #ced4da',
+    border: '0px solid #ced4da',
     fontSize: 14,
     color:'#000',
     padding: '10px 12px',
-    width: 'calc(100% - 24px)',
     height: '17px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [
@@ -51,10 +50,6 @@ const styles = theme => ({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
-    '&:focus': {
-      borderColor: '#80bdff',
-      boxShadow: '0 0 0 0.1rem rgba(0,123,255,.25)'
-    },
   },
   bootstrapFormLabel: {
     fontSize: 18,
@@ -67,11 +62,13 @@ function CustomizedInputs(props) {
   return (
       <TextField {...props.input}
         label=""
+        placeholder={props.myPlaceHolder}
         id={props.id}
         type={props.myType}
-        fullWidth = {true}
+        fullWidth = {props.fullWidth}
+        width = {props.minWidth}
         InputProps={{
-          disableUnderline: true,
+          disableUnderline: false,
           classes: {
             root: classes.bootstrapRoot,
             input: classes.bootstrapInput,

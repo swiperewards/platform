@@ -7,6 +7,7 @@ import Routes from './routes'
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import defaultTheme from './scss/theme-default'
 import '../src/scss/styles.css'
+import 'flexboxgrid/css/flexboxgrid.css';
 
 ReactDOM.render(
     <Provider store={Store}>

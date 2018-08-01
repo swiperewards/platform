@@ -23,6 +23,19 @@ import { validateUser, logout } from '../actions/accountAction';
 
 const required = value => value && value.trim() !== "" ? undefined : `Required`
 
+const validateField = values => {
+    const errors = {}
+    const requiredFields = ['username', 'password']
+    requiredFields.forEach(field => {
+      if (!values[ field ]) {
+        errors[ field ] = 'Required'
+      }
+    })
+    if (values.email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+      errors.email = 'Invalid email address'
+    }
+    return errors
+  }
 
 const styles = {
     loginTxt:{
@@ -79,8 +92,15 @@ class Login extends Component {
                 if (nextProps.validateAction_Data.user) {
                     if (nextProps.validateAction_Data.user.status === 200) {
                         if (nextProps.validateAction_Data.user.responseData.role === 'superadmin') {
+                            this.props.history.push(`/superadmindashboard`);
+                        }
+                        else if(nextProps.validateAction_Data.user.responseData.role === 'admin'){
                             this.props.history.push(`/admindashboard`);
-                        }else {
+                        }
+                        else if(nextProps.validateAction_Data.user.responseData.role === 'merchant'){
+                            this.props.history.push(`/merchantdashboard`);
+                        }
+                        else {
                             errorMessage = <div style={{
                                 padding: '5px 20px',
                                 margin: '5px',
@@ -131,11 +151,11 @@ class Login extends Component {
                                 </div>
                                 <div className="formGroup">
                                     <label className="controlLabel">Username or Email Address</label>
-                                    <Field name="username" myLabel="Email" myPlaceHolder="Email" component={InputField} validate={required} />
+                                    <Field name="username" myLabel="Email" myPlaceHolder="" fullWidth={true} component={InputField} validate={required} />
                                 </div>
                                 <div className="formGroup">
                                     <label  className="controlLabel">Password</label>
-                                    <Field name="password" myType="password" myLabel="password" myPlaceHolder="Password" component={InputField} validate={required} />
+                                    <Field name="password" myType="password" myLabel="password" myPlaceHolder="" fullWidth={true} component={InputField} validate={required} />
                                 </div>
                                 <div className="checkbox">
                                     <label className="controlLabel"><input type="checkbox" ref="remember" name="remember"/> Remember me</label>                 

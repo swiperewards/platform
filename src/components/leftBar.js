@@ -39,11 +39,9 @@ const styles = theme => ({
   list: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: '#252b34',
     color: '#000',
     fontSize:'14px',
     padding:'0px',
-    height:'90%'
   },
   appBar: {
     position: 'absolute',
@@ -57,9 +55,13 @@ const styles = theme => ({
       display: 'none',
     },
   },
-  toolbar: theme.mixins.toolbar,
+  toolbar: { 
+    height:'64px',
+    backgroundColor:'#FFFFFF'
+  },
   drawerPaper: {
     width: drawerWidth,
+    backgroundColor: '#252b34',
     [theme.breakpoints.up('md')]: {
       position: 'relative',
     },
@@ -91,11 +93,11 @@ const styles = theme => ({
     fontWeight:'bold',
   },  
   ListItem: {
+    '&:hover':{
+      backgroundColor: '#516072',
+    },
     '&:focus': {
-      backgroundColor: '#516072',//theme.palette.primary.main,
-      '& $primary, & $icon': {
-        color: theme.palette.common.white,
-      },
+      backgroundColor: '#516072',
     },
   },
 });
@@ -136,7 +138,7 @@ class ResponsiveDrawer extends React.Component {
     const open = Boolean(anchorEl);
 
     const drawer = (
-      <div style={{height:'100%'}}>
+      <div style={{width:'100%'}}>
         <div className={classes.toolbar} >
             <div>    
                 <NavLink to={'/dashboard'}>

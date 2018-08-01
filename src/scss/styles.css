@@ -85,6 +85,15 @@ body, h1, h2, h3, h4, h5, h6 {
   text-align: left;
   text-transform: uppercase; }
 
+.appTitleLabel {
+  font-family: 'open_sansbold';
+  color: #231f20;
+  padding-bottom: 10px;
+  font-size: 14px;
+  margin-top: 0%;
+  text-align: left;
+  text-transform: uppercase; }
+
 .controlLabel {
   color: #231f20;
   font-weight: normal;
@@ -115,3 +124,8 @@ body, h1, h2, h3, h4, h5, h6 {
 
 .formGroup {
   margin-bottom: 10px; }
+
+.row {
+  display: -ms-flexbox;
+  display: flex;
+  margin: 0 5px 10px; }
