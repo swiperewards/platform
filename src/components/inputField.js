@@ -61,7 +61,6 @@ function CustomizedInputs(props) {
 
   return (
       <TextField {...props.input}
-        label=""
         placeholder={props.myPlaceHolder}
         id={props.id}
         type={props.myType}

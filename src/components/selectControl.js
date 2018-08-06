@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
   button: {
@@ -14,26 +12,20 @@ const styles = theme => ({
   },
   formControl: {
     margin: theme.spacing.unit,
-    minWidth: 120,
+    minWidth: 170,
+  },
+  inputOptions:{
+    fontSize: '12px',
   },
 });
 
-class ControlledOpenSelect extends React.Component {
+class SelectOption extends React.Component {
   state = {
-    age: '',
     open: false,
-  };
+  } 
 
-  handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
-  };
-
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  handleOpen = () => {
-    this.setState({ open: true });
+  handleChange(field, value) {
+    this.setState({ [field]: Number(value) });
   };
 
   render() {
@@ -41,28 +33,21 @@ class ControlledOpenSelect extends React.Component {
 
     return (
       <form autoComplete="off">
-        <Button className={classes.button} onClick={this.handleOpen}>
-          Open the select
-        </Button>
         <FormControl className={classes.formControl}>
-          <InputLabel htmlFor="demo-controlled-open-select">Age</InputLabel>
           <Select
-            open={this.state.open}
-            onClose={this.handleClose}
-            onOpen={this.handleOpen}
-            value={this.state.age}
+            className={classes.inputOptions}
             onChange={this.handleChange}
-            inputProps={{
-              name: 'age',
-              id: 'demo-controlled-open-select',
-            }}
+            value={this.props.stateValue}
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            {
+                this.props.menuItems.map((item) =>{
+                    return <MenuItem 
+                    className={classes.inputOptions}
+                    value={item.prefix}>
+                    {item.name.toUpperCase()}
+                    </MenuItem>
+                })
+            }
           </Select>
         </FormControl>
       </form>
@@ -70,8 +55,8 @@ class ControlledOpenSelect extends React.Component {
   }
 }
 
-ControlledOpenSelect.propTypes = {
+SelectOption.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ControlledOpenSelect);
+export default withStyles(styles)(SelectOption);

@@ -89,7 +89,7 @@ const styles = theme => ({
     height:'50px',
   }, 
   avatarSpan: {
-    color: Typography.textDarkBlack,
+    color: '#ffffff',
     fontWeight:'bold',
   },  
   ListItem: {
@@ -127,7 +127,7 @@ class ResponsiveDrawer extends React.Component {
   };
 
   render() {
-    const { classes, theme } = this.props;
+    const { classes, theme, handleDrawerToggle, navDrawerOpen } = this.props;
     const children = this.props.children;
     const toolbarStyle = {
         width:'100%',
@@ -138,7 +138,7 @@ class ResponsiveDrawer extends React.Component {
     const open = Boolean(anchorEl);
 
     const drawer = (
-      <div style={{width:'100%'}}>
+      <div>
         <div className={classes.toolbar} >
             <div>    
                 <NavLink to={'/dashboard'}>
