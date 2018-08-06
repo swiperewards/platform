@@ -74,7 +74,7 @@ class App extends Component {
       return(
             <div>
               <LeftBar navDrawerOpen={window.innerWidth > 1025 ? true : navDrawerOpen}
-              handleChangeRequestNavDrawer={this.handleChangeRequestNavDrawer.bind(this)}
+              handleDrawerToggle={this.handleChangeRequestNavDrawer.bind(this)}
               children={this.props.children}
               />
             </div>
