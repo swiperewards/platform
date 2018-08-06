@@ -89,9 +89,18 @@ $primary-Text-Color:#231f20;
   }
 
   body, h1, h2, h3, h4, h5, h6 {
-    font-size: 15px;
+    font-size: 13px;
     margin: 0px;
     line-height: 24px;
+  }
+
+  .inputControl{
+    font-size: 12pt;
+    width: 100%;
+  }
+
+  FormLabel{
+    font-size: 14px;
   }
 
   .logo{
@@ -126,6 +135,15 @@ $primary-Text-Color:#231f20;
     margin-top: 0%;
     text-align: left;
     text-transform: uppercase;
+  }
+
+  .appDescriptionLabel{
+    font-family: 'open_regular';
+    color: 'grey';
+    padding-bottom: 10px;
+    font-size: 12px;
+    margin-top: 0%;
+    text-align: left;
   }
 
   .controlLabel{
