@@ -5,21 +5,27 @@ import { Field } from 'redux-form'
 //material-ui
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
+import FormLabel from '@material-ui/core/FormLabel';
 
 //Components
 import InputField from '../../components/inputField';
+
+//Data
+import Data from '../../staticData'
 
 let errorMessage
 
 const styles = {
     formControl: {
-        minWidth: 180,
+        minWidth: '100%',
         marginLeft:'0px',
       },
+      selectControl:{
+        fontSize: '12px',
+      }
 };
 
 class BankAccount extends Component {
@@ -39,44 +45,49 @@ class BankAccount extends Component {
                 <Paper className="pagePaper">
                     <div className="formContent">
                         <div className="appTitleLabel">
-                            ADD BANK ACCOUNT
+                            <FormLabel component="legend">ADD BANK ACCOUNT</FormLabel>
                         </div>
-                        <Divider />
+                        <Divider style={{marginBottom:'20px'}}/>
                         <div className="row middle-md">
-                            <div className="col-md-3" >
-                                Bank Account Type
+                            <div className="col-xs-12 col-sm-6 col-md-3" >
+                                Bank Account Type*
                             </div>    
-                            <div className="col-md-8">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControl style={styles.formControl}>
-                                    <InputLabel htmlFor="account-controlled-open-select"></InputLabel>
                                     <Select
+                                        style={styles.selectControl}
                                         value={this.state.account}
                                         onChange={this.handleChange}
                                         inputProps={{
                                             name: 'account',
-                                            id: 'account-controlled-open-select',
                                         }}
                                     >
-                                        <MenuItem value='Checking'>Checking</MenuItem>
-                                        <MenuItem value='Savings'>Savings</MenuItem>
-                                        <MenuItem value='Corporate Checking'>Corporate Checking</MenuItem>
-                                        <MenuItem value='Corporate Savings'>Corporate Savings</MenuItem>
+                                        {
+                                            Data.bankAccountType.map((item) =>{
+                                               return <MenuItem 
+                                                style={styles.selectControl}
+                                                key={item.id}
+                                                value={item.id}>
+                                                {item.name}
+                                               </MenuItem>
+                                            })
+                                        }
                                     </Select>    
                                 </FormControl>  
                             </div>  
                         </div>
                         <div className="row middle-md">
-                            <div className="col-sm-3 col-md-3">
-                                Bank Routing Number
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Bank Routing Number*
                             </div>
-                            <div className="col-sm-3 col-md-3">
-                                <Field name="routeNumber" myLabel="routingNumber" myPlaceHolder="" minWidth="150px" fullWidth={false} component={InputField} />  
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field myType="text" name="routeNumber" fullWidth={true} component={InputField} />  
                             </div>
-                            <div className="col-sm-3 col-md-3">
-                                Bank Account Number
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Bank Account Number*
                             </div>
-                            <div className="col-sm-3 col-md-3">    
-                                <Field name="accountNumber" myLabel="accountNumber" myPlaceHolder="" minWidth="150px" fullWidth={false} component={InputField} />  
+                            <div className="col-xs-12 col-sm-6 col-md-3">    
+                                <Field myType="text" name="accountNumber" fullWidth={true} component={InputField} />  
                             </div>
                         </div>
                     </div>            
