@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 //material-ui
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 
@@ -19,8 +18,8 @@ let errorMessage
 
 const styles = {
     formControl: {
-        minWidth: 120,
-        marginLeft:'25px',
+        minWidth: '100%',
+        marginLeft:'0px',
       },
 };
 
@@ -38,79 +37,69 @@ class ManageMerchants extends Component {
     render() {
 
         return (
-            <div>
-                <div>
-                    <Paper className="pagePaper">
-                        <div className="formContent">
-                            <form size='large' className="form-horizontal" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
-                                <div className="appTitleLabel">MANAGE MERCHANT
-                                </div>
-                                <div style={{position:'relative', margin:'0px', width:'100%'}}>
-                                    <div style={{float:'left'}}>
-
-                                        <Field name="username" myLabel="Name" myPlaceHolder="Name" fullWidth={false} component={InputField} />
-                                        <FormControl style={styles.formControl}>
-                                            <InputLabel htmlFor="status-controlled-open-select">Status</InputLabel>
-                                            <Select
-                                                value={this.state.status}
-                                                onChange={this.handleChange}
-                                                inputProps={{
-                                                    name: 'status',
-                                                    id: 'status-controlled-open-select',
-                                                }}
-                                            >
-                                                <MenuItem value="">
-                                                <em>None</em>
-                                                </MenuItem>
-                                                <MenuItem value='Active'>Active</MenuItem>
-                                                <MenuItem value='Deactivate'>Deactivate</MenuItem>
-                                            </Select>    
-                                        </FormControl>
-                                        <FormControl style={styles.formControl}>
-                                            <InputLabel htmlFor="location-controlled-open-select">Location</InputLabel>
-                                            <Select
-                                                value={this.state.location}
-                                                onChange={this.handleChange}
-                                                inputProps={{
-                                                    name: 'location',
-                                                    id: 'location-controlled-open-select',
-                                                }}
-                                            >
-                                                <MenuItem value="">
-                                                <em>None</em>
-                                                </MenuItem>
-                                                <MenuItem value='Los Angeles'>Los Angeles</MenuItem>
-                                                <MenuItem value='Washington'>Washington</MenuItem>
-                                                <MenuItem value='Springfield'>Springfield</MenuItem>
-                                                <MenuItem value='Franklin'>Franklin</MenuItem>
-                                                <MenuItem value='Greenville'>Greenville</MenuItem>
-                                                <MenuItem value='Bristol'>Bristol</MenuItem>
-                                                <MenuItem value='Clinton'>Clinton</MenuItem>
-                                                <MenuItem value='Fairview'>Fairview</MenuItem>
-                                                <MenuItem value='Salem'>Salem</MenuItem>
-                                                <MenuItem value='Madison'>Madison</MenuItem>
-                                                <MenuItem value='Georgetown'>Georgetown</MenuItem>
-
-                                            </Select>    
-                                        </FormControl>
-                               
-                                       <RaiseButton type="submit" variant="contained" color="primary" label="Filter"/>
-                                     </div>               
-                                    <div style={{float:'right', padding:'5px'}}>
-                                        <RaiseButton type="button" actionLink="/addNewMerchant" variant="contained" color='primary' label="+Add Merchant"/>
-                                    </div>
-                                </div>  
-                            </form>
-                        </div>            
-                    </Paper>
-                    
-                        <TableGridView />
-                    
-                    <div>
-                        {errorMessage}
+          
+            <Paper className="pagePaper">
+                <form size='large' className="form-horizontal" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
+                    <div className="appTitleLabel">
+                        MANAGE MERCHANT
                     </div>
-                </div>
-            </div>
+                    <div className="row middle-md">
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            <Field name="username" myPlaceholder="Name" fullWidth={true} component={InputField} />
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            <FormControl style={styles.formControl}>
+                                <Select
+                                    value={this.state.status}
+                                    onChange={this.handleChange}
+                                    inputProps={{
+                                        name: 'status',
+                                    }}
+                                >
+                                    <MenuItem value="">
+                                    <em>None</em>
+                                    </MenuItem>
+                                    <MenuItem value='Active'>Active</MenuItem>
+                                    <MenuItem value='Deactivate'>Deactivate</MenuItem>
+                                </Select>    
+                            </FormControl>  
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            <FormControl style={styles.formControl}>
+                                <Select
+                                    value={this.state.location}
+                                    onChange={this.handleChange}
+                                    inputProps={{
+                                        name: 'location',
+                                    }}
+                                >
+                                    <MenuItem value="">
+                                    <em>None</em>
+                                    </MenuItem>
+                                    <MenuItem value='Los Angeles'>Los Angeles</MenuItem>
+                                    <MenuItem value='Washington'>Washington</MenuItem>
+                                    <MenuItem value='Springfield'>Springfield</MenuItem>
+                                    <MenuItem value='Franklin'>Franklin</MenuItem>
+                                    <MenuItem value='Greenville'>Greenville</MenuItem>
+                                    <MenuItem value='Bristol'>Bristol</MenuItem>
+                                    <MenuItem value='Clinton'>Clinton</MenuItem>
+                                    <MenuItem value='Fairview'>Fairview</MenuItem>
+                                    <MenuItem value='Salem'>Salem</MenuItem>
+                                    <MenuItem value='Madison'>Madison</MenuItem>
+                                    <MenuItem value='Georgetown'>Georgetown</MenuItem>
+
+                                </Select>    
+                            </FormControl>
+                        </div>    
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            <RaiseButton type="submit" variant="contained" color="primary" label="Filter"/>  
+                        </div>   
+                        <div className="col-xs-12 col-sm-6 col-md-4 end-md">
+                            <RaiseButton type="button" actionLink="/addNewMerchant" variant="contained" color='primary' label="+Add Merchant"/>
+                        </div>
+                    </div>
+                </form>
+            </Paper>       
         );
     }
 }

@@ -12,6 +12,7 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import FormLabel from '@material-ui/core/FormLabel';
 
 //Containers
 import BusinessDetails from '../../containers/merchant/merchantBusinessDetails';
@@ -137,7 +138,7 @@ class AddMerchant extends Component {
                         <div className="formContent">
                             <form size='large' className="form-horizontal" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
                                 <div className="appTitleLabel">
-                                    ADD MERCHANT
+                                  <FormLabel component="legend">ADD MERCHANT</FormLabel>
                                 </div>
 
                                 <div className={classes.root}>
