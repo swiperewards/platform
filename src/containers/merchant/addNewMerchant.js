@@ -89,7 +89,16 @@ const styles = theme => ({
     }
   }
 
-  
+  const validate = values => {
+    const errors = {}
+
+    if (values.confirmPassword !== values.password) {
+        errors.confirmPassword = "Confirm password must be the same as password"
+    }
+
+    return errors;
+}
+
 class AddMerchant extends Component {
 
     state = {
@@ -123,7 +132,7 @@ class AddMerchant extends Component {
       };
 
       onSubmit(values) {
-
+        console.log('Add New Merchant, '+values.businessName);
       }
 
     render() {
@@ -136,7 +145,7 @@ class AddMerchant extends Component {
                 <div>
                     <Paper className="pagePaper">
                         <div className="formContent">
-                            <form size='large' className="form-horizontal" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
+                            <form size='large' className="form-horizontal">
                                 <div className="appTitleLabel">
                                   <FormLabel component="legend">ADD MERCHANT</FormLabel>
                                 </div>
@@ -152,28 +161,32 @@ class AddMerchant extends Component {
                                     })}
                                     </Stepper>
                                     <div>
-                                    {this.state.activeStep === steps.length ? (
-                                        <div>
-                                        <Typography className={classes.instructions}>All steps completed</Typography>
-                                        <Button onClick={this.handleReset}>Reset</Button>
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            {
-                                                getStepContent(activeStep)
-                                            }
+                                       {
+                                          getStepContent(activeStep)
+                                        }
+                                    {this.state.activeStep === steps.length-1 ? (
                                         <div>
                                             <Button
                                             disabled={activeStep === 0}
                                             onClick={this.handleBack}
-                                            className={classes.backButton}
-                                            >
-                                            Back
+                                            className={classes.backButton}>
+                                                Back
                                             </Button>
-                                            <Button variant="contained" color='primary' onClick={this.handleNext} className={classNames(classes.margin, classes.bootstrapRoot)}>
-                                                {activeStep === steps.length - 1 ? 'ADD NEW MERCHANT' : 'Next'}
+                                            <Button type="button" onClick={this.props.handleSubmit((event) => this.onSubmit(event))} variant="contained" color='primary' className={classNames(classes.margin, classes.bootstrapRoot)}>
+                                                 ADD NEW MERCHANT
                                             </Button>
                                         </div>
+                                    ) : (                                            
+                                        <div>
+                                            <Button
+                                            disabled={activeStep === 0}
+                                            onClick={this.handleBack}
+                                            className={classes.backButton}>
+                                                Back
+                                            </Button>
+                                            <Button variant="contained" color='primary' onClick={this.handleNext} className={classNames(classes.margin, classes.bootstrapRoot)}>
+                                                 Next
+                                            </Button>
                                         </div>
                                     )}
                                     </div>
@@ -194,7 +207,7 @@ AddMerchant.propTypes = {
     classes : PropTypes.object,
 }
 
-export default reduxForm({form: 'FrmAddMerchant',})(withStyles(styles)(AddMerchant))
+export default reduxForm({form: 'FrmAddMerchant', validate})(withStyles(styles)(AddMerchant))
 
 
 // export default reduxForm({
