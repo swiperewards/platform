@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 
 //redux-form
-import { reduxForm } from 'redux-form'
+import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 
 
@@ -14,16 +14,42 @@ import Paper from '@material-ui/core/Paper';
 import InputField from '../components/inputField'
 import RaiseButton from '../components/raiseButton'
 
+//Validation
+import {required, email, minimum8} from '../utilities/validation'
+
 //Actions
 import {registerUser} from '../actions/accountAction'
 
-const required = value => value && value.trim() !== "" ? undefined : `Required`
+
+
+const validate = values => {
+    const errors = {}
+
+    if (values.confirmPassword !== values.password) {
+        errors.confirmPassword = "Confirm password must be the same as password"
+    }
+
+    return errors;
+}
 
 class Register extends Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            loadStatus: false,
+            invalidRecaptcha: true,
+            showError: false
+        }
+    }
+
     onSubmit(values) {
-        this.setState({showLoader:true})
-        this.props.registerUser(values);
+        if (this.state.invalidRecaptcha) {
+            this.setState({ showError: true });
+        } else {
+            this.props.registerUser(values);
+            this.setState({ showError: false });
+        }
     }
 
     render() {
@@ -41,19 +67,19 @@ class Register extends Component {
                                 </div>
                                 <div className="formGroup">
                                     <label className="controlLabel">Email Address</label>
-                                    <InputField name="emailId" myLabel="Email" myPlaceHolder="" fullWidth={true} component={InputField} validate={required} />
+                                    <Field name="emailId" fullWidth={true} component={InputField} validate={[required, email]} />
                                 </div>
                                 <div className="formGroup">
                                     <label className="controlLabel">Full Name</label>
-                                    <InputField name="fullName" myLabel="Full Name" myPlaceHolder="" fullWidth={true} component={InputField} validate={required} />
+                                    <Field name="fullName" fullWidth={true} component={InputField} validate={required} />
                                 </div>
                                 <div className="formGroup">
                                     <label className="controlLabel">Password</label>
-                                    <InputField name="password" myType="password" myLabel="password" myPlaceHolder="" fullWidth={true} component={InputField} validate={required} />
+                                    <Field name="password" myType="password" fullWidth={true} component={InputField} validate={[required, minimum8]} />
                                 </div>
                                 <div className="formGroup">
                                     <label className="controlLabel">Confirm Password</label>
-                                    <InputField name="confirmPassword" myType="password" myLabel="password" myPlaceHolder="" fullWidth={true} component={InputField} validate={required} />
+                                    <Field name="confirmPassword" myType="password" fullWidth={true} component={InputField} validate={required} />
                                 </div>
                                 <div className="g-recaptcha" data-sitekey="6Ld6-mMUAAAAAGcrILvNoAyV8EwAWKYi38aunc8F"></div>
                                 <div style={{paddingTop:'10px', textAlign:'center'}}> 
@@ -74,6 +100,7 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default reduxForm({
-    form: 'FrmRegister'
+    form: 'FrmRegister',
+    validate
 }
 )(connect(null, mapDispatchToProps)(Register))

@@ -16,26 +16,12 @@ import InputField from '../components/inputField'
 import RaiseButton from '../components/raiseButton'
 import Loader from '../components/loader'
 
+//Validation
+import {required} from '../utilities/validation'
 
 //Actions
 import { validateUser, logout } from '../actions/accountAction';
 
-
-const required = value => value && value.trim() !== "" ? undefined : `Required`
-
-const validateField = values => {
-    const errors = {}
-    const requiredFields = ['username', 'password']
-    requiredFields.forEach(field => {
-      if (!values[ field ]) {
-        errors[ field ] = 'Required'
-      }
-    })
-    if (values.email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-      errors.email = 'Invalid email address'
-    }
-    return errors
-  }
 
 const styles = {
     loginTxt:{
@@ -100,8 +86,10 @@ class Login extends Component {
                         else if(nextProps.validateAction_Data.user.responseData.role === 'merchant'){
                             this.props.history.push(`/merchantdashboard`);
                         }
-                        else {
-                            errorMessage = <div style={{
+                    }
+                    else{
+                        errorMessage =
+                            <div style={{
                                 padding: '5px 20px',
                                 margin: '5px',
                                 marginBottom: '10px',
@@ -113,16 +101,9 @@ class Login extends Component {
                                 backgroundColor: '#ffdce0',
                                 borderColor: 'rgba(27, 31, 35, 0.15)',
                                 textAlign: 'center'
-                            }}>{nextProps.validateAction_Data.user.message}</div>
-                            this.props.setTimeout(()=>{
-                                this.props.clearBadRequest()
-                            },5000)
-                            this.setState({ showLoader: false })
-                        }
-                    }else{
-                        errorMessage = <div/>
+                            }}>{nextProps.validateAction_Data.user.message}</div >
                     }
-                }else errorMessage = <div/>
+                }
             }
         }
         this.setState({showLoader:false})
@@ -151,11 +132,11 @@ class Login extends Component {
                                 </div>
                                 <div className="formGroup">
                                     <label className="controlLabel">Username or Email Address</label>
-                                    <Field name="username" myLabel="Email" myPlaceHolder="" fullWidth={true} component={InputField} validate={required} />
+                                    <Field name="username"  fullWidth={true} component={InputField} validate={required} />
                                 </div>
                                 <div className="formGroup">
                                     <label  className="controlLabel">Password</label>
-                                    <Field name="password" myType="password" myLabel="password" myPlaceHolder="" fullWidth={true} component={InputField} validate={required} />
+                                    <Field name="password" myType="password" fullWidth={true} component={InputField} validate={required} />
                                 </div>
                                 <div className="checkbox">
                                     <label className="controlLabel"><input type="checkbox" ref="remember" name="remember"/> Remember me</label>                 
