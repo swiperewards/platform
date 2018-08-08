@@ -15,6 +15,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import FormLabel from '@material-ui/core/FormLabel';
 
+//Validation
+import {required, email, ssnMask, phoneMask, zipMask, percentage, drivingLicenseMask} from '../../utilities/validation'
+
 //Components
 import InputField from '../../components/inputField';
 
@@ -123,27 +126,35 @@ class OwnerDetails extends Component {
                                                 First Name*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="text" name="firstname" fullWidth={true} component={InputField} />  
+                                                <Field myType="text" name="firstname" fullWidth={true} component={InputField} validate={required}/>  
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
                                                 Last Name*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                                <Field myType="text" name="lastname" fullWidth={true} component={InputField} />  
+                                                <Field myType="text" name="lastname" fullWidth={true} component={InputField} validate={required}/>  
                                             </div>
                                         </div>
                                         <div className="row middle-md">
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                DOB(mm-dd-yyyy)*
+                                                DOB(dd/mm/yyyy)*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="date" name="dob" fullWidth={true} component={InputField} />  
+                                                <Field myType="date" name="dob" fullWidth={true} component={InputField} validate={required}/>  
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
                                                 SSN*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                                <Field myType="number" name="ssn" fullWidth={true} component={InputField} />  
+                                                <Field 
+                                                    myType="text" 
+                                                    name="ssn" fullWidth={true} 
+                                                    component={InputField} 
+                                                    validate={required}
+                                                    masked={true}
+                                                    myMaskType="text"
+                                                    maskReg={ssnMask}
+                                                />  
                                             </div>
                                         </div>
                                         <div className="row middle-md">
@@ -151,13 +162,13 @@ class OwnerDetails extends Component {
                                             Business Title*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="text" name="businesstitle" fullWidth={true} component={InputField} />  
+                                                <Field myType="text" name="businesstitle" fullWidth={true} component={InputField} validate={required}/>  
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
                                                 OwnerShip %*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                                <Field myType="number" name="ownership" fullWidth={true} component={InputField} />  
+                                                <Field myType="number" name="ownership" fullWidth={true} component={InputField} validate={[required, percentage]}/>  
                                             </div>
                                         </div>
                                         <div className="row middle-md">
@@ -165,7 +176,16 @@ class OwnerDetails extends Component {
                                                 Driver License
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="text" name="license" fullWidth={true} component={InputField} />  
+                                                <Field 
+                                                    myType="text" 
+                                                    name="license" 
+                                                    fullWidth={true} 
+                                                    component={InputField} 
+                                                    validate={[required]}
+                                                    masked={true}
+                                                    myMaskType="text"
+                                                    maskReg={drivingLicenseMask}
+                                                />  
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
                                                 DL State
@@ -204,13 +224,13 @@ class OwnerDetails extends Component {
                                                 Address*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="text" name="address" fullWidth={true} component={InputField} />  
+                                                <Field myType="text" name="address" fullWidth={true} component={InputField} validate={required}/>  
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
                                                 Address 2
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                                <Field name="text" fullWidth={true} component={InputField} />  
+                                                <Field myType="text" name="address2" fullWidth={true} component={InputField} />  
                                             </div>
                                         </div>
                                         <div className="row middle-md">
@@ -218,7 +238,7 @@ class OwnerDetails extends Component {
                                                 City*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="text" name="city" fullWidth={true} component={InputField} />  
+                                                <Field myType="text" name="city" fullWidth={true} component={InputField} validate={required}/>  
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
                                                 State*
@@ -252,7 +272,16 @@ class OwnerDetails extends Component {
                                                 Zip*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="number" name="zip" fullWidth={true} component={InputField} />  
+                                                <Field 
+                                                    myType="text" 
+                                                    name="zip" 
+                                                    fullWidth={true} 
+                                                    component={InputField} 
+                                                    validate={required}
+                                                    masked={true}
+                                                    myMaskType="text"
+                                                    maskReg={zipMask}
+                                                />  
                                             </div>
                                         </div>
                                         <div className="row middle-md">
@@ -260,13 +289,22 @@ class OwnerDetails extends Component {
                                                 Email*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="email" name="email" fullWidth={true} component={InputField} />  
+                                                <Field myType="text" name="email" fullWidth={true} component={InputField} validate={[required, email]}/>  
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
                                                 Phone*
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                                <Field name="number" fullWidth={true} component={InputField} />  
+                                                <Field 
+                                                    myTpe="text"
+                                                    name="ownerPhone" 
+                                                    fullWidth={true} 
+                                                    component={InputField} 
+                                                    validate={required}
+                                                    masked={true}
+                                                    myMaskType="text"
+                                                    maskReg={phoneMask}
+                                                />  
                                             </div>
                                         </div>
                                     </Paper>

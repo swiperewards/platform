@@ -10,6 +10,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
 
+//Validation
+import {required} from '../../utilities/validation'
+
 //Components
 import InputField from '../../components/inputField';
 
@@ -81,13 +84,13 @@ class BankAccount extends Component {
                                 Bank Routing Number*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name="routeNumber" fullWidth={true} component={InputField} />  
+                                <Field myType="text" name="routeNumber" fullWidth={true} component={InputField} validate={required}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Bank Account Number*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name="accountNumber" fullWidth={true} component={InputField} />  
+                                <Field myType="text" name="accountNumber" fullWidth={true} component={InputField} validate={required}/>  
                             </div>
                         </div>
                     </div>            

@@ -19,6 +19,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormLabel from '@material-ui/core/FormLabel';
 
+//Validation
+import {required, minimum8} from '../../utilities/validation'
+
 //Components
 import InputField from '../../components/inputField';
 
@@ -125,7 +128,7 @@ class AccountSetup extends Component {
                                     Add MCC*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field name="mccNumber" myType="number" myLabel="mccNumber" myPlaceHolder="" fullWidth={true} component={InputField} /> 
+                                <Field name="mccNumber" myType="number" myLabel="mccNumber" myPlaceHolder="" fullWidth={true} component={InputField} validate={required}/> 
                                 <Dialog
                                     open={this.state.openMCCPopUp}
                                     onClose={this.handleClose}
@@ -316,7 +319,7 @@ class AccountSetup extends Component {
                                         Merchant Username*
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field  myType="text" name="addgroup" fullWidth={true} component={InputField} />  
+                                        <Field  myType="text" name="merchantUsername" fullWidth={true} component={InputField} validate={required}/>  
                                     </div>
                                 </React.Fragment>
                                 ) : ( null
@@ -328,13 +331,13 @@ class AccountSetup extends Component {
                                         Password*
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="password" name="password" fullWidth={true} component={InputField} />  
+                                        <Field myType="password" name="password" fullWidth={true} component={InputField} validate={[required, minimum8]}/>  
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
                                         Confirm Password*
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="password" name="confirmpassword" fullWidth={true} component={InputField} />  
+                                        <Field myType="password" name="confirmpassword" fullWidth={true} component={InputField} validate={required}/>  
                                     </div>
                                 </div>
                                 ) : ( null

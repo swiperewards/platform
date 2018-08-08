@@ -1,8 +1,6 @@
 //react redux
 import React, { Component } from 'react';
 import { Field } from 'redux-form'
-import MaskedInput from 'react-text-mask';
-import PropTypes from 'prop-types';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -13,10 +11,12 @@ import Divider from '@material-ui/core/Divider';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormLabel from '@material-ui/core/FormLabel';
-import Input from '@material-ui/core/Input';
 
 //Components
 import InputField from '../../components/inputField';
+
+//Validation
+import {required, email, website, phoneMask, taxNumberMask, zipMask} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -33,27 +33,6 @@ const styles = {
       }
 };
 
-const phoneMask = ['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
-
-function TextMaskCustom(props) {
-    const { inputRef, ...other } = props;
-  
-    return (
-      <MaskedInput
-        {...other}
-        ref={inputRef}
-        mask={phoneMask}
-        placeholderChar={'\u2000'}
-        showMask={false}
-        guide={false}
-      />
-    );
-  }
-  
-  TextMaskCustom.propTypes = {
-    inputRef: PropTypes.func.isRequired,
-  };
-
 class BusinessDetails extends Component {
 
     state = {
@@ -61,19 +40,10 @@ class BusinessDetails extends Component {
         stateName:'',
         creditCheckedNo: true,
         creditCheckedYes: false,
-        textmask: '',
-        servicePhoneMask: '',
-        contactPhoneMask:'',
       };
 
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
-      };
-
-      handleTextChange = name => event => {
-        this.setState({
-          [name]: event.target.value,
-        });
       };
 
       handleCheckboxChange = name => event => {
@@ -82,13 +52,25 @@ class BusinessDetails extends Component {
         if (name === "creditCheckedYes"){
             this.setState({creditCheckedNo: !event.target.checked});
         }
-        else{
+        else if (name === "creditCheckedNo"){
             this.setState({creditCheckedYes: !event.target.checked});
         }
       };
 
+      renderSwitch(param) {
+        switch(param) {
+          case '0':
+            return true;
+          case '5':
+            return true;  
+          case '6':
+            return true;
+          default:
+            return false;
+        }
+      }
+
     render() {
-        const { textmask, servicePhoneMask, contactPhoneMask } = this.state;
 
         return (
             <div style={{paddingBottom:'20px'}}>
@@ -122,6 +104,24 @@ class BusinessDetails extends Component {
                                                </MenuItem>
                                             })
                                         }
+                                        {
+                                            !this.renderSwitch(this.state.businesstype) ?(
+                                            <MenuItem>
+                                            <FormControlLabel
+                                                control={
+                                                <Checkbox
+                                                    name="publicCompany"
+                                                    checked={this.state.publicCompany}
+                                                    onChange={this.handleCheckboxChange('publicCompany')}
+                                                    value="publicCompany"
+                                                    color="primary"
+                                                />
+                                            }
+                                            label="Public Company"
+                                            />
+                                            </MenuItem>
+                                            ): null
+                                        }
                                     </Select>    
                                 </FormControl>  
                             </div>  
@@ -133,7 +133,13 @@ class BusinessDetails extends Component {
                                         Legal Business Name*
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="text" name="businessName" fullWidth={true} component={InputField} />  
+                                        <Field 
+                                            myType="text" 
+                                            name="businessName" 
+                                            fullWidth={true} 
+                                            component={InputField} 
+                                            validate={required}
+                                        />  
                                     </div>
                                 </div>
                             ) : null
@@ -151,25 +157,29 @@ class BusinessDetails extends Component {
                                 Tax ID Number*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Input
-                                    className="inputControl"
-                                    name="taxId" 
-                                    mask={phoneMask}
-                                    value={textmask}
-                                    onChange={this.handleTextChange('textmask')}
-                                    inputComponent={TextMaskCustom}
-                                />
+                                <Field 
+                                        myType="text" 
+                                        name="taxId" 
+                                        fullWidth={true} 
+                                        component={InputField} 
+                                        validate={required}
+                                        masked={true}
+                                        myMaskType="text"
+                                        maskReg={taxNumberMask}
+                                />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Customer Service Phone
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Input
-                                    className="inputControl"
+                                <Field 
+                                    myType="text" 
                                     name="servicePhone" 
-                                    value={servicePhoneMask}
-                                    onChange={this.handleTextChange('servicePhoneMask')}
-                                    inputComponent={TextMaskCustom}
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    masked={true}
+                                    myMaskType="text"
+                                    maskReg={phoneMask}
                                 />  
                             </div>
                         </div>
@@ -178,13 +188,19 @@ class BusinessDetails extends Component {
                                 Years in Business*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name="businessPeriod" fullWidth={true} component={InputField} />  
+                                <Field myType="text" name="businessPeriod" fullWidth={true} component={InputField} validate={required}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Website*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name="website" fullWidth={true} component={InputField} />  
+                                <Field 
+                                    myType="text" 
+                                    name="website" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={[required, website]}
+                                />  
                             </div>
                         </div>
                         <div className="row">
@@ -221,7 +237,15 @@ class BusinessDetails extends Component {
                                         Annual CC Sales*
                                 </div>    
                                 <div className="col-xs-12 col-sm-6 col-md-3">
-                                    <Field myType="number" name="phone" fullWidth={true} component={InputField} />  
+                                    <Field 
+                                        myType="text" 
+                                        name="ccSale" 
+                                        fullWidth={true} 
+                                        component={InputField} 
+                                        validate={required}
+                                        masked={true}
+                                        myMaskType="number"
+                                    />    
                                 </div>
                                 </React.Fragment>
                                 ) : ( null
@@ -232,19 +256,30 @@ class BusinessDetails extends Component {
                                 Phone*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Input
-                                    className="inputControl"
-                                    name="taxId" 
-                                    value={contactPhoneMask}
-                                    onChange={this.handleTextChange('contactPhoneMask')}
-                                    inputComponent={TextMaskCustom}
+                                <Field 
+                                    myType="text" 
+                                    name="phone" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={required}
+                                    masked={true}
+                                    myMaskType="text"
+                                    maskReg={phoneMask}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Fax
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="number" name="fax" fullWidth={true} component={InputField} />  
+                            <div className="col-xs-12 col-sm-6 col-md-3">   
+                                <Field 
+                                    myType="text" 
+                                    name="fax" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    masked={true}
+                                    myMaskType="text"
+                                    maskReg={phoneMask}
+                                />  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -252,7 +287,7 @@ class BusinessDetails extends Component {
                                 Address*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name="address" fullWidth={true} component={InputField} />  
+                                <Field myType="text" name="address" fullWidth={true} component={InputField} validate={required}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Address 2
@@ -266,7 +301,7 @@ class BusinessDetails extends Component {
                                 City*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name="city" fullWidth={true} component={InputField} />  
+                                <Field myType="text" name="city" fullWidth={true} component={InputField} validate={required}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 State*
@@ -300,13 +335,22 @@ class BusinessDetails extends Component {
                                 Zip*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="number" name="zip" fullWidth={true} component={InputField} />  
+                                <Field 
+                                    myType="text" 
+                                    name="zip" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={required}
+                                    masked={true}
+                                    myMaskType="text"
+                                    maskReg={zipMask}
+                                />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Email*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name="email" fullWidth={true} component={InputField} />  
+                                <Field myType="text" name="email" fullWidth={true} component={InputField} validate={[required, email]}/>  
                             </div>
                         </div>
                     </div>            
