@@ -9,7 +9,6 @@ import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
@@ -127,7 +126,7 @@ class ResponsiveDrawer extends React.Component {
   };
 
   render() {
-    const { classes, theme, handleDrawerToggle, navDrawerOpen } = this.props;
+    const { classes, theme } = this.props;
     const children = this.props.children;
     const toolbarStyle = {
         width:'100%',
@@ -173,7 +172,7 @@ class ResponsiveDrawer extends React.Component {
             <IconButton
               color="inherit"
               aria-label="Open drawer"
-              onClick={this.handleDrawerToggle}
+              onClick={this.handleDrawerToggle.bind(this)}
               className={classes.navIconHide}
             >
               <MenuIcon />
@@ -225,7 +224,7 @@ class ResponsiveDrawer extends React.Component {
             variant="temporary"
             anchor={theme.direction === 'rtl' ? 'right' : 'left'}
             open={this.state.mobileOpen}
-            onClose={this.handleDrawerToggle}
+            onClose={this.handleDrawerToggle.bind(this)}
             classes={{
               paper: classes.drawerPaper,
             }}

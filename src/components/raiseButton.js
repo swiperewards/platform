@@ -27,7 +27,7 @@ const styles = theme => ({
     textTransform: 'none',
     fontSize: '14px',
     padding: '6px 12px',
-    border: '1px solid',
+    border: '0px solid',
     backgroundColor: '#53c1ff',
     borderColor: '#53c1ff',
     fontFamily: [
@@ -44,15 +44,13 @@ const styles = theme => ({
     ].join(','),
     '&:hover': {
       backgroundColor: '#337ab7',
-      borderColor: '#2e6da4',
     },
     '&:active': {
       boxShadow: 'none',
       backgroundColor: '#337ab7',
-      borderColor: '#2e6da4',
     },
     '&:focus': {
-      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.0)',
     },
   },
 });

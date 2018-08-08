@@ -1,4 +1,6 @@
 import React from 'react';
+import MaskedInput from 'react-text-mask';
+import NumberFormat from "react-number-format";
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -56,11 +58,53 @@ const styles = theme => ({
   },
 });
 
-function CustomizedInputs(props) {
-  const { classes } = props;
+var maskValue;
+
+//Mask textfield control based on maskValue passed
+function TextMaskCustom(props) {
+  const { inputRef, ...other } = props;
+  return (
+    <MaskedInput
+      {...other}
+      ref={inputRef}
+      mask={maskValue}
+      placeholderChar={'\u2000'}
+      showMask={false}
+      guide={false}
+    />
+  );
+}
+
+TextMaskCustom.propTypes = {
+  inputRef: PropTypes.func.isRequired,
+};
+
+
+function NumberFormatCustom(props) {
+  const { inputRef, onChange, ...other } = props;
 
   return (
+    <NumberFormat
+      {...other}
+      ref={inputRef}
+      thousandSeparator
+    />
+  );
+}
+
+NumberFormatCustom.propTypes = {
+  inputRef: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+
+function CustomizedInputs(props) {
+  const { classes } = props;
+  maskValue = props.maskReg;
+  return (
       <TextField {...props.input}
+        error={props.meta.touched ? props.meta.invalid : false}
+        helperText={props.meta.touched ? props.meta.error : ''}
         placeholder={props.myPlaceHolder}
         id={props.id}
         type={props.myType}
@@ -72,6 +116,7 @@ function CustomizedInputs(props) {
             root: classes.bootstrapRoot,
             input: classes.bootstrapInput,
           },
+          inputComponent: (props.masked ? (props.myMaskType === 'text'? TextMaskCustom : NumberFormatCustom) : undefined),
         }}
         InputLabelProps={{
           shrink: false,
