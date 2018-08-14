@@ -110,6 +110,7 @@ function CustomizedInputs(props) {
         type={props.myType}
         fullWidth = {props.fullWidth}
         width = {props.minWidth}
+        value={props.myValue === undefined ? props.input.value : props.myValue}
         InputProps={{
           disableUnderline: false,
           classes: {

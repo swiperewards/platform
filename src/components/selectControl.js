@@ -1,62 +1,33 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
-const styles = theme => ({
-  button: {
-    display: 'block',
-    marginTop: theme.spacing.unit * 2,
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 170,
-  },
-  inputOptions:{
-    fontSize: '12px',
-  },
-});
-
-class SelectOption extends React.Component {
-  state = {
-    open: false,
-  } 
-
-  handleChange(field, value) {
-    this.setState({ [field]: Number(value) });
-  };
-
-  render() {
-    const { classes } = this.props;
-
-    return (
-      <form autoComplete="off">
-        <FormControl className={classes.formControl}>
-          <Select
-            className={classes.inputOptions}
-            onChange={this.handleChange}
-            value={this.props.stateValue}
-          >
-            {
-                this.props.menuItems.map((item) =>{
-                    return <MenuItem 
-                    className={classes.inputOptions}
-                    value={item.prefix}>
-                    {item.name.toUpperCase()}
-                    </MenuItem>
-                })
-            }
-          </Select>
-        </FormControl>
-      </form>
-    );
-  }
-}
-
-SelectOption.propTypes = {
-  classes: PropTypes.object.isRequired,
+const styles = {
+    selectControl:{
+      fontSize: '14px',
+    }
 };
 
-export default withStyles(styles)(SelectOption);
+const renderSelectField = ({
+  input,
+  label,
+  meta: { touched, error, invalid },
+  children,
+  ...custom
+}) => (
+  <FormControl error>   
+    <Select
+      style={styles.selectControl}
+      error= {touched && invalid}
+      {...input}
+      children={children}
+      {...custom}
+    />
+    {(touched && invalid) ? <FormHelperText>{error}</FormHelperText> : null}
+  </FormControl>
+)
+
+export{
+  renderSelectField
+}
