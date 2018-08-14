@@ -1,8 +1,10 @@
 import { hostURL, addMerchantAPI } from '../app.config';
+import {normalizedPhone} from '../utilities/validation'
+
 var axios = require('axios');
 
 //Function to add new merchant to processing system
-export function addNewMerchant(values) {
+export function addNewMerchant(values, token) {
 
     var setting = {
         method: 'post',
@@ -11,41 +13,64 @@ export function addNewMerchant(values) {
 	        "requestData":{
 		        "new": "0",
                 "established": "20101020", 
-                "annualCCSales": "1000000", //Annual CC Sales *
-                "mcc": "8111",//Add MCC *
-                "dba":"", //DBA - Statement Descriptor #taken
-                "status": "1",//Boarding Status*
-                "entityLogin": "t1_log_5b59a54baf609892736b7db", //hardcode
-                "entityType": "2", //Business Type (e.g. LLC)*
-                "entityName": "Some company new", //Legal Business Name *
-                "entityEnvironment":"", //Merchant Type #taken
-                "entityAddress1": "123 North 12 St", //Address*
-                "entityAddress2":"",//Address 2 #taken
-                "entityCity": "Miami", //City*
-                "entityState": "FL", //State*
-                "entityZip": "33024", //Zip*
-                "entityCountry": "USA", //#
-                "entityPhone": "1234567891", //Phone*
-                "entityCustomerPhone":"", //Customer Service Phone customerPhone #taken
-                "entityFax":"", //Fax #taken
-                "entityEmail": "support@example.com", //Email*
-                "entityEin": "123456789", //Tax ID Number *
-                "entityPublic": "1", //Business Type (e.g. LLC)*
-                "entityWebsite": "http://www.example.com", //Website*
+                "annualCCSales": values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedPhone,''),
+                "mcc": values.mccNumber,
+                "dba": values.dba,
+                "status": values.boardingStatus,
+                "entityType": values.businessType,
+                "entityName": values.businessName === undefined ? (values.owners[0].ownerFirstName + ' ' + values.owners[0].ownerLastName) : values.businessName,
+                "entityEnvironment":values.merchantType,
+                "entityAddress1": values.businessAddress,
+                "entityAddress2":values.businessAddress2,
+                "entityCity": values.businessCity,
+                "entityState": values.businessStateName,
+                "entityZip": values.businessZip === undefined ? undefined : (values.businessZip).replace(normalizedPhone,''),
+                "entityCountry": "USA",
+                "entityPhone": values.businessPhone === undefined ? undefined : (values.businessPhone).replace(normalizedPhone,''),
+                "entityCustomerPhone":values.servicePhone === undefined ? undefined : (values.servicePhone).replace(normalizedPhone,''),
+                "entityFax": values.businessFax === undefined ? undefined : (values.businessFax).replace(normalizedPhone,''),
+                "entityEmail": values.businessEmail,
+                "entityEin": values.taxId === undefined ? undefined : (values.taxId).replace(normalizedPhone,''),
+                "entityPublic": values.publicCompany,
+                "entityWebsite": values.businessWebsite,
                 "entityaccounts": [{
-                    "primary": "1", //#
-                    "accountMethod": "8",//Bank Account Type*
-                    "accountNumber": "023456789012345",//Bank Account Number*
-                    "accountRouting": "063013924"//Bank Routing Number*
+                    "primary": "1",
+                    "accountMethod": values.bankAccountType,
+                    "accountNumber": values.accountNumber,
+                    "accountRouting": values.routeNumber
                 }],
 		
-                "entityTcAcceptDate":"", // tcAcceptDate Date of Acceptance #taken
-                "entityTcAcceptIp":"", //tcAcceptIp IP Address #taken
+                "entityTcAcceptDate": "198703051215", //values.acceptanceDate+values.acceptanceTime,
+                "entityTcAcceptIp":values.ipAddress,
+
+                "members": 
+                    values.owners.map((owner)=>(
+                    {
+                        "title": owner.ownerBusinessTitle,
+                        "first": owner.ownerFirstName,
+                        "last": owner.ownerLastName,
+                        "dob": owner.ownerDob === undefined ? undefined : (owner.ownerDob).replace(normalizedPhone,''),
+                        "ownership": (parseFloat(owner.ownership)) * 100,
+                        "email":owner.ownerEmail,
+                        "ssn":owner.ownerSsn === undefined ? undefined : (owner.ownerSsn).replace(normalizedPhone,''),
+                        "address1":owner.ownerAddress,
+                        "address2":owner.ownerAddress2,
+                        "city":owner.ownerCity,	
+                        "state":owner.ownerState,
+                        "zip":owner.ownerZip === undefined ? undefined : (owner.ownerZip).replace(normalizedPhone,''),
+                        "country":"USA",
+                        "timezone":"est",
+                        "dl":owner.ownerDrivingLicense,
+                        "dlstate":owner.ownerDlState,
+                        "primary":"1",
+                        "phone":owner.ownerPhone === undefined ? undefined : (owner.ownerPhone).replace(normalizedPhone,''),
+                    }
+                    ))
             }
 	    },
         headers: {
             'content-type': 'application/json',
-            'auth' : ''
+            'auth' : token
         }
     }
 
@@ -60,7 +85,7 @@ export function addNewMerchant(values) {
         );
 
     return {
-        type: 'VALIDATE_USER',
+        type: 'ONBOARD_MERCHANT',
         payload: response
     }
 }
