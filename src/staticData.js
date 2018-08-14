@@ -78,14 +78,14 @@ const data={
 
     ],
     boardingStatus: [
-        {id:'1', name: 'Not Ready'},
-        {id:'2', name: 'Board Immediately'}
+        {id:'0', name: 'Not Ready'},
+        {id:'1', name: 'Board Immediately'}
     ],
     bankAccountType: [
-        {id:'1', name: 'Checking'},
-        {id:'2', name: 'Savings'},
-        {id:'3', name: 'Corporate Checking'},
-        {id:'4', name: 'Corporate Savings'}
+        {id:'8', name: 'Checking'},
+        {id:'9', name: 'Savings'},
+        {id:'10', name: 'Corporate Checking'},
+        {id:'11', name: 'Corporate Savings'}
     ],
     mccCodes : [
         {
