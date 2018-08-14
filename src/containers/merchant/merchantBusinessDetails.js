@@ -1,10 +1,9 @@
 //react redux
 import React, { Component } from 'react';
-import { Field } from 'redux-form'
+import { Field } from 'redux-form';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
@@ -14,9 +13,10 @@ import FormLabel from '@material-ui/core/FormLabel';
 
 //Components
 import InputField from '../../components/inputField';
+import {renderSelectField} from '../../components/selectControl';
 
 //Validation
-import {required, email, website, phoneMask, taxNumberMask, zipMask} from '../../utilities/validation'
+import {required, exact9, between1to100, between0toIntMax, dropDownRequired, email, website, phoneMask, taxNumberMask, zipMask} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -32,11 +32,11 @@ const styles = {
         fontSize: '12px',
       }
 };
-
+  
 class BusinessDetails extends Component {
 
     state = {
-        businesstype: '',
+        businessType: '',
         stateName:'',
         creditCheckedNo: true,
         creditCheckedYes: false,
@@ -57,6 +57,7 @@ class BusinessDetails extends Component {
         }
       };
 
+      //Enables "Public Company" option if not following cases
       renderSwitch(param) {
         switch(param) {
           case '0':
@@ -86,14 +87,13 @@ class BusinessDetails extends Component {
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControl style={styles.formControl}>
-                                    <Select
-                                        style={styles.selectControl}
-                                        value={this.state.businesstype}
-                                        onChange={this.handleChange}
-                                        inputProps={{
-                                            name: 'businesstype',
-                                        }}
-                                    >
+                                        <Field
+                                            name="businessType"
+                                            component={renderSelectField}
+                                            fullWidth={true}
+                                            onChange={this.handleChange}
+                                            validate={dropDownRequired}
+                                        >
                                         {
                                             Data.businessType.map((item) =>{
                                                return <MenuItem 
@@ -105,7 +105,7 @@ class BusinessDetails extends Component {
                                             })
                                         }
                                         {
-                                            !this.renderSwitch(this.state.businesstype) ?(
+                                            !this.renderSwitch(this.state.businessType) ?(
                                             <MenuItem>
                                             <FormControlLabel
                                                 control={
@@ -122,12 +122,12 @@ class BusinessDetails extends Component {
                                             </MenuItem>
                                             ): null
                                         }
-                                    </Select>    
+                                    </Field>    
                                 </FormControl>  
                             </div>  
                         </div>
                         {
-                            this.state.businesstype !== "0" ?(
+                            this.state.businessType !== "0" ?(
                                 <div className="row middle-md">
                                     <div className="col-xs-12 col-sm-6 col-md-3">
                                         Legal Business Name*
@@ -138,7 +138,7 @@ class BusinessDetails extends Component {
                                             name="businessName" 
                                             fullWidth={true} 
                                             component={InputField} 
-                                            validate={required}
+                                            validate={[required,between1to100]}
                                         />  
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@ class BusinessDetails extends Component {
                                         name="taxId" 
                                         fullWidth={true} 
                                         component={InputField} 
-                                        validate={required}
+                                        validate={[required,exact9]}
                                         masked={true}
                                         myMaskType="text"
                                         maskReg={taxNumberMask}
@@ -196,7 +196,8 @@ class BusinessDetails extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">    
                                 <Field 
                                     myType="text" 
-                                    name="website" 
+                                    name="businessWebsite" 
+                                    myPlaceHolder="http://www.example.com"
                                     fullWidth={true} 
                                     component={InputField} 
                                     validate={[required, website]}
@@ -242,7 +243,7 @@ class BusinessDetails extends Component {
                                         name="ccSale" 
                                         fullWidth={true} 
                                         component={InputField} 
-                                        validate={required}
+                                        validate={[required]}
                                         masked={true}
                                         myMaskType="number"
                                     />    
@@ -258,7 +259,7 @@ class BusinessDetails extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     myType="text" 
-                                    name="phone" 
+                                    name="businessPhone" 
                                     fullWidth={true} 
                                     component={InputField} 
                                     validate={required}
@@ -273,7 +274,7 @@ class BusinessDetails extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">   
                                 <Field 
                                     myType="text" 
-                                    name="fax" 
+                                    name="businessFax" 
                                     fullWidth={true} 
                                     component={InputField} 
                                     masked={true}
@@ -287,13 +288,13 @@ class BusinessDetails extends Component {
                                 Address*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name="address" fullWidth={true} component={InputField} validate={required}/>  
+                                <Field myType="text" name="businessAddress" fullWidth={true} component={InputField} validate={[required,between1to100]}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Address 2
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name="address2" fullWidth={true} component={InputField} />  
+                                <Field myType="text" name="businessAddress2" fullWidth={true} component={InputField} />  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -301,21 +302,20 @@ class BusinessDetails extends Component {
                                 City*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name="city" fullWidth={true} component={InputField} validate={required}/>  
+                                <Field myType="text" name="businessCity" fullWidth={true} component={InputField} validate={[required,between1to100]}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 State*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
                                 <FormControl style={styles.formControl}>
-                                    <Select
-                                        style={styles.selectControl}
-                                        value={this.state.stateName}
-                                        onChange={this.handleChange}
-                                        inputProps={{
-                                            name: 'stateName',
-                                        }}
-                                    >
+                                        <Field
+                                            name="businessStateName"
+                                            component={renderSelectField}
+                                            fullWidth={true}
+                                            onChange={this.handleChange}
+                                            validate={dropDownRequired}
+                                        >
                                         {
                                             Data.states.map((item) =>{
                                                return <MenuItem 
@@ -326,7 +326,7 @@ class BusinessDetails extends Component {
                                                </MenuItem>
                                             })
                                         }
-                                    </Select>    
+                                    </Field>    
                                 </FormControl>  
                             </div>
                         </div>
@@ -337,7 +337,7 @@ class BusinessDetails extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     myType="text" 
-                                    name="zip" 
+                                    name="businessZip" 
                                     fullWidth={true} 
                                     component={InputField} 
                                     validate={required}
@@ -350,7 +350,7 @@ class BusinessDetails extends Component {
                                 Email*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name="email" fullWidth={true} component={InputField} validate={[required, email]}/>  
+                                <Field myType="text" name="businessEmail" fullWidth={true} component={InputField} validate={[required, email, between1to100]}/>  
                             </div>
                         </div>
                     </div>            
@@ -362,5 +362,5 @@ class BusinessDetails extends Component {
         );
     }
 }
-  
-export default BusinessDetails
+
+export default BusinessDetails;

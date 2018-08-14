@@ -4,31 +4,33 @@ import { Field } from 'redux-form'
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormLabel from '@material-ui/core/FormLabel';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 //Validation
-import {required, minimum8} from '../../utilities/validation'
+import {required, minimum8, dropDownRequired, ipAddressMatch} from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
+import {renderSelectField} from '../../components/selectControl';
 
 //Data
 import Data from '../../staticData'
 
 let errorMessage
+
+const passwordsMatch = (value, allValues) => 
+  value !== allValues.merchantPassword ? 'Passwords don\'t match' : undefined;
 
 const styles = {
     formControl: {
@@ -37,7 +39,13 @@ const styles = {
       },
       selectControl:{
         fontSize: '12px',
-      }
+      },
+      row: {
+        fontSize:'12px',
+        '&:nth-of-type(odd)': {
+          backgroundColor: '#f2f4f6',
+        },
+      },
 };
 
 class AccountSetup extends Component {
@@ -52,7 +60,8 @@ class AccountSetup extends Component {
         loginCheckedNo: true,
         loginCheckedYes: false,
         openMCCPopUp: false,
- 
+        updatedList:Data.mccCodes, 
+        mccCode:'',
       };
 
       handleChange = event => {
@@ -77,13 +86,36 @@ class AccountSetup extends Component {
         }
       };
 
-      handleMCCPopUp = () => {
+      handleMCCPopUp = (event) => {
+        event.target.blur()
         this.setState({ openMCCPopUp: true });
+        this.setState({ updatedList: Data.mccCodes});
       };
     
       handleClose = () => {
         this.setState({ openMCCPopUp: false });
       };
+
+      selectMCCCode = (code) => {
+          this.setState({mccCode: code});
+          this.handleClose();
+      }
+
+      onHandleSearch = (searchValue)=>{
+        var filteredList
+
+        if(searchValue.target.value === ''){
+            filteredList = Data.mccCodes
+        }
+        else{
+            const regex = new RegExp(searchValue.target.value, 'i');
+            filteredList = Data.mccCodes.filter((datum) => {
+              return (datum.edited_description.search(regex) > -1);
+            });
+        }
+        
+        this.setState({ updatedList: filteredList});
+      }
 
     render() {
 
@@ -101,16 +133,13 @@ class AccountSetup extends Component {
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControl style={styles.formControl}>
-                                    <InputLabel htmlFor="status-controlled-open-select"></InputLabel>
-                                    <Select
-                                        style={styles.selectControl}
-                                        value={this.state.boardStatus}
-                                        onChange={this.handleChange}
-                                        inputProps={{
-                                            name: 'boardStatus',
-                                            id: 'status-controlled-open-select',
-                                        }}
-                                    >
+                                            <Field
+                                                name="boardingStatus"
+                                                component={renderSelectField}
+                                                fullWidth={true}
+                                                onChange={this.handleChange}
+                                                validate={dropDownRequired}
+                                            >
                                         {
                                             Data.boardingStatus.map((item) =>{
                                                return <MenuItem 
@@ -121,35 +150,51 @@ class AccountSetup extends Component {
                                                </MenuItem>
                                             })
                                         }
-                                    </Select>    
+                                    </Field>    
                                 </FormControl>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                     Add MCC*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field name="mccNumber" myType="number" myLabel="mccNumber" myPlaceHolder="" fullWidth={true} component={InputField} validate={required}/> 
+                                <Field 
+                                    name="mccNumber" 
+                                    myType="number" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={this.state.mccCode !== '' ? undefined : required} 
+                                    myValue={this.state.mccCode}
+                                    onFocus={this.handleMCCPopUp}
+                                /> 
                                 <Dialog
                                     open={this.state.openMCCPopUp}
                                     onClose={this.handleClose}
                                     aria-labelledby="alert-dialog-title"
                                     aria-describedby="alert-dialog-description"
                                     >
-                                    <DialogTitle id="alert-dialog-title">{"MCC Codes"}</DialogTitle>
+                                    <DialogTitle id="alert-dialog-title">{"MCC CODES"}</DialogTitle>
                                     <DialogContent>
-                                        <DialogContentText id="alert-dialog-description">
-                                        Let Google help apps determine location. This means sending anonymous location data to
-                                        Google, even when no apps are running.
-                                        </DialogContentText>
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={this.handleClose} color="primary">
-                                        Disagree
-                                        </Button>
-                                        <Button onClick={this.handleClose} color="primary" autoFocus>
-                                        Agree
-                                        </Button>
-                                    </DialogActions>
+                                        <Field 
+                                            myType="text"  
+                                            myPlaceHolder="Search Text" 
+                                            name="searchBox" 
+                                            fullWidth={true} 
+                                            component={InputField}
+                                            onChange={this.onHandleSearch}
+                                        />  
+                                        <List>
+                                            {
+                                                this.state.updatedList.map((item, index) =>{
+                                                    return(
+                                                    <ListItem key={index} button disableGutters divider onClick={() => this.selectMCCCode(item.mcc)}>
+                                                        <ListItemText disableTypography primary={item.mcc + " - " + item.combined_description}/>
+                                                    </ListItem>
+                                                    )
+                                                
+                                                })
+                                            }
+                                        </List>                                    
+                                        </DialogContent>
                                 </Dialog> 
                             </div>
                         </div>
@@ -159,25 +204,23 @@ class AccountSetup extends Component {
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3 start-md">    
                                 <FormControl style={styles.formControl}>
-                                        <Select
-                                            style={styles.selectControl}
-                                            value={this.state.merchanttype}
-                                            onChange={this.handleChange}
-                                            inputProps={{
-                                                name: 'merchanttype',
-                                            }}
-                                        >
+                                            <Field
+                                                name="merchantType"
+                                                component={renderSelectField}
+                                                fullWidth={true}
+                                                onChange={this.handleChange}
+                                            >
                                         {
-                                            Data.merchantType.map((item) =>{
+                                            Data.merchantType.map((item, index) =>{
                                                return <MenuItem 
                                                     style={styles.selectControl}
-                                                    key={item.id}
+                                                    key={index}
                                                     value={item.id}>
                                                     {item.name}
                                                </MenuItem>
                                             })
                                         }
-                                        </Select>    
+                                        </Field>    
                                     </FormControl>  
                             </div>
                         </div>
@@ -209,17 +252,6 @@ class AccountSetup extends Component {
                                     label="Yes"
                                 />
                             </div>
-                            {this.state.termsCheckedYes === true && this.state.termsCheckedNo === false ? (
-                                <React.Fragment>
-                                    <div className="col-xs-12 col-sm-6 col-md-3">
-                                        Version accepted
-                                    </div>
-                                    <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field name="version" fullWidth={true} component={InputField} />  
-                                    </div>
-                                </React.Fragment>
-                                ) : ( null
-                            )}
                         </div>
                         {this.state.termsCheckedYes === true && this.state.termsCheckedNo === false ? (
                             <React.Fragment>
@@ -228,13 +260,13 @@ class AccountSetup extends Component {
                                         Date of Acceptance
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="date" name="date" fullWidth={true} component={InputField} />  
+                                        <Field myType="date" name="acceptanceDate" fullWidth={true} component={InputField} />  
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
                                         IP Address
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="text" name="ipaddress" fullWidth={true} component={InputField} />  
+                                        <Field myType="text" name="ipAddress" fullWidth={true} component={InputField} validate={ipAddressMatch}/>  
                                     </div>
                                 </div>
                                 <div className="row">
@@ -242,7 +274,7 @@ class AccountSetup extends Component {
                                         Time
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="time" name="time" fullWidth={true} component={InputField} />  
+                                        <Field myType="time" name="acceptanceTime" fullWidth={true} component={InputField} />  
                                     </div>
                                 </div>
                             </React.Fragment>
@@ -331,13 +363,13 @@ class AccountSetup extends Component {
                                         Password*
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="password" name="password" fullWidth={true} component={InputField} validate={[required, minimum8]}/>  
+                                        <Field myType="password" name="merchantPassword" fullWidth={true} component={InputField} validate={[required, minimum8]}/>  
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
                                         Confirm Password*
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="password" name="confirmpassword" fullWidth={true} component={InputField} validate={required}/>  
+                                        <Field myType="password" name="confirmPassword" fullWidth={true} component={InputField} validate={[required, passwordsMatch]}/>  
                                     </div>
                                 </div>
                                 ) : ( null
@@ -352,4 +384,4 @@ class AccountSetup extends Component {
     }
 }
 
-export default AccountSetup
+export default AccountSetup;

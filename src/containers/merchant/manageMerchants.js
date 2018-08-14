@@ -31,6 +31,10 @@ class ManageMerchants extends Component {
         this.setState({ [event.target.name]: event.target.value });
       };
 
+      clickAddNewMerchant(){
+            this.props.history.push('/addNewMerchant');
+      }
+
     render() {
 
         return (
@@ -92,7 +96,7 @@ class ManageMerchants extends Component {
                             <RaiseButton type="submit" variant="contained" color="primary" label="Filter"/>  
                         </div>   
                         <div className="col-xs-12 col-sm-6 col-md-4 end-md">
-                            <RaiseButton type="button" actionLink="/addNewMerchant" variant="contained" color='primary' label="+Add Merchant"/>
+                            <RaiseButton type="button"  onClick={this.clickAddNewMerchant} variant="contained" color='primary' label="+Add Merchant"/>
                         </div>
                     </div>
                 </form>

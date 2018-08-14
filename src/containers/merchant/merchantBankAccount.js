@@ -4,17 +4,17 @@ import { Field } from 'redux-form'
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
 
 //Validation
-import {required} from '../../utilities/validation'
+import {required, dropDownRequired} from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
+import {renderSelectField} from '../../components/selectControl';
 
 //Data
 import Data from '../../staticData'
@@ -57,14 +57,13 @@ class BankAccount extends Component {
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControl style={styles.formControl}>
-                                    <Select
-                                        style={styles.selectControl}
-                                        value={this.state.account}
-                                        onChange={this.handleChange}
-                                        inputProps={{
-                                            name: 'account',
-                                        }}
-                                    >
+                                        <Field
+                                            name="bankAccountType"
+                                            component={renderSelectField}
+                                            fullWidth={true}
+                                            onChange={this.handleChange}
+                                            validate={dropDownRequired}
+                                        >
                                         {
                                             Data.bankAccountType.map((item) =>{
                                                return <MenuItem 
@@ -75,7 +74,7 @@ class BankAccount extends Component {
                                                </MenuItem>
                                             })
                                         }
-                                    </Select>    
+                                    </Field>    
                                 </FormControl>  
                             </div>  
                         </div>
@@ -103,4 +102,4 @@ class BankAccount extends Component {
     }
 }
 
-export default BankAccount
+export default BankAccount;

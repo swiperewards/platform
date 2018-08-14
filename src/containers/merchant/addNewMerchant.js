@@ -4,15 +4,19 @@ import { reduxForm } from 'redux-form'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogActions from '@material-ui/core/DialogActions';
 
 //Containers
 import BusinessDetails from '../../containers/merchant/merchantBusinessDetails';
@@ -20,7 +24,11 @@ import OwnerDetails from '../../containers/merchant/merchantOwnerDetails';
 import AccountSetup from '../../containers/merchant/merchantAccountSetup';
 import BankAccount from '../../containers/merchant/merchantBankAccount';
 
-let errorMessage
+//Components
+import Loader from '../../components/loader'
+
+//Actions
+import { addNewMerchant } from '../../actions/merchantAction';
 
 const styles = theme => ({
     root: {
@@ -89,22 +97,15 @@ const styles = theme => ({
     }
   }
 
-  const validate = values => {
-    const errors = {}
-
-    if (values.confirmPassword !== values.password) {
-        errors.confirmPassword = "Confirm password must be the same as password"
-    }
-
-    return errors;
-}
+  let errorMessage
 
 class AddMerchant extends Component {
 
     state = {
         status: '',
         location:'',
-        activeStep: 0
+        activeStep: 0,
+        open: false,
       };
 
       handleChange = event => {
@@ -132,8 +133,70 @@ class AddMerchant extends Component {
       };
 
       onSubmit(values) {
-        console.log('Add New Merchant, '+values.businessName);
+        const steps = getSteps();
+        const { activeStep } = this.state;
+        if (activeStep < steps.length-1){
+          this.setState({
+            activeStep: activeStep + 1,
+          });
+        }
+        else{
+          this.setState({showLoader:true})
+          this.props.addNewMerchant(values, this.props.userData.user.responseData.token)
+        }
       }
+
+      handleClickOpen = () => {
+        this.setState({ open: true });
+      };
+    
+      handleClose = () => {
+        this.setState({ open: false });
+        this.props.history.goBack()
+      };
+
+    componentWillMount()
+    {
+        
+        this.setState({
+            open: false
+        });
+    }
+
+    componentWillReceiveProps(nextProps) {
+
+      if (nextProps) {
+        if (nextProps.merchantPayload){
+          if(nextProps.merchantPayload.data){
+            if(nextProps.merchantPayload.data.status === 200){
+                errorMessage = <div></div>
+                this.handleClickOpen()
+            }
+            else{
+              errorMessage =
+              nextProps.merchantPayload.data.responseData.map((error, index) =>
+                  <div key={index} style={{
+                      padding: '5px 20px',
+                      margin: '5px',
+                      marginBottom: '10px',
+                      fontSize: 13,
+                      borderStyle: 'solid',
+                      borderWidth: '1px',
+                      borderRadius: '5px',
+                      color: '#86181d',
+                      backgroundColor: '#ffdce0',
+                      borderColor: 'rgba(27, 31, 35, 0.15)',
+                      textAlign: 'center'
+                  }}>
+                     {error.field + ' : ' + error.msg}
+                  </div >
+                )
+            }
+          }
+        }
+      }
+      this.setState({showLoader:false})
+    }
 
     render() {
         const { classes } = this.props;
@@ -142,23 +205,37 @@ class AddMerchant extends Component {
 
         return (
             <div>
+                <Loader status={this.state.showLoader} />
+                <div>
+                    <Dialog
+                      open={this.state.open}
+                      aria-labelledby="alert-dialog-title"
+                    >
+                      <DialogTitle id="alert-dialog-title">{"Congratulations! You've successfully created a new merchant account."}</DialogTitle>
+                      <DialogActions>
+                        <Button onClick={this.handleClose} color="primary" autoFocus>
+                          OK
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                  </div> 
                 <div>
                     <Paper className="pagePaper">
                         <div className="formContent">
-                            <form size='large' className="form-horizontal">
+                            <form size='large' className="form-horizontal" autoComplete="off" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
                                 <div className="appTitleLabel">
                                   <FormLabel component="legend">ADD MERCHANT</FormLabel>
                                 </div>
 
                                 <div className={classes.root}>
                                     <Stepper activeStep={activeStep} alternativeLabel>
-                                    {steps.map(label => {
-                                        return (
-                                        <Step key={label}>
-                                            <StepLabel>{label}</StepLabel>
-                                        </Step>
-                                        );
-                                    })}
+                                        {steps.map(label => {
+                                            return (
+                                            <Step key={label}>
+                                                <StepLabel>{label}</StepLabel>
+                                            </Step>
+                                            );
+                                        })}
                                     </Stepper>
                                     <div>
                                        {
@@ -172,7 +249,13 @@ class AddMerchant extends Component {
                                             className={classes.backButton}>
                                                 Back
                                             </Button>
-                                            <Button type="button" onClick={this.props.handleSubmit((event) => this.onSubmit(event))} variant="contained" color='primary' className={classNames(classes.margin, classes.bootstrapRoot)}>
+                                            <Button 
+                                              type="submit"  
+                                              variant="contained" 
+                                              color='primary' 
+                                              className={classNames(classes.margin, classes.bootstrapRoot)}
+                                              onClick={this.props.handleSubmit((event) => this.onSubmit(event))}
+                                              >
                                                  ADD NEW MERCHANT
                                             </Button>
                                         </div>
@@ -184,7 +267,7 @@ class AddMerchant extends Component {
                                             className={classes.backButton}>
                                                 Back
                                             </Button>
-                                            <Button variant="contained" color='primary' onClick={this.handleNext} className={classNames(classes.margin, classes.bootstrapRoot)}>
+                                            <Button type="submit" variant="contained" color='primary' className={classNames(classes.margin, classes.bootstrapRoot)}>
                                                  Next
                                             </Button>
                                         </div>
@@ -207,11 +290,16 @@ AddMerchant.propTypes = {
     classes : PropTypes.object,
 }
 
-export default reduxForm({form: 'FrmAddMerchant', validate})(withStyles(styles)(AddMerchant))
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({ addNewMerchant }, dispatch)
+}
 
+AddMerchant = connect(
+  state => ({
+    userData: state.account === undefined ? undefined : state.account,
+    merchantPayload: state.merchant === undefined ? undefined : state.merchant
+  }),
+  mapDispatchToProps,
+)(AddMerchant)
 
-// export default reduxForm({
-//     form: 'FrmAddMerchant',})
-// (
-//     connect(null, null)(AddMerchant)
-// )
+export default reduxForm({form: 'FrmAddMerchant'})(withStyles(styles)(AddMerchant))
