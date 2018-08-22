@@ -64,6 +64,9 @@ body, h1, h2, h3, h4, h5, h6 {
   margin: 0px;
   line-height: 24px; }
 
+button {
+  border-width: 0px; }
+
 .inputControl {
   font-size: 12pt;
   width: 100%; }
@@ -144,3 +147,89 @@ FormLabel {
   display: -ms-flexbox;
   display: flex;
   margin: 0 5px 10px; }
+
+/* The container */
+.checkBoxContainer {
+  display: block;
+  position: relative;
+  padding-left: 40px;
+  padding-bottom: 18px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+/* Hide the browser's default checkbox */
+.checkBoxContainer input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer; }
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 14px;
+  width: 14px;
+  margin: 0px 12px;
+  border: solid #626262;
+  border-width: 2px;
+  background-color: white;
+  border-radius: 2px; }
+
+/* On mouse-over, add a grey background color */
+.checkBoxContainer:hover input ~ .checkmark {
+  border: solid #626262;
+  border-width: 2px;
+  background-color: white; }
+
+/* When the checkbox is checked, add a blue background */
+.checkBoxContainer input:checked ~ .checkmark {
+  background-color: #26a5ee;
+  border: solid #26a5ee;
+  border-width: 2px; }
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none; }
+
+/* Show the checkmark when checked */
+.checkBoxContainer input:checked ~ .checkmark:after {
+  display: block; }
+
+/* Style the checkmark/indicator */
+.checkBoxContainer .checkmark:after {
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg); }
+
+.button {
+  background-color: #2D99EB;
+  /* Green */
+  border: none;
+  color: white;
+  padding: 6px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  border-radius: 5px;
+  margin-left: 10px; }
+
+.disabledButton {
+  opacity: 0.6;
+  cursor: not-allowed; }
+
+.enabledButton {
+  opacity: 1.0; }
