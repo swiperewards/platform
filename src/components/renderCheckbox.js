@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 
 const Error = {
     padding: '12px',
@@ -7,26 +7,24 @@ const Error = {
     position: 'absolute'
 }
 
-const RenderCheckbox = ({
-    input,
-    label,
-    myValue,
-    meta: { touched, error, invalid },
-    children,
-  }) => (
-    <div>
-        <div>
-            <label className="checkBoxContainer">
-                { 
-                    myValue ? <input type="checkbox" {...input} checked /> : <input type="checkbox" {...input} />
-                }
-                <span className="checkmark"></span>
-            </label>
-            <span style={Error}>{touched ? error : ''}</span>
-        </div>
-    </div>
-  )
-  
-  export{
-    RenderCheckbox
-  }
+class RenderCheckbox extends Component {
+    render() {
+        return (
+            <div>
+                <div>
+
+                    <label className="checkBoxContainer">
+                     <input type="checkbox" {...this.props.input} checked={this.props.input.value} /> 
+                        <span className="checkmark"></span>
+                    </label>
+                    <div style={{ position: 'relative', width: '80%', left: '25px', lineHeight: '13px' }}> {this.props.myLabel}</div>
+
+                    <span style={Error}>{this.props.meta.touched ? this.props.meta.error : ''}</span>
+                </div>
+
+            </div>
+        )
+    }
+}
+
+export default RenderCheckbox;

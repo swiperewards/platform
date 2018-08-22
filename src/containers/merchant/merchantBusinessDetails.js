@@ -1,6 +1,7 @@
 //react redux
 import React, { Component } from 'react';
 import { Field } from 'redux-form';
+import { connect } from 'react-redux';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -13,7 +14,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 //Components
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
-import {RenderCheckbox} from '../../components/renderCheckbox'
+import RenderCheckbox from '../../components/renderCheckbox'
 
 
 //Validation
@@ -42,8 +43,9 @@ class BusinessDetails extends Component {
     state = {
         businessType: '',
         stateName:'',
-        creditCheckedNo: false,
-        creditCheckedYes: true,
+        merchantObject:'',
+        creditCheckedNo: true,
+        creditCheckedYes: false,
       };
 
       handleChange = event => {
@@ -75,8 +77,19 @@ class BusinessDetails extends Component {
         }
       }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps) {
+          if (nextProps.merchantDetails){
+            if(nextProps.merchantDetails.status === 200){
+                this.setState({merchantObject: nextProps.merchantDetails.responseData})
+            }
+          }
+        }
+    }  
+
     render() {
 
+        const {merchantObject} = this.state;
         return (
             <div style={{paddingBottom:'20px'}}>
                 <Paper className="pagePaper">
@@ -95,6 +108,7 @@ class BusinessDetails extends Component {
                                             name="businessType"
                                             component={renderSelectField}
                                             fullWidth={true}
+                                            value={merchantObject.businessType}
                                             onChange={this.handleChange}
                                             validate={dropDownRequired}
                                         >
@@ -202,6 +216,7 @@ class BusinessDetails extends Component {
                                     myPlaceHolder="http://www.example.com"
                                     fullWidth={true} 
                                     component={InputField} 
+                                    myValue={merchantObject.website_v}
                                     validate={[required, website]}
                                 />  
                             </div>
@@ -217,7 +232,7 @@ class BusinessDetails extends Component {
                                             name="isCreditCardNo" 
                                             id="creditCardNo" 
                                             myStyle={styles} 
-                                            myValue={this.state.creditCheckedNo}
+                                            value={this.state.creditCheckedNo}
                                             onChange={this.handleCheckboxChange('creditCheckedNo')}
                                             component={RenderCheckbox} 
                                         />
@@ -230,7 +245,7 @@ class BusinessDetails extends Component {
                                             name="isCreditCardYes" 
                                             id="creditCardYes" 
                                             myStyle={styles} 
-                                            myValue= {this.state.creditCheckedYes}
+                                            value= {this.state.creditCheckedYes}
                                             onChange={this.handleCheckboxChange('creditCheckedYes')}
                                             component={RenderCheckbox} 
                                         />
@@ -356,7 +371,14 @@ class BusinessDetails extends Component {
                                 Email*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name="businessEmail" fullWidth={true} component={InputField} validate={[required, email, between1to100]}/>  
+                                <Field 
+                                myType="text" 
+                                name="businessEmail" 
+                                fullWidth={true} 
+                                myValue={merchantObject.email_v}
+                                component={InputField} 
+                                validate={[required, email, between1to100]}
+                                />  
                             </div>
                         </div>
                     </div>            
@@ -368,5 +390,11 @@ class BusinessDetails extends Component {
         );
     }
 }
+
+BusinessDetails = connect(
+    state => ({
+       merchantDetails: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails
+    }),
+  )(BusinessDetails)
 
 export default BusinessDetails;

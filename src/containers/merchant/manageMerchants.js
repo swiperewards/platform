@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import NumberFormat from "react-number-format";
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -28,7 +29,7 @@ import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { getMerchantListWithFilter, deleteMerchant, getMerchantDetailsAPI } from '../../actions/merchantAction';
 
 //Data
 import Data from '../../staticData';
@@ -154,6 +155,13 @@ class ManageMerchants extends Component {
         else{
             //#TODO: Handle token expire case here
         }
+    }
+
+    updateMerchant = (merchantId) => {
+        if(this.props.userData.user.responseData.token){
+            this.props.getMerchantDetailsAPI(merchantId, this.props.userData.user.responseData.token)
+        }
+        this.props.history.push('/updateMerchant')
     }
 
     handleClose = () => {
@@ -321,14 +329,14 @@ class ManageMerchants extends Component {
                                                 <TableCell>{object.first_v + " " + object.last_v}</TableCell>
                                                 <TableCell>{object.city_v}</TableCell>
                                                 <TableCell>{object.email_v}</TableCell>
-                                                <TableCell>{object.phone_v}</TableCell>
+                                                <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
                                                 <TableCell>
                                                     <div style={object.inactive_v === 1 ? styles.titleRed : styles.titleGreen}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                                 </TableCell>
                                                 <TableCell> 
                                                     <div className="row start-md middle-md">
                                                         <div className="col-md-6">
-                                                            <button type="button" disabled={object.inactive_v === 1 ? true : false} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                            <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
                                                                 <img src="../images/ic_edit.svg" alt="" /> 
                                                             </button>
                                                         </div>
@@ -377,7 +385,7 @@ class ManageMerchants extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant, getMerchantDetailsAPI }, dispatch)
   }
   
   ManageMerchants = connect(

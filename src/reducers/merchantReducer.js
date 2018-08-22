@@ -11,7 +11,11 @@ export default function (state = {}, action) {
         case 'DELETE_MERCHANT':
             return{
                 deleteMerchant: action.payload
-            }      
+            }     
+        case 'GET_MERCHANT_DETAILS':
+            return{
+                ...state, merchantDetails: action.payload
+            }   
         default:
             return state;
     }

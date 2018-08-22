@@ -172,7 +172,7 @@ class AddMerchant extends Component {
                 this.handleClickOpen()
             }
             else{
-              if(nextProps.merchantPayload.data.status === 5001){
+              if(nextProps.merchantPayload.data.status === 1082){
                 errorMessage =
                 nextProps.merchantPayload.data.responseData.map((error, index) =>
                     <div key={index} style={{
@@ -191,7 +191,10 @@ class AddMerchant extends Component {
                       {error.field + ' : ' + error.msg}
                     </div >
                   )
-              }
+                }
+                else{
+                  //TODO: Handle error condition
+                }
             }
           }
         }

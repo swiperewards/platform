@@ -16,6 +16,7 @@ import ManageDeals from './containers/admin/manageDeals'
 import ManageUsers from './containers/user/manageUsers'
 import AddAdmin from './containers/admin/addNewAdmin'
 import AddMerchant from './containers/merchant/addNewMerchant'
+import UpdateMerchant from './containers/merchant/updateMerchantDetails'
 
 
 import SuperAdminDashboard from './containers/superAdmin/superAdminDashboard'
@@ -48,6 +49,7 @@ class Routes extends Component {
                             <Route exact path="/manageusers" component={ManageUsers} />
                             <Route exact path="/addNewAdmin" component={AddAdmin} />
                             <Route exact path="/addNewMerchant" component={AddMerchant} />
+                            <Route exact path="/updateMerchant" component={UpdateMerchant}/>
                         </App>
                     </Switch>
                 </div>

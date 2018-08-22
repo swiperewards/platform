@@ -69,6 +69,7 @@ class Login extends Component {
 
     componentWillMount() {
         localStorage.clear();
+        errorMessage="";
     }
 
     componentWillReceiveProps(nextProps) {
