@@ -1,4 +1,4 @@
-import { hostURL, addMerchantAPI } from '../app.config';
+import { hostURL, addMerchantAPI, deleteMerchantAPI, getMerchantsFilterAPI, getMerchantDetailAPI } from '../app.config';
 import {normalizedPhone} from '../utilities/validation'
 
 var axios = require('axios');
@@ -86,6 +86,118 @@ export function addNewMerchant(values, token) {
 
     return {
         type: 'ONBOARD_MERCHANT',
+        payload: response
+    }
+}
+
+export function ClearMerchantState() {
+    return {
+        type: 'ONBOARD_MERCHANT',
+        payload: undefined
+    }
+}
+
+
+//Function to delete merchant from splash payment system
+export function deleteMerchant(merchantId,token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + deleteMerchantAPI,
+        data: {
+            "platform": 'Web',
+	        "requestData":{
+                "merchantId" : merchantId,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'DELETE_MERCHANT',
+        payload: response
+    }
+}
+
+//Function to fetch list of all merchants from splash payment system
+export function getMerchantListWithFilter(name, inactive, statePrefix, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + getMerchantsFilterAPI,
+        data: {
+            "platform": 'Web',
+	        "requestData":{
+                "nameFilter" : name === undefined ? "" : name,
+                "inactiveFilter" : inactive === undefined ? "" : inactive,
+                "stateFilter": statePrefix === undefined ? "" : statePrefix
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_MERCHANTS',
+        payload: response
+    }
+}
+
+//Function to get merchant details from splash payment system
+export function getMerchantDetailsAPI(merchantId,token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + getMerchantDetailAPI,
+        data: {
+            "platform": 'Web',
+	        "requestData":{
+                "merchantId" : merchantId,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_MERCHANT_DETAILS',
         payload: response
     }
 }
