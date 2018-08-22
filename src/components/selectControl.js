@@ -6,6 +6,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 const styles = {
     selectControl:{
       fontSize: '14px',
+      paddingLeft: '12px',
     }
 };
 
