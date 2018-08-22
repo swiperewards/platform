@@ -81,6 +81,11 @@ const data={
         {id:'0', name: 'Not Ready'},
         {id:'1', name: 'Board Immediately'}
     ],
+    searchStatus: [
+      {id:'', name: 'None'},
+      {id:'0', name: 'Activate'},
+      {id:'1', name: 'Deactivate'}
+    ],
     bankAccountType: [
         {id:'8', name: 'Checking'},
         {id:'9', name: 'Savings'},
