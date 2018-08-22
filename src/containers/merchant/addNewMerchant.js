@@ -28,7 +28,7 @@ import BankAccount from '../../containers/merchant/merchantBankAccount';
 import Loader from '../../components/loader'
 
 //Actions
-import { addNewMerchant } from '../../actions/merchantAction';
+import { addNewMerchant, ClearMerchantState } from '../../actions/merchantAction';
 
 const styles = theme => ({
     root: {
@@ -152,15 +152,14 @@ class AddMerchant extends Component {
     
       handleClose = () => {
         this.setState({ open: false });
-        this.props.history.goBack()
+        this.props.history.push('/managemerchants');
       };
 
     componentWillMount()
     {
-        
-        this.setState({
-            open: false
-        });
+        //to clear old payment state
+        this.props.ClearMerchantState();
+        this.setState({open: false});
     }
 
     componentWillReceiveProps(nextProps) {
@@ -173,24 +172,26 @@ class AddMerchant extends Component {
                 this.handleClickOpen()
             }
             else{
-              errorMessage =
-              nextProps.merchantPayload.data.responseData.map((error, index) =>
-                  <div key={index} style={{
-                      padding: '5px 20px',
-                      margin: '5px',
-                      marginBottom: '10px',
-                      fontSize: 13,
-                      borderStyle: 'solid',
-                      borderWidth: '1px',
-                      borderRadius: '5px',
-                      color: '#86181d',
-                      backgroundColor: '#ffdce0',
-                      borderColor: 'rgba(27, 31, 35, 0.15)',
-                      textAlign: 'center'
-                  }}>
-                     {error.field + ' : ' + error.msg}
-                  </div >
-                )
+              if(nextProps.merchantPayload.data.status === 5001){
+                errorMessage =
+                nextProps.merchantPayload.data.responseData.map((error, index) =>
+                    <div key={index} style={{
+                        padding: '5px 20px',
+                        margin: '5px',
+                        marginBottom: '10px',
+                        fontSize: 13,
+                        borderStyle: 'solid',
+                        borderWidth: '1px',
+                        borderRadius: '5px',
+                        color: '#86181d',
+                        backgroundColor: '#ffdce0',
+                        borderColor: 'rgba(27, 31, 35, 0.15)',
+                        textAlign: 'center'
+                    }}>
+                      {error.field + ' : ' + error.msg}
+                    </div >
+                  )
+              }
             }
           }
         }
@@ -291,7 +292,7 @@ AddMerchant.propTypes = {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ addNewMerchant }, dispatch)
+  return bindActionCreators({ addNewMerchant, ClearMerchantState }, dispatch)
 }
 
 AddMerchant = connect(

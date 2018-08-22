@@ -10,7 +10,7 @@ import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
 
 //Validation
-import {required, dropDownRequired} from '../../utilities/validation'
+import {required, dropDownRequired, between5to20} from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
@@ -83,13 +83,13 @@ class BankAccount extends Component {
                                 Bank Routing Number*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name="routeNumber" fullWidth={true} component={InputField} validate={required}/>  
+                                <Field myType="number" name="routeNumber" fullWidth={true} component={InputField} validate={[required, between5to20]}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Bank Account Number*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name="accountNumber" fullWidth={true} component={InputField} validate={required}/>  
+                                <Field myType="number" name="accountNumber" fullWidth={true} component={InputField} validate={[required, between5to20]}/>  
                             </div>
                         </div>
                     </div>            

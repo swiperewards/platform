@@ -8,20 +8,24 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import FormLabel from '@material-ui/core/FormLabel';
 
 //Components
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
+import {RenderCheckbox} from '../../components/renderCheckbox'
+
 
 //Validation
-import {required, exact9, between1to100, between0toIntMax, dropDownRequired, email, website, phoneMask, taxNumberMask, zipMask} from '../../utilities/validation'
+import {required, exact9, between1to100, dropDownRequired, email, website, phoneMask, taxNumberMask, zipMask, normalizedPhone} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
 
 let errorMessage
+
+const intMaxRangeMatch = (value) => parseFloat(value.replace(normalizedPhone,'')) > 2147483647 ? 'Invalid sales amount' : undefined;
+
 
 const styles = {
     formControl: {
@@ -38,8 +42,8 @@ class BusinessDetails extends Component {
     state = {
         businessType: '',
         stateName:'',
-        creditCheckedNo: true,
-        creditCheckedYes: false,
+        creditCheckedNo: false,
+        creditCheckedYes: true,
       };
 
       handleChange = event => {
@@ -107,18 +111,16 @@ class BusinessDetails extends Component {
                                         {
                                             !this.renderSwitch(this.state.businessType) ?(
                                             <MenuItem>
-                                            <FormControlLabel
-                                                control={
-                                                <Checkbox
-                                                    name="publicCompany"
-                                                    checked={this.state.publicCompany}
-                                                    onChange={this.handleCheckboxChange('publicCompany')}
-                                                    value="publicCompany"
-                                                    color="primary"
+                                                <FormControlLabel
+                                                    control={
+                                                        <Field 
+                                                            name="isPublicCompany" 
+                                                            id="publicCompany" 
+                                                            myStyle={styles} 
+                                                            component={RenderCheckbox} />
+                                                    }
+                                                    label="Public Company"
                                                 />
-                                            }
-                                            label="Public Company"
-                                            />
                                             </MenuItem>
                                             ): null
                                         }
@@ -211,22 +213,26 @@ class BusinessDetails extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControlLabel
                                     control={
-                                        <Checkbox
-                                        checked={this.state.creditCheckedNo}
-                                        onChange={this.handleCheckboxChange('creditCheckedNo')}
-                                        value="creditCheckedNo"
-                                        color="primary"
+                                        <Field 
+                                            name="isCreditCardNo" 
+                                            id="creditCardNo" 
+                                            myStyle={styles} 
+                                            myValue={this.state.creditCheckedNo}
+                                            onChange={this.handleCheckboxChange('creditCheckedNo')}
+                                            component={RenderCheckbox} 
                                         />
                                     }
                                     label="No"
                                 />
                                 <FormControlLabel
                                     control={
-                                        <Checkbox
-                                        checked={this.state.creditCheckedYes}
-                                        onChange={this.handleCheckboxChange('creditCheckedYes')}
-                                        value="creditCheckedYes"
-                                        color="primary"
+                                        <Field 
+                                            name="isCreditCardYes" 
+                                            id="creditCardYes" 
+                                            myStyle={styles} 
+                                            myValue= {this.state.creditCheckedYes}
+                                            onChange={this.handleCheckboxChange('creditCheckedYes')}
+                                            component={RenderCheckbox} 
                                         />
                                     }
                                     label="Yes"
@@ -243,7 +249,7 @@ class BusinessDetails extends Component {
                                         name="ccSale" 
                                         fullWidth={true} 
                                         component={InputField} 
-                                        validate={[required]}
+                                        validate={[required, intMaxRangeMatch]}
                                         masked={true}
                                         myMaskType="number"
                                     />    
