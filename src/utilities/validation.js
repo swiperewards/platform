@@ -19,7 +19,7 @@ const minimum8 = value => value && !/^.{8,}$/.test(value) ? 'Password must be mi
 
 const between1to100 = value => value && !/^.{1,100}$/.test(value) ? 'This field only accepts characters strings between 1 and 100 characters long' : undefined
 
-const between0toIntMax = value => value && !/^\d{0,2147483647}$/i.test(value) ? 'Annual CC Sale should not be more than 2147483647' : undefined
+const between5to20 = value => value && !/^.{5,20}$/.test(value) ? 'This field only accepts characters strings between 5 and 20 characters long' : undefined
 
 const exact9 = value => value && !/^.{10,10}$/.test(value) ? 'Field should be 9 chatacters long' : undefined
 
@@ -52,5 +52,5 @@ export {
     exact9, 
     ipAddressMatch,
     between1to100,
-    between0toIntMax,
+    between5to20,
 }
