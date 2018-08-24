@@ -5,6 +5,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 const styles = {
     container: {
 
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent : 'center',
+        alignItems : 'center',
         position: 'fixed',
         height: '100%',
         width: '100%',
@@ -18,6 +22,9 @@ const styles = {
         zIndex: 99999999999999
 
     },
+    spinnerStyle: {
+        
+    },
     refresh: {
         //display: 'inline-block',
         position: 'fixed',
@@ -29,7 +36,7 @@ const Loader = (props) => {
     var loader;
     if (status) {
         loader = <div style={styles.container}>
-            <CircularProgress size={80} thickness={5} style={{ top: '40%', left: '47%' }} />
+            <CircularProgress/>
         </div>
     }
     else {
