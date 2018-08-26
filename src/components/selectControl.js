@@ -24,6 +24,10 @@ const renderSelectField = ({
       {...input}
       children={children}
       {...custom}
+      inputProps={{
+              name: input.name,
+        }
+      }
     />
     {(touched && invalid) ? <FormHelperText>{error}</FormHelperText> : null}
   </FormControl>

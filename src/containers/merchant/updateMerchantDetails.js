@@ -19,10 +19,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
 
 //Containers
-import BusinessDetails from '../../containers/merchant/merchantBusinessDetails';
-import OwnerDetails from '../../containers/merchant/merchantOwnerDetails';
-import AccountSetup from '../../containers/merchant/merchantAccountSetup';
-import BankAccount from '../../containers/merchant/merchantBankAccount';
+import UpdateBusinessDetails from '../../containers/merchant/updateMerchantBusiness';
+import UpdateOwnerDetails from '../../containers/merchant/updateMerchantOwners';
+import UpdateAccountSetup from '../../containers/merchant/updateMerchantAccountSetup';
+import UpdateBankAccount from '../../containers/merchant/updateMerchantBankAccount';
 
 //Components
 import Loader from '../../components/loader'
@@ -82,16 +82,16 @@ const styles = theme => ({
   }
   
   //Function to navigate to respective step based on active index
-  function getStepContent(stepIndex) {
+  function getStepContent(stepIndex, merchantId) {
     switch (stepIndex) {
       case 0:
-        return (<BusinessDetails />);
+        return (<UpdateBusinessDetails merchant= {merchantId}/>);
       case 1:
-        return (<OwnerDetails />);
+        return (<UpdateOwnerDetails />);
       case 2:
-        return (<AccountSetup />);
+        return (<UpdateAccountSetup />);
       case 3:
-        return (<BankAccount />);
+        return (<UpdateBankAccount />);
       default:
         return 'Uknown stepIndex';
     }
@@ -159,7 +159,7 @@ class UpdateMerchant extends Component {
     {
         //to clear old payment state
         this.props.ClearMerchantState();
-        this.setState({open: false});
+        this.setState({open: false});        
     }
 
     componentWillReceiveProps(nextProps) {
@@ -212,7 +212,7 @@ class UpdateMerchant extends Component {
                       open={this.state.open}
                       aria-labelledby="alert-dialog-title"
                     >
-                      <DialogTitle id="alert-dialog-title">{"Congratulations! You've successfully created a new merchant account."}</DialogTitle>
+                      <DialogTitle id="alert-dialog-title">{"Congratulations! You've successfully updated merchant details."}</DialogTitle>
                       <DialogActions>
                         <Button onClick={this.handleClose} color="primary" autoFocus>
                           OK
@@ -225,7 +225,7 @@ class UpdateMerchant extends Component {
                         <div className="formContent">
                             <form size='large' className="form-horizontal" autoComplete="off" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
                                 <div className="appTitleLabel">
-                                  <FormLabel component="legend">ADD MERCHANT</FormLabel>
+                                  <FormLabel component="legend">UPDATE MERCHANT</FormLabel>
                                 </div>
 
                                 <div className={classes.root}>
@@ -240,7 +240,8 @@ class UpdateMerchant extends Component {
                                     </Stepper>
                                     <div>
                                        {
-                                          getStepContent(activeStep)
+                                          getStepContent(activeStep, 
+                                            this.props.location.state !== undefined ? this.props.location.state.detail : undefined)
                                         }
                                     {this.state.activeStep === steps.length-1 ? (
                                         <div>
@@ -257,7 +258,7 @@ class UpdateMerchant extends Component {
                                               className={classNames(classes.margin, classes.bootstrapRoot)}
                                               onClick={this.props.handleSubmit((event) => this.onSubmit(event))}
                                               >
-                                                 ADD NEW MERCHANT
+                                                 UPDATE MERCHANT
                                             </Button>
                                         </div>
                                     ) : (                                            
@@ -303,4 +304,6 @@ UpdateMerchant = connect(
   mapDispatchToProps,
 )(UpdateMerchant)
 
-export default reduxForm({form: 'FrmUpdateMerchant'})(withStyles(styles)(UpdateMerchant))
+export default reduxForm({
+  form: 'FrmUpdateMerchant',
+})(withStyles(styles)(UpdateMerchant))

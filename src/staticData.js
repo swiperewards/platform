@@ -73,8 +73,8 @@ const data={
         { id:'4', prefix:'3', name: 'Retail'},
         { id:'6', prefix:'4', name: 'Fuel'},
         { id:'7', prefix:'5', name: 'Service Stations'},
-        { id:'7', prefix:'6', name: 'Restaurants & Food'},
-        { id:'7', prefix:'7', name: 'E-commerce'}
+        { id:'8', prefix:'6', name: 'Restaurants & Food'},
+        { id:'9', prefix:'7', name: 'E-commerce'}
 
     ],
     boardingStatus: [

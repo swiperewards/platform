@@ -67,7 +67,9 @@ const styles = theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: '0px',
+    paddingTop: '65px',
+    paddingRight: '0px',
+    width:'50%',
   },
   logo:{
      margin: 'auto',
@@ -122,7 +124,7 @@ class ResponsiveDrawer extends React.Component {
   };
 
   handleDrawerToggle = () => {
-    this.setState(state => ({ mobileOpen: !state.mobileOpen }));
+    this.setState({ mobileOpen: !this.state.mobileOpen });
   };
 
   render() {
@@ -133,7 +135,7 @@ class ResponsiveDrawer extends React.Component {
         padding:'0px',
         backgroundColor: '#5cbbff'
     }
-    const { auth, anchorEl } = this.state;
+    const { auth, anchorEl, mobileOpen } = this.state;
     const open = Boolean(anchorEl);
 
     const drawer = (
@@ -223,7 +225,7 @@ class ResponsiveDrawer extends React.Component {
           <Drawer
             variant="temporary"
             anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-            open={this.state.mobileOpen}
+            open={mobileOpen}
             onClose={this.handleDrawerToggle.bind(this)}
             classes={{
               paper: classes.drawerPaper,
@@ -238,7 +240,7 @@ class ResponsiveDrawer extends React.Component {
         <Hidden smDown implementation="css">
           <Drawer
             variant="permanent"
-            open
+            open={mobileOpen}
             classes={{
               paper: classes.drawerPaper,
             }}
@@ -247,7 +249,6 @@ class ResponsiveDrawer extends React.Component {
           </Drawer>
         </Hidden>
         <main className={classes.content}>
-          <div className={classes.toolbar} />
           {children}
         </main>
       </div>

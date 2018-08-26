@@ -1,6 +1,7 @@
 //react redux
 import React, { Component } from 'react';
 import { Field, FieldArray } from 'redux-form'
+import { connect } from 'react-redux';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -25,6 +26,8 @@ import {renderSelectField} from '../../components/selectControl';
 //Data
 import Data from '../../staticData';
 
+let errorMessage
+
 const styles = {
     root: {
       width: '100%',
@@ -43,16 +46,15 @@ const styles = {
         fontSize: '12px',
     },
     column: {
-        flexBasis: '100.0%',
+        flexBasis: '90.0%',
       },
       buttonColumn: {
         flexBasis: '10.0%',
-        float:'right',
-        padding:'0px',
       },
   };
 
-  let renderOwners = ({ fields, expand, meta: { touched, error, submitFailed } }) => {
+  let renderOwners = ({ fields, merchantDetails, meta: { touched, error, submitFailed } }) => {
+
     if(fields.length === 0){
         fields.push({})
     }
@@ -60,10 +62,10 @@ const styles = {
     return(  
     <React.Fragment>
 
-        {   
+        {      
          fields.map((member, idx) =>
             <div style={styles.root} key={'fragment' + idx}>
-            <ExpansionPanel>
+            <ExpansionPanel defaultExpanded>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                     <div style={styles.column}>
                         <Typography style={styles.heading}>{idx === 0 ? "Primary Owner" : "Additional Owner"}</Typography>
@@ -89,7 +91,13 @@ const styles = {
                                 First Name*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name={`${member}.ownerFirstName`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field 
+                                    myType="text" 
+                                    name={`${member}.ownerFirstName`} 
+                                    fullWidth={true} 
+                                    myValue={member.first_v}
+                                    component={InputField} 
+                                    validate={required}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Last Name*
@@ -272,12 +280,11 @@ const styles = {
             </ExpansionPanel>
             </div>
         )}
-        <div style={{marginTop:'10px'}}>
+        <div>
             <button 
                 type="button" 
                 onClick={() => fields.push({})} 
-                className="button"
-                style={{backgroundColor:'#27A24F'}}>
+                className="small">
                 + Add additional owner
             </button>           
         </div>
@@ -285,23 +292,33 @@ const styles = {
     )
 }
 
-class OwnerDetails extends Component {
+class UpdateOwnerDetails extends Component {
 
     state = {
         account: '',
         name: '',
         stateName: '',
         dlStateName: '',
-        expanded: false,
+        merchantObject:'',
       };
 
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
       };
 
+      componentWillReceiveProps(nextProps) {
+        if (nextProps) {
+          if (nextProps.merchantDetails){
+            if(nextProps.merchantDetails.status === 200){
+                this.setState({merchantObject: nextProps.merchantDetails.responseData})
+            }
+          }
+        }
+    }  
+
     render() {
 
-        const { expanded } = this.state;
+        const { expanded, merchantObject } = this.state;
 
         return (
             <div style={{paddingBottom:'20px'}}>
@@ -318,12 +335,21 @@ class OwnerDetails extends Component {
                         </div>
                         <Divider style={{marginBottom:'20px'}} />
 
-                        <FieldArray name="owners" component={renderOwners} expand={expanded}/>
+                        <FieldArray name="owners" merchantDetails={merchantObject} component={renderOwners} expand={expanded}/>
                     </div>
                 </Paper>                    
+                <div>
+                    {errorMessage}
+                </div>
             </div>
         );
     }
 }
 
-export default OwnerDetails;
+UpdateOwnerDetails = connect(
+    state => ({
+       merchantDetails: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails
+    }),
+  )(UpdateOwnerDetails)
+
+export default UpdateOwnerDetails;

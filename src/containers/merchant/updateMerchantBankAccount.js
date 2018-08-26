@@ -1,6 +1,7 @@
 //react redux
 import React, { Component } from 'react';
 import { Field } from 'redux-form'
+import { connect } from 'react-redux';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -19,6 +20,8 @@ import {renderSelectField} from '../../components/selectControl';
 //Data
 import Data from '../../staticData'
 
+let errorMessage
+
 const styles = {
     formControl: {
         minWidth: '100%',
@@ -29,17 +32,30 @@ const styles = {
       }
 };
 
-class BankAccount extends Component {
+class UpdateBankAccount extends Component {
 
     state = {
         account: '',
+        merchantObject:'',
       };
 
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
       };
 
+      componentWillReceiveProps(nextProps) {
+        if (nextProps) {
+          if (nextProps.merchantDetails){
+            if(nextProps.merchantDetails.status === 200){
+                this.setState({merchantObject: nextProps.merchantDetails.responseData})
+            }
+          }
+        }
+    }  
+
     render() {
+
+        const { merchantObject } = this.state;
 
         return (
             <div style={{paddingBottom:'20px'}}>
@@ -59,6 +75,7 @@ class BankAccount extends Component {
                                             name="bankAccountType"
                                             component={renderSelectField}
                                             fullWidth={true}
+                                            label={merchantObject.type_v}
                                             onChange={this.handleChange}
                                             validate={dropDownRequired}
                                         >
@@ -81,7 +98,13 @@ class BankAccount extends Component {
                                 Bank Routing Number*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="number" name="routeNumber" fullWidth={true} component={InputField} validate={[required, between5to20]}/>  
+                                <Field 
+                                    myType="number" 
+                                    name="routeNumber" 
+                                    fullWidth={true} 
+                                    myValue={merchantObject.BankAccount}
+                                    component={InputField} 
+                                    validate={[required, between5to20]}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Bank Account Number*
@@ -91,10 +114,19 @@ class BankAccount extends Component {
                             </div>
                         </div>
                     </div>            
-                </Paper>                   
+                </Paper>                    
+                <div>
+                    {errorMessage}
+                </div>
             </div>
         );
     }
 }
 
-export default BankAccount;
+UpdateBankAccount = connect(
+    state => ({
+       merchantDetails: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails
+    }),
+  )(UpdateBankAccount)
+
+export default UpdateBankAccount;

@@ -1,6 +1,7 @@
 //react redux
 import React, { Component } from 'react';
 import { Field } from 'redux-form'
+import { connect } from 'react-redux';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -18,14 +19,20 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 //Validation
-import {required, dropDownRequired, ipAddressMatch} from '../../utilities/validation'
+import {required, minimum8, dropDownRequired, ipAddressMatch} from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
+import Loader from '../../components/loader';
 
 //Data
 import Data from '../../staticData'
+
+let errorMessage
+
+const passwordsMatch = (value, allValues) => 
+  value !== allValues.merchantPassword ? 'Passwords don\'t match' : undefined;
 
 const styles = {
     formControl: {
@@ -43,23 +50,25 @@ const styles = {
       },
 };
 
-class AccountSetup extends Component {
+class UpdateAccountSetup extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            boardingStatus: '',
-            merchanttype: '',
-            termsCheckedNo: true,
-            termsCheckedYes: false,
-            openMCCPopUp: false,
-            updatedList:Data.mccCodes, 
-            mccCode:'',
-          };
-      }
+    state = {
+        boardStatus: '',
+        merchanttype: '',
+        termsCheckedNo: true,
+        termsCheckedYes: false,
+        groupCheckedNo: true,
+        groupCheckedYes: false,
+        loginCheckedNo: true,
+        loginCheckedYes: false,
+        openMCCPopUp: false,
+        updatedList:Data.mccCodes, 
+        mccCode:'',
+        merchantObject:'',
+      };
 
-      handleChange = name => event => {
-        this.setState({ [name]: event.target.value});
+      handleChange = event => {
+        this.setState({ [event.target.name]: event.target.value });
       };
 
       handleCheckboxChange = name => event => {
@@ -69,16 +78,26 @@ class AccountSetup extends Component {
             this.setState({termsCheckedNo: !event.target.checked})
         }else if (name === "termsCheckedNo"){
             this.setState({termsCheckedYes: !event.target.checked})
+        }else if (name === "groupCheckedYes"){
+            this.setState({groupCheckedNo: !event.target.checked})
+        }else if (name === "groupCheckedNo"){
+            this.setState({groupCheckedYes: !event.target.checked})
+        }else if (name === "loginCheckedYes"){
+            this.setState({loginCheckedNo: !event.target.checked})
+        }else if (name === "loginCheckedNo"){
+            this.setState({loginCheckedYes: !event.target.checked})
         }
       };
 
       handleMCCPopUp = (event) => {
+        this.setState({showLoader:true})
         event.target.blur()
         this.setState({ openMCCPopUp: true });
         this.setState({ updatedList: Data.mccCodes});
       };
     
       handleClose = () => {
+        this.setState({showLoader:false})
         this.setState({ openMCCPopUp: false });
       };
 
@@ -103,19 +122,22 @@ class AccountSetup extends Component {
         this.setState({ updatedList: filteredList});
       }
 
-      componentWillMount(){
-          
-      }
-
-      componentDidMount(){
-        if(this.refs.boardingStatus){
-            this.setState({boardingStatus:this.refs.boardingStatus.value})
+      componentWillReceiveProps(nextProps) {
+        if (nextProps) {
+          if (nextProps.merchantDetails){
+            if(nextProps.merchantDetails.status === 200){
+                this.setState({merchantObject: nextProps.merchantDetails.responseData})
+                this.setState({mccCode: nextProps.merchantDetails.responseData.mcc_v})
+            }
           }
-      }
-    render() {
+        }
+    }  
 
+    render() {
+            const {merchantObject} = this.state;
         return (
             <div style={{paddingBottom:'20px'}}>
+                    <Loader status={this.state.showLoader} />
                 <Paper className="pagePaper">
                     <div className="formContent">
                         <div className="appTitleLabel">
@@ -132,9 +154,7 @@ class AccountSetup extends Component {
                                                 name="boardingStatus"
                                                 component={renderSelectField}
                                                 fullWidth={true}
-                                                onChange={this.handleChange('boardingStatus')}
-                                                label={this.state.boardingStatus}
-                                                ref="boardingStatus"
+                                                onChange={this.handleChange}
                                                 validate={dropDownRequired}
                                             >
                                         {
@@ -151,19 +171,15 @@ class AccountSetup extends Component {
                                 </FormControl>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                            {   
-                                this.state.boardingStatus === "0" ? 
-                                    "Add MCC" : "Add MCC*"
-                            }
+                                    Add MCC*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     name="mccNumber" 
-                                    myType="number"
-                                    ref="mccNumber" 
+                                    myType="number" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={this.state.boardingStatus === "0" ? undefined : required} 
+                                    validate={this.state.mccCode !== '' ? undefined : required} 
                                     myValue={this.state.mccCode}
                                     onFocus={this.handleMCCPopUp}
                                 /> 
@@ -216,7 +232,7 @@ class AccountSetup extends Component {
                                                return <MenuItem 
                                                     style={styles.selectControl}
                                                     key={index}
-                                                    value={item.prefix}>
+                                                    value={item.id}>
                                                     {item.name}
                                                </MenuItem>
                                             })
@@ -261,13 +277,24 @@ class AccountSetup extends Component {
                                         Date of Acceptance
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="date" name="acceptanceDate" fullWidth={true} component={InputField} />  
+                                        <Field 
+                                            myType="date" 
+                                            name="acceptanceDate" 
+                                            fullWidth={true} 
+                                            myValue={merchantObject.tcAcceptDate_v}
+                                            component={InputField} />  
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
                                         IP Address
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="text" name="ipAddress" fullWidth={true} component={InputField} validate={ipAddressMatch}/>  
+                                        <Field 
+                                            myType="text" 
+                                            name="ipAddress" 
+                                            fullWidth={true} 
+                                            myValue={merchantObject.tcAcceptIp_v}
+                                            component={InputField} 
+                                            validate={ipAddressMatch}/>  
                                     </div>
                                 </div>
                                 <div className="row">
@@ -275,18 +302,125 @@ class AccountSetup extends Component {
                                         Time
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="time" name="acceptanceTime" fullWidth={true} component={InputField} />  
+                                        <Field 
+                                            myType="time" 
+                                            name="acceptanceTime" 
+                                            fullWidth={true} 
+                                            myValue={merchantObject.tcAcceptTime_v}
+                                            component={InputField} />  
                                     </div>
                                 </div>
                             </React.Fragment>
 
                                 ) : ( null
                             )}
+                        <div className="row">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Add New Merchant to Group
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                        checked={this.state.groupCheckedNo ? true : false}
+                                        onChange={this.handleCheckboxChange('groupCheckedNo')}
+                                        value="groupCheckedNo"
+                                        color="primary"
+                                        />
+                                    }
+                                    label="No"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                        checked={this.state.groupCheckedYes ? true : false}
+                                        onChange={this.handleCheckboxChange('groupCheckedYes')}
+                                        value="groupCheckedYes"
+                                        color="primary"
+                                        />
+                                    }
+                                    label="Yes"
+                                />
+                            </div>
+                            {this.state.groupCheckedYes === true && this.state.groupCheckedNo === false ? (
+                                <div className="col-xs-12 col-sm-6 col-md-6">
+                                    <Field name="addgroup" myPlaceHolder="ADD TO GROUPS" fullWidth={true} component={InputField} />  
+                                </div>
+                                ) : ( null
+                            )}
+                        </div>
+                        <div className="row">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Create Login for Merchant
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                        checked={this.state.loginCheckedNo ? true : false}
+                                        onChange={this.handleCheckboxChange('loginCheckedNo')}
+                                        value="loginCheckedNo"
+                                        color="primary"
+                                        />
+                                    }
+                                    label="No"
+                                />
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                        checked={this.state.loginCheckedYes ? true : false}
+                                        onChange={this.handleCheckboxChange('loginCheckedYes')}
+                                        value="loginCheckedYes"
+                                        color="primary"
+                                        />
+                                    }
+                                    label="Yes"
+                                />
+                            </div>
+
+                            {this.state.loginCheckedYes === true && this.state.loginCheckedNo === false ? (
+                                <React.Fragment>
+                                    <div className="col-xs-12 col-sm-6 col-md-3">
+                                        Merchant Username*
+                                    </div>
+                                    <div className="col-xs-12 col-sm-6 col-md-3">
+                                        <Field  myType="text" name="merchantUsername" fullWidth={true} component={InputField} validate={required}/>  
+                                    </div>
+                                </React.Fragment>
+                                ) : ( null
+                            )}
+                        </div>
+                        {this.state.loginCheckedYes === true && this.state.loginCheckedNo === false ? (
+                                <div className="row">
+                                    <div className="col-xs-12 col-sm-6 col-md-3">
+                                        Password*
+                                    </div>
+                                    <div className="col-xs-12 col-sm-6 col-md-3">
+                                        <Field myType="password" name="merchantPassword" fullWidth={true} component={InputField} validate={[required, minimum8]}/>  
+                                    </div>
+                                    <div className="col-xs-12 col-sm-6 col-md-3">
+                                        Confirm Password*
+                                    </div>
+                                    <div className="col-xs-12 col-sm-6 col-md-3">
+                                        <Field myType="password" name="confirmPassword" fullWidth={true} component={InputField} validate={[required, passwordsMatch]}/>  
+                                    </div>
+                                </div>
+                                ) : ( null
+                            )}
                     </div>            
                 </Paper>                    
+                <div>
+                    {errorMessage}
+                </div>
             </div>
         );
     }
 }
 
-export default AccountSetup;
+UpdateAccountSetup = connect(
+    state => ({
+       merchantDetails: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails
+    }),
+  )(UpdateAccountSetup)
+
+export default UpdateAccountSetup;

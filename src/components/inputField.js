@@ -63,6 +63,7 @@ var maskValue;
 //Mask textfield control based on maskValue passed
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
+  console.log('TextMaskCustom ' + props.name +' '+ props.value);
   return (
     <MaskedInput
       {...other}
@@ -74,11 +75,6 @@ function TextMaskCustom(props) {
     />
   );
 }
-
-TextMaskCustom.propTypes = {
-  inputRef: PropTypes.func.isRequired,
-};
-
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -97,7 +93,6 @@ NumberFormatCustom.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-
 function CustomizedInputs(props) {
   const { classes } = props;
   maskValue = props.maskReg;
@@ -110,7 +105,6 @@ function CustomizedInputs(props) {
         type={props.myType}
         fullWidth = {props.fullWidth}
         width = {props.minWidth}
-        value={props.myValue === undefined ? props.input.value : props.myValue}
         InputProps={{
           disableUnderline: false,
           classes: {
@@ -126,9 +120,5 @@ function CustomizedInputs(props) {
       />
   );
 }
-
-CustomizedInputs.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(CustomizedInputs);

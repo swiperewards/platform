@@ -233,3 +233,9 @@ FormLabel {
 
 .enabledButton {
   opacity: 1.0; }
+
+.tableMaterial {
+  width: '100%'; }
+
+.tableWrapperMaterial {
+  overflow-x: 'auto'; }

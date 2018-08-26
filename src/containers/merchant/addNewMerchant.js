@@ -160,6 +160,7 @@ class AddMerchant extends Component {
         //to clear old payment state
         this.props.ClearMerchantState();
         this.setState({open: false});
+        errorMessage="";
     }
 
     componentWillReceiveProps(nextProps) {
