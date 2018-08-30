@@ -18,7 +18,7 @@ import {renderSelectField} from '../../components/selectControl';
 import RenderCheckbox from '../../components/renderCheckbox'
 
 //Actions
-import { getMerchantDetailsAPI } from '../../actions/merchantAction';
+import { getMerchantDetailsAPI, updateMerchantDetails } from '../../actions/merchantAction';
 
 //Validation
 import {required, exact9, between1to100, dropDownRequired, email, website, phoneMask, taxNumberMask, zipMask, normalizedPhone} from '../../utilities/validation'
@@ -93,7 +93,7 @@ class UpdateBusinessDetails extends Component {
         }
       }
 
-    componentDidMount() {
+    componentWillMount() {
 
         if(this.props.userData.user.responseData.token && this.props.merchant){
             this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
@@ -101,64 +101,44 @@ class UpdateBusinessDetails extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps) {
-          if (nextProps.merchantDetails){
-            if(nextProps.merchantDetails.status === 200){
-                this.handleInitialize(nextProps.merchantDetails.responseData);
-                
-            }
-          }
-        }
+    
     }  
 
     handleInitialize(entityDetails) {
         if(entityDetails !== undefined){
-            const initData = {
-            "businessType": entityDetails.type_v,
-            "isPublicCompany": entityDetails.public_v,
-            "businessName": entityDetails.name_v,
-            "dba": entityDetails.dba_v,
-            "taxId": entityDetails.ein_v,
-            "servicePhone": entityDetails.customerPhone_v,
-            "businessPeriod": entityDetails.established_v,  
-            "businessWebsite": entityDetails.website_v,
-            "isCreditCardNo": entityDetails.annualCCSales_v !== ""? false: true,
-            "isCreditCardYes": entityDetails.annualCCSales_v !== ""? true: false,
-            "ccSale":entityDetails.annualCCSales_v,    
-            "businessPhone": entityDetails.phone_v,   
-            "businessFax": entityDetails.fax_v,
-            "businessAddress":entityDetails.address1_v,
-            "businessAddress2":entityDetails.address2_v,
-            "businessCity":entityDetails.city_v,
-            "businessZip":entityDetails.zip_v,
-            "businessEmail":entityDetails.email_v,
-            "businessStateName":entityDetails.state_v,
-            };
-        
-            this.props.initialize(initData);
+            this.props.initialize(entityDetails);
         }
       }
 
-      handleFormSubmit(formProps) {
-        this.props.submitFormAction(formProps);
+      onSubmit(values) {
+
+        if(this.props.userData.user.responseData.token){
+            this.props.updateMerchantDetails(values, "businessDetails", this.props.userData.user.responseData.token)
+        }
       }
 
     render() {
 
-        const { handleSubmit } = this.props;  
+        const { pristine, submitting } = this.props
 
         return (
             <div style={{paddingBottom:'20px'}}>
-                <form autoComplete="off" onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
+                <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
 
                 <Paper className="pagePaper">
                     <div className="formContent">
                         <div className="appTitleLabel row">
-                            <div className="col-xs-6">
+                            <div className="col-xs-10 col-md-10">
                             <FormLabel component="legend">BUSINESS DETAILS</FormLabel>
                             </div>
-                            <div className="col-xs-6">
-                                <button action="submit">Save changes</button>
+                            <div className="col-xs-2 col-md-2">
+                            <button 
+                                type="submit"
+                                disabled={pristine || submitting}
+                                className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
+                            >
+                                Update
+                            </button>
                             </div>
                         </div>
 
@@ -237,7 +217,6 @@ class UpdateBusinessDetails extends Component {
                                     name="dba" 
                                     fullWidth={true} 
                                     onChange={this.handleChange}
-                                    myValue={this.state.dba}
                                     component={InputField} />  
                             </div>
                         </div>
@@ -250,13 +229,12 @@ class UpdateBusinessDetails extends Component {
                                         myType="text" 
                                         name="taxId" 
                                         fullWidth={true} 
-                                        myValue={this.state.taxId}
                                         onChange={this.handleChange}
                                         component={InputField} 
-                                        validate={[required,exact9]}
                                         masked={true}
                                         myMaskType="text"
                                         maskReg={taxNumberMask}
+                                        validate={[required,exact9]}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
@@ -268,7 +246,6 @@ class UpdateBusinessDetails extends Component {
                                     name="servicePhone" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    myValue={this.state.servicePhone}
                                     onChange={this.handleChange}
                                     masked={true}
                                     myMaskType="text"
@@ -285,7 +262,6 @@ class UpdateBusinessDetails extends Component {
                                     myType="date" 
                                     name="businessPeriod" 
                                     fullWidth={true} 
-                                    myValue={this.state.businessPeriod}
                                     onChange={this.handleChange}
                                     component={InputField} 
                                     validate={required}/>  
@@ -299,7 +275,6 @@ class UpdateBusinessDetails extends Component {
                                     name="businessWebsite" 
                                     myPlaceHolder="http://www.example.com"
                                     fullWidth={true} 
-                                    myValue={this.state.businessWebsite}
                                     onChange={this.handleChange}
                                     component={InputField} 
                                     validate={[required, website]}
@@ -348,7 +323,6 @@ class UpdateBusinessDetails extends Component {
                                         myType="text" 
                                         name="ccSale" 
                                         fullWidth={true} 
-                                        myValue={this.state.ccSale}
                                         onChange={this.handleChange}
                                         component={InputField} 
                                         validate={[required, intMaxRangeMatch]}
@@ -369,7 +343,6 @@ class UpdateBusinessDetails extends Component {
                                     myType="text" 
                                     name="businessPhone" 
                                     fullWidth={true} 
-                                    myValue={this.state.businessPhone}
                                     onChange={this.handleChange}
                                     component={InputField} 
                                     validate={required}
@@ -387,7 +360,6 @@ class UpdateBusinessDetails extends Component {
                                     name="businessFax" 
                                     fullWidth={true} 
                                     onChange={this.handleChange}
-                                    myValue={this.state.businessFax}
                                     component={InputField} 
                                     masked={true}
                                     myMaskType="text"
@@ -404,7 +376,6 @@ class UpdateBusinessDetails extends Component {
                                     myType="text" 
                                     name="businessAddress" 
                                     fullWidth={true} 
-                                    myValue={this.state.businessAddress}
                                     onChange={this.handleChange}
                                     component={InputField} 
                                     validate={[required,between1to100]}/>  
@@ -416,7 +387,6 @@ class UpdateBusinessDetails extends Component {
                                 <Field 
                                     myType="text" 
                                     name="businessAddress2" 
-                                    myValue={this.state.businessAddress2}
                                     onChange={this.handleChange}
                                     fullWidth={true} 
                                     component={InputField} />  
@@ -431,7 +401,6 @@ class UpdateBusinessDetails extends Component {
                                     myType="text" 
                                     name="businessCity" 
                                     fullWidth={true} 
-                                    myValue={this.state.businessCity}
                                     onChange={this.handleChange}
                                     component={InputField} 
                                     validate={[required,between1to100]}/>  
@@ -472,7 +441,6 @@ class UpdateBusinessDetails extends Component {
                                     myType="text" 
                                     name="businessZip" 
                                     fullWidth={true} 
-                                    myValue={this.state.businessZip}
                                     onChange={this.handleChange}
                                     component={InputField} 
                                     validate={required}
@@ -490,7 +458,6 @@ class UpdateBusinessDetails extends Component {
                                 name="businessEmail" 
                                 fullWidth={true} 
                                 onChange={this.handleChange}
-                                myValue={this.state.businessEmail}
                                 component={InputField} 
                                 validate={[required, email, between1to100]}
                                 />  
@@ -508,7 +475,7 @@ class UpdateBusinessDetails extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantDetailsAPI }, dispatch)
+    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails }, dispatch)
   }
 
 UpdateBusinessDetails = reduxForm({
@@ -520,7 +487,7 @@ UpdateBusinessDetails = reduxForm({
 UpdateBusinessDetails = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
-       merchantDetails: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails
+       initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
     }),
     mapDispatchToProps,
   )(UpdateBusinessDetails)

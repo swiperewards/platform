@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { reduxForm } from 'redux-form'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -11,7 +10,7 @@ import { bindActionCreators } from 'redux';
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
+import StepButton from '@material-ui/core/StepButton';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
 import Dialog from '@material-ui/core/Dialog';
@@ -28,7 +27,8 @@ import UpdateBankAccount from '../../containers/merchant/updateMerchantBankAccou
 import Loader from '../../components/loader'
 
 //Actions
-import { addNewMerchant, ClearMerchantState } from '../../actions/merchantAction';
+import { addNewMerchant } from '../../actions/merchantAction';
+
 
 const styles = theme => ({
     root: {
@@ -106,11 +106,22 @@ class UpdateMerchant extends Component {
         location:'',
         activeStep: 0,
         open: false,
+        completed: new Set(),
       };
 
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
       };
+
+      handleStep = step => () => {
+        this.setState({
+          activeStep: step,
+        });
+      };
+
+      isStepComplete(step) {
+        return this.state.completed.has(step);
+      }
 
       handleNext = () => {
         const { activeStep } = this.state;
@@ -157,8 +168,6 @@ class UpdateMerchant extends Component {
 
     componentWillMount()
     {
-        //to clear old payment state
-        this.props.ClearMerchantState();
         this.setState({open: false});        
     }
 
@@ -223,17 +232,21 @@ class UpdateMerchant extends Component {
                 <div>
                     <Paper className="pagePaper">
                         <div className="formContent">
-                            <form size='large' className="form-horizontal" autoComplete="off" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
                                 <div className="appTitleLabel">
                                   <FormLabel component="legend">UPDATE MERCHANT</FormLabel>
                                 </div>
 
                                 <div className={classes.root}>
-                                    <Stepper activeStep={activeStep} alternativeLabel>
-                                        {steps.map(label => {
+                                    <Stepper alternativeLabel nonLinear activeStep={activeStep}>
+                                        {steps.map((label, index) => {
                                             return (
                                             <Step key={label}>
-                                                <StepLabel>{label}</StepLabel>
+                                                <StepButton
+                                                  onClick={this.handleStep(index)}
+                                                  completed={this.isStepComplete(index)}
+                                                >
+                                                  {label}
+                                                </StepButton>
                                             </Step>
                                             );
                                         })}
@@ -241,42 +254,10 @@ class UpdateMerchant extends Component {
                                     <div>
                                        {
                                           getStepContent(activeStep, 
-                                            this.props.location.state !== undefined ? this.props.location.state.detail : undefined)
+                                          this.props.location.state !== undefined ? this.props.location.state.detail : undefined)
                                         }
-                                    {this.state.activeStep === steps.length-1 ? (
-                                        <div>
-                                            <Button
-                                            disabled={activeStep === 0}
-                                            onClick={this.handleBack}
-                                            className={classes.backButton}>
-                                                Back
-                                            </Button>
-                                            <Button 
-                                              type="submit"  
-                                              variant="contained" 
-                                              color='primary' 
-                                              className={classNames(classes.margin, classes.bootstrapRoot)}
-                                              onClick={this.props.handleSubmit((event) => this.onSubmit(event))}
-                                              >
-                                                 UPDATE MERCHANT
-                                            </Button>
-                                        </div>
-                                    ) : (                                            
-                                        <div>
-                                            <Button
-                                            disabled={activeStep === 0}
-                                            onClick={this.handleBack}
-                                            className={classes.backButton}>
-                                                Back
-                                            </Button>
-                                            <Button type="submit" variant="contained" color='primary' className={classNames(classes.margin, classes.bootstrapRoot)}>
-                                                 Next
-                                            </Button>
-                                        </div>
-                                    )}
                                     </div>
                                 </div>
-                            </form>
                         </div>            
                     </Paper>                    
                     <div>
@@ -293,13 +274,12 @@ UpdateMerchant.propTypes = {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ addNewMerchant, ClearMerchantState }, dispatch)
+  return bindActionCreators({ addNewMerchant }, dispatch)
 }
 
 UpdateMerchant = connect(
   state => ({
     userData: state.account === undefined ? undefined : state.account,
-    merchantPayload: state.merchant === undefined ? undefined : state.merchant
   }),
   mapDispatchToProps,
 )(UpdateMerchant)
