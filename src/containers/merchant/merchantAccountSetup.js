@@ -83,7 +83,9 @@ class AccountSetup extends Component {
       };
 
       selectMCCCode = (code) => {
-          this.setState({mccCode: code});
+
+          //this.props.change('mccNumber',code)
+            //document.getElementsByName("mccNumber").item.value = code
           this.handleClose();
       }
 
@@ -101,10 +103,6 @@ class AccountSetup extends Component {
         }
         
         this.setState({ updatedList: filteredList});
-      }
-
-      componentWillMount(){
-          
       }
 
       componentDidMount(){
@@ -164,7 +162,6 @@ class AccountSetup extends Component {
                                     fullWidth={true} 
                                     component={InputField} 
                                     validate={this.state.boardingStatus === "0" ? undefined : required} 
-                                    myValue={this.state.mccCode}
                                     onFocus={this.handleMCCPopUp}
                                 /> 
                                 <Dialog

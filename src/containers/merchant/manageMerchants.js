@@ -322,7 +322,9 @@ class ManageMerchants extends Component {
                                     <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
                                 </TableRow>)
                                 : (
-                                merchantList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((object, index) => {
+                                merchantList
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((object, index) => {
                                     return (
                                     <TableRow style={styles.row} key={object.id}>
                                         <TableCell numeric>{object.serial_number}</TableCell>

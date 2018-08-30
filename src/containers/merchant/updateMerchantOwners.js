@@ -1,7 +1,8 @@
 //react redux
 import React, { Component } from 'react';
-import { Field, FieldArray } from 'redux-form'
+import { Field, FieldArray, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -14,7 +15,6 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import FormLabel from '@material-ui/core/FormLabel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DeleteIcon from '@material-ui/icons/Delete';
 
 //Validation
 import {required, dropDownRequired, email, ssnMask, phoneMask, zipMask, percentage, drivingLicenseMask} from '../../utilities/validation'
@@ -22,6 +22,9 @@ import {required, dropDownRequired, email, ssnMask, phoneMask, zipMask, percenta
 //Components
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
+
+//Actions
+import { getMerchantDetailsAPI, updateMerchantDetails } from '../../actions/merchantAction';
 
 //Data
 import Data from '../../staticData';
@@ -53,11 +56,7 @@ const styles = {
       },
   };
 
-  let renderOwners = ({ fields, merchantDetails, meta: { touched, error, submitFailed } }) => {
-
-    if(fields.length === 0){
-        fields.push({})
-    }
+  let renderOwners = ({ fields, members, meta: { touched, error, submitFailed } }) => {
 
     return(  
     <React.Fragment>
@@ -70,18 +69,6 @@ const styles = {
                     <div style={styles.column}>
                         <Typography style={styles.heading}>{idx === 0 ? "Primary Owner" : "Additional Owner"}</Typography>
                     </div>
-                    { idx !== 0 ?
-                        <div style={styles.buttonColumn}>
-                            <button
-                            type="button"
-                            title="Remove Member"
-                            onClick={() => fields.remove(idx)}
-                            > 
-                                <DeleteIcon />
-                            </button>
-                        </div>
-                        : null
-                    }
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Paper style={{width:'100%', padding:'15px'}}>
@@ -95,7 +82,6 @@ const styles = {
                                     myType="text" 
                                     name={`${member}.ownerFirstName`} 
                                     fullWidth={true} 
-                                    myValue={member.first_v}
                                     component={InputField} 
                                     validate={required}/>  
                             </div>
@@ -103,7 +89,12 @@ const styles = {
                                 Last Name*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name={`${member}.ownerLastName`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field 
+                                    myType="text" 
+                                    name={`${member}.ownerLastName`} 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={required}/>  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -111,7 +102,12 @@ const styles = {
                                 DOB(dd/mm/yyyy)*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="date" name={`${member}.ownerDob`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field 
+                                    myType="date" 
+                                    name={`${member}.ownerDob`} 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={required}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 SSN*
@@ -134,13 +130,23 @@ const styles = {
                             Business Title*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name={`${member}.ownerBusinessTitle`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field 
+                                    myType="text" 
+                                    name={`${member}.ownerBusinessTitle`} 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={required}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 OwnerShip %*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="number" name={`${member}.ownership`} fullWidth={true} component={InputField} validate={[required, percentage]}/>  
+                                <Field 
+                                    myType="number" 
+                                    name={`${member}.ownership`} 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={[required, percentage]}/>  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -185,21 +191,25 @@ const styles = {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <button type="button" className="small">COPY FROM BUSINESS</button>           
-                            </div>
-                        </div>
-                        <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
                                 Address*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name={`${member}.ownerAddress`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field 
+                                    myType="text" 
+                                    name={`${member}.ownerAddress`} 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={required}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Address 2
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name={`${member}.ownerAddress2`} fullWidth={true} component={InputField} />  
+                                <Field 
+                                    myType="text" 
+                                    name={`${member}.ownerAddress2`} 
+                                    fullWidth={true} 
+                                    component={InputField} />  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -207,7 +217,12 @@ const styles = {
                                 City*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name={`${member}.ownerCity`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field 
+                                    myType="text" 
+                                    name={`${member}.ownerCity`} 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={required}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 State*
@@ -257,7 +272,12 @@ const styles = {
                                 Email*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name={`${member}.ownerEmail`} fullWidth={true} component={InputField} validate={[required, email]}/>  
+                                <Field 
+                                    myType="text" 
+                                    name={`${member}.ownerEmail`} 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={[required, email]}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Phone*
@@ -280,14 +300,6 @@ const styles = {
             </ExpansionPanel>
             </div>
         )}
-        <div>
-            <button 
-                type="button" 
-                onClick={() => fields.push({})} 
-                className="small">
-                + Add additional owner
-            </button>           
-        </div>
     </React.Fragment>
     )
 }
@@ -300,44 +312,47 @@ class UpdateOwnerDetails extends Component {
         stateName: '',
         dlStateName: '',
         merchantObject:'',
-      };
+    };
 
-      handleChange = event => {
+    handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
-      };
+    };
 
-      componentWillReceiveProps(nextProps) {
-        if (nextProps) {
-          if (nextProps.merchantDetails){
-            if(nextProps.merchantDetails.status === 200){
-                this.setState({merchantObject: nextProps.merchantDetails.responseData})
-            }
-          }
+    onSubmit(values) {
+        if(this.props.userData.user.responseData.token){
+            this.props.updateMerchantDetails(values, "memberDetails" ,this.props.userData.user.responseData.token)
         }
-    }  
+    }
 
     render() {
-
+        const { pristine, submitting } = this.props
         const { expanded, merchantObject } = this.state;
 
         return (
             <div style={{paddingBottom:'20px'}}>
+                <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
                 <Paper className="pagePaper">
                     <div className="formContent">
-                        <div className="row">
-
-                            <div className="appTitleLabel col-md-2">
-                                <FormLabel component="legend">OWNERS DETAILS</FormLabel>
+                    <div className="appTitleLabel row">
+                            <div className="col-xs-10 col-md-10">
+                                <FormLabel component="legend">OWNER DETAILS</FormLabel>
                             </div>
-                            <div className="appDescriptionLabel col-md-10">
-                                Please submit all owners with at least 25% ownership in the company. Public companies, submit an executive officer
-                            </div> 
+                            <div className="col-xs-2 col-md-2">
+                            <button 
+                                type="submit"
+                                disabled={pristine || submitting}
+                                className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
+                            >
+                                Update
+                            </button>
+                            </div>
                         </div>
                         <Divider style={{marginBottom:'20px'}} />
 
-                        <FieldArray name="owners" merchantDetails={merchantObject} component={renderOwners} expand={expanded}/>
+                        <FieldArray name="owners" members={merchantObject} component={renderOwners} expand={expanded}/>
                     </div>
-                </Paper>                    
+                </Paper>   
+                </form>                 
                 <div>
                     {errorMessage}
                 </div>
@@ -346,10 +361,25 @@ class UpdateOwnerDetails extends Component {
     }
 }
 
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails }, dispatch)
+}
+
+UpdateOwnerDetails = reduxForm({
+    form: 'frmUpdateOwnerDetails',
+    enableReinitialize: true,
+})(UpdateOwnerDetails)
+
 UpdateOwnerDetails = connect(
     state => ({
-       merchantDetails: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails
+        userData: state.account === undefined ? undefined : state.account,
+        initialValues: {
+            owners: state.merchant.merchantDetails === undefined 
+            ? undefined 
+            : state.merchant.merchantDetails.responseData.members.sort(((a,b) => a.primary < b.primary))
+          }
     }),
+    mapDispatchToProps,
   )(UpdateOwnerDetails)
 
 export default UpdateOwnerDetails;

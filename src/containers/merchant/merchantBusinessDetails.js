@@ -73,6 +73,9 @@ class BusinessDetails extends Component {
         }
       }
 
+      componentDidMount(){
+
+      }
     render() {
 
         return (
@@ -208,14 +211,15 @@ class BusinessDetails extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Currently accept credit cards
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
+                            <div className="col-xs-12 col-sm-6 col-md-3">                               
                                 <FormControlLabel
                                     control={
                                         <Field 
                                             name="isCreditCardNo" 
                                             id="creditCardNo" 
+                                            ref="creditCardNo"
                                             myStyle={styles} 
-                                            value={this.state.creditCheckedNo}
+                                            myChecked={this.state.creditCheckedNo}
                                             onChange={this.handleCheckboxChange('creditCheckedNo')}
                                             component={RenderCheckbox} 
                                         />
@@ -226,9 +230,10 @@ class BusinessDetails extends Component {
                                     control={
                                         <Field 
                                             name="isCreditCardYes" 
-                                            id="creditCardYes" 
+                                            id="creditCardYes"
+                                            ref="creditCardYes" 
                                             myStyle={styles} 
-                                            value= {this.state.creditCheckedYes}
+                                            myChecked= {this.state.creditCheckedYes}
                                             onChange={this.handleCheckboxChange('creditCheckedYes')}
                                             component={RenderCheckbox} 
                                         />
@@ -245,6 +250,7 @@ class BusinessDetails extends Component {
                                     <Field 
                                         myType="text" 
                                         name="ccSale" 
+                                        ref="ccSale"
                                         fullWidth={true} 
                                         component={InputField} 
                                         validate={[required, intMaxRangeMatch]}
