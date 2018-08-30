@@ -60,21 +60,41 @@ const styles = theme => ({
 
 var maskValue;
 
+function maskInputFields(pattern) {
+  return (props) => {
+    const { inputRef, ...other } = props;
+    return (
+      <MaskedInput
+        {...other}
+        ref={inputRef}
+        mask={pattern}
+        placeholderChar={'\u2000'}
+        showMask={false}
+        guide={false}
+      />
+    )
+  };
+}
+
 //Mask textfield control based on maskValue passed
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
-  console.log('TextMaskCustom ' + props.name +' '+ props.value);
-  return (
-    <MaskedInput
+  console.log("Mask Reg"+props.maskReg);
+    return (
+      <MaskedInput
       {...other}
       ref={inputRef}
-      mask={maskValue}
+      mask={maskValue === undefined ? [''] : maskValue}
       placeholderChar={'\u2000'}
       showMask={false}
       guide={false}
     />
-  );
-}
+    )
+  };
+
+TextMaskCustom.propTypes = {
+  inputRef: PropTypes.func.isRequired,
+};
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -97,11 +117,13 @@ function CustomizedInputs(props) {
   const { classes } = props;
   maskValue = props.maskReg;
   return (
+
       <TextField {...props.input}
         error={props.meta.touched ? props.meta.invalid : false}
         helperText={props.meta.touched ? props.meta.error : ''}
         placeholder={props.myPlaceHolder}
         id={props.id}
+        ref={props.ref}
         type={props.myType}
         fullWidth = {props.fullWidth}
         width = {props.minWidth}
@@ -111,11 +133,7 @@ function CustomizedInputs(props) {
             root: classes.bootstrapRoot,
             input: classes.bootstrapInput,
           },
-          inputComponent: (props.masked ? (props.myMaskType === 'text'? TextMaskCustom : NumberFormatCustom) : undefined),
-        }}
-        InputLabelProps={{
-          shrink: false,
-          className: classes.bootstrapFormLabel,
+          //inputComponent:(props.masked ? (props.myMaskType === 'text'? TextMaskCustom : NumberFormatCustom) : null),
         }}
       />
   );

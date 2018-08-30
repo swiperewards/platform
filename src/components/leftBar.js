@@ -211,9 +211,16 @@ class ResponsiveDrawer extends React.Component {
                         open={open}
                         onClose={this.handleClose}
                         >
-                        <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                        <MenuItem onClick={this.handleClose}>Settings</MenuItem>
-                        <MenuItem><NavLink to="/logout" style={{textDecoration:'none', color:'#000'}}>Logout</NavLink></MenuItem>
+                        <MenuItem>
+                          <NavLink to="/editUserProfile" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
+                            Profile
+                          </NavLink>
+                        </MenuItem>
+                        <MenuItem>
+                            <NavLink to="/logout" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
+                            Logout
+                            </NavLink>
+                        </MenuItem>
                         </Menu>
                     </div>
                     )}
@@ -221,7 +228,7 @@ class ResponsiveDrawer extends React.Component {
             </div>
           </Toolbar>
         </AppBar>
-        <Hidden mdUp>
+         <Hidden mdUp>
           <Drawer
             variant="temporary"
             anchor={theme.direction === 'rtl' ? 'right' : 'left'}

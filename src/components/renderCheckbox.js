@@ -14,7 +14,22 @@ class RenderCheckbox extends Component {
                 <div>
 
                     <label className="checkBoxContainer">
-                     <input type="checkbox" {...this.props.input} checked={this.props.input.value} /> 
+                    {
+                        this.props.input.value !== "" 
+                        ?
+                            <input 
+                                {...this.props.input} 
+                                type="checkbox" 
+                                checked={this.props.input.value}
+                            />
+                        :
+                            <input 
+                                {...this.props.input} 
+                                type="checkbox" 
+                                checked={this.props.myChecked}
+                            />
+                    }
+                     
                         <span className="checkmark"></span>
                     </label>
                     <div style={{ position: 'relative', width: '80%', left: '25px', lineHeight: '13px' }}> {this.props.myLabel}</div>
