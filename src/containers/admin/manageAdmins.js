@@ -13,7 +13,6 @@ import FormControl from '@material-ui/core/FormControl';
 //Components
 import InputField from '../../components/inputField';
 import RaiseButton from '../../components/raiseButton';
-import TableGridView from '../../components/tableGrid';
 
 let errorMessage
 
@@ -36,11 +35,9 @@ class ManageAdmins extends Component {
       };
 
     onSubmitAddAdmin() {
-        console.log("Add New Admin");
     }
 
     onFilterClick(){
-        console.log("On Filter Click");
     }
 
     render() {
@@ -82,7 +79,6 @@ class ManageAdmins extends Component {
                             </form>
                         </div>            
                     </Paper>
-                        <TableGridView />
                     <div>
                         {errorMessage}
                     </div>

@@ -13,7 +13,6 @@ import FormControl from '@material-ui/core/FormControl';
 //Components
 import InputField from '../../components/inputField';
 import RaiseButton from '../../components/raiseButton';
-import TableGridView from '../../components/tableGrid';
 
 let errorMessage
 
@@ -118,10 +117,7 @@ class ManageUsers extends Component {
                                 </div>  
                             </form>
                         </div>            
-                    </Paper>
-                    
-                        <TableGridView />
-                    
+                    </Paper>                    
                     <div>
                         {errorMessage}
                     </div>
