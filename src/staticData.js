@@ -79,10 +79,9 @@ const data={
     ],
     boardingStatus: [
         {id:'0', name: 'Not Ready'},
-        {id:'1', name: 'Board Immediately'}
+        {id:'2', name: 'Board Immediately'}
     ],
     searchStatus: [
-      {id:'', name: 'None'},
       {id:'0', name: 'Activate'},
       {id:'1', name: 'Deactivate'}
     ],
