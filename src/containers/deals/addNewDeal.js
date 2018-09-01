@@ -110,6 +110,10 @@ class AddNewDeal extends Component {
         console.log(values);
       }
 
+      cancelClick(){
+        this.props.history.goBack();
+    }
+
     render() {
         return (
             <div style={{paddingBottom:'20px'}}>
@@ -228,6 +232,7 @@ class AddNewDeal extends Component {
                                     style={{backgroundColor:'#BCBCBC'}}
                                     disabled={this.state.disableReset}
                                     className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
+                                    onClick={this.cancelClick.bind(this)}
                                     > Cancel
                                 </button>
 

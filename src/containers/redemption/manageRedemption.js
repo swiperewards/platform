@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import NumberFormat from "react-number-format";
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -44,7 +43,7 @@ const styles = {
       },
 };
 
-class ManageUsers extends Component {
+class ManageRedemption extends Component {
 
     state = {
         name:'',
@@ -131,8 +130,8 @@ class ManageUsers extends Component {
         this.setState({ dialogOpen: false });
     };
 
-    addNewAdmin(){
-        this.props.history.push('/addNewAdmin')
+    addNewDeal(){
+        this.props.history.push('/merchantList')
     }
 
     onHandleReset(){
@@ -177,8 +176,19 @@ class ManageUsers extends Component {
             <Paper className="pagePaper">
                 <form size='large' className="form-horizontal">
                     <div className="row appTitleLabel">
-                        MANAGE USERS
+                        MANAGE REDEEM REQUESTS
                     </div>
+                    <div className="row middle-md">
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            Pending : 110
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            Approved : 500
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            Rejected : 130
+                        </div>
+                    </div>    
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-2">
                             <Field 
@@ -239,33 +249,25 @@ class ManageUsers extends Component {
                                     }
                                 </Field>    
                             </FormControl>  
-                        </div>  
+                        </div>    
                         <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="type"
-                                    component={renderSelectField}
-                                    fullWidth={true}
-                                    onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Type
-                                    </MenuItem>
-                                    {
-                                    Data.states.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.prefix}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
-                                    }
-                                </Field>    
-                            </FormControl>  
-                        </div>  
-                        <div className="col-xs-12 col-sm-6 col-md-4">
+                            <Field 
+                            myType="date"
+                            name="fromDate" 
+                            fullWidth={true} 
+                            component={InputField} 
+                            />
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            <Field 
+                            myType="date"
+                            name="toDate" 
+                            myPlaceHolder="To Date" 
+                            fullWidth={true} 
+                            component={InputField} 
+                            />
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-2">
                             <button 
                                 type="button"
                                 onClick={this.onHandleReset.bind(this)}
@@ -297,8 +299,9 @@ class ManageUsers extends Component {
                                 <TableCell numeric>#</TableCell>
                                 <TableCell>User Name</TableCell>
                                 <TableCell>Email Address</TableCell>
-                                <TableCell>Location</TableCell>
-                                <TableCell>Phone Number</TableCell>
+                                <TableCell>Amount</TableCell>
+                                <TableCell>Mode</TableCell>
+                                <TableCell>Transaction No</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Actions</TableCell>
                             </TableRow>
@@ -319,8 +322,9 @@ class ManageUsers extends Component {
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.first_v + " " + object.last_v}</TableCell>
                                         <TableCell>{object.email_v}</TableCell>
-                                        <TableCell>{object.city_v}</TableCell>
-                                        <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
+                                        <TableCell>$ {object.serial_number}</TableCell>
+                                        <TableCell>Cheque</TableCell>
+                                        <TableCell>TROA{object.serial_number}</TableCell>
                                         <TableCell>
                                             <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                         </TableCell>
@@ -328,12 +332,12 @@ class ManageUsers extends Component {
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
                                                     <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_edit.svg" alt="" /> 
+                                                        <img src="../images/ic_approve.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_delete.svg" alt="" />
+                                                        <img src="../images/ic_reject.svg" alt="" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -379,13 +383,13 @@ const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
   }
   
-  ManageUsers = connect(
+  ManageRedemption = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
       merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
     }),
     mapDispatchToProps,
-  )(ManageUsers)
+  )(ManageRedemption)
   
-  export default reduxForm({form: 'FrmManageUsers'})(ManageUsers)
+  export default reduxForm({form: 'FrmManageRedemption'})(ManageRedemption)

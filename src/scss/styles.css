@@ -225,7 +225,7 @@ FormLabel {
   display: inline-block;
   font-size: 14px;
   border-radius: 5px;
-  margin-left: 10px; }
+  margin: 5px; }
 
 .disabledButton {
   opacity: 0.6;
@@ -239,3 +239,37 @@ FormLabel {
 
 .tableWrapperMaterial {
   overflow-x: 'auto'; }
+
+.titleGreen {
+  background-color: #2EC55D;
+  height: 10%;
+  width: 100%;
+  border-radius: 12px;
+  text-align: center;
+  padding-left: 5px;
+  padding-right: 5px; }
+
+.titleRed {
+  background-color: #DE3630;
+  height: 10%;
+  width: 100%;
+  border-radius: 12px;
+  text-align: center;
+  padding-left: 5px;
+  padding-right: 5px; }
+
+.bigAvatar {
+  width: 60;
+  height: 60; }
+
+.tableRow:nth-of-type(odd) {
+  background-color: #f2f6f2; }
+
+.dashboardBox {
+  height: 80%;
+  width: 80%;
+  text-align: center;
+  padding: 40px 5px;
+  border: solid #e2e2e2;
+  border-width: 1px;
+  border-radius: 1px; }

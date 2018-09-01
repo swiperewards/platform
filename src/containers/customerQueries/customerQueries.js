@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import NumberFormat from "react-number-format";
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -44,7 +43,7 @@ const styles = {
       },
 };
 
-class ManageUsers extends Component {
+class CustomerQueries extends Component {
 
     state = {
         name:'',
@@ -131,8 +130,8 @@ class ManageUsers extends Component {
         this.setState({ dialogOpen: false });
     };
 
-    addNewAdmin(){
-        this.props.history.push('/addNewAdmin')
+    addNewDeal(){
+        this.props.history.push('/merchantList')
     }
 
     onHandleReset(){
@@ -177,7 +176,7 @@ class ManageUsers extends Component {
             <Paper className="pagePaper">
                 <form size='large' className="form-horizontal">
                     <div className="row appTitleLabel">
-                        MANAGE USERS
+                        MANAGE TICKETS
                     </div>
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-2">
@@ -218,14 +217,14 @@ class ManageUsers extends Component {
                         <div className="col-xs-12 col-sm-6 col-md-2">
                             <FormControl style={styles.formControl}>
                                 <Field
-                                    name="location"
+                                    name="userType"
                                     component={renderSelectField}
                                     fullWidth={true}
                                     onChange={this.handleChange}
                                     displayEmpty
                                     >
                                     <MenuItem value="" disabled>
-                                        Location
+                                        User Type
                                     </MenuItem>
                                     {
                                     Data.states.map((item) =>{
@@ -239,18 +238,18 @@ class ManageUsers extends Component {
                                     }
                                 </Field>    
                             </FormControl>  
-                        </div>  
+                        </div>    
                         <div className="col-xs-12 col-sm-6 col-md-2">
                             <FormControl style={styles.formControl}>
                                 <Field
-                                    name="type"
+                                    name="ticketType"
                                     component={renderSelectField}
                                     fullWidth={true}
                                     onChange={this.handleChange}
                                     displayEmpty
                                     >
                                     <MenuItem value="" disabled>
-                                        Type
+                                        Ticket Type
                                     </MenuItem>
                                     {
                                     Data.states.map((item) =>{
@@ -264,7 +263,7 @@ class ManageUsers extends Component {
                                     }
                                 </Field>    
                             </FormControl>  
-                        </div>  
+                        </div>    
                         <div className="col-xs-12 col-sm-6 col-md-4">
                             <button 
                                 type="button"
@@ -295,10 +294,11 @@ class ManageUsers extends Component {
                         <TableHead>
                             <TableRow>
                                 <TableCell numeric>#</TableCell>
+                                <TableCell>Ticket No</TableCell>
                                 <TableCell>User Name</TableCell>
                                 <TableCell>Email Address</TableCell>
-                                <TableCell>Location</TableCell>
-                                <TableCell>Phone Number</TableCell>
+                                <TableCell>User Type</TableCell>
+                                <TableCell>Ticket Type</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Actions</TableCell>
                             </TableRow>
@@ -317,10 +317,11 @@ class ManageUsers extends Component {
                                     return (
                                     <TableRow className="tableRow" key={object.id}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
+                                        <TableCell>TCNA{object.serial_number}</TableCell>
                                         <TableCell>{object.first_v + " " + object.last_v}</TableCell>
                                         <TableCell>{object.email_v}</TableCell>
-                                        <TableCell>{object.city_v}</TableCell>
-                                        <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
+                                        <TableCell>Customer</TableCell>
+                                        <TableCell>High</TableCell>
                                         <TableCell>
                                             <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                         </TableCell>
@@ -333,7 +334,7 @@ class ManageUsers extends Component {
                                                 </div>
                                                 <div className="col-md-6">
                                                     <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_delete.svg" alt="" />
+                                                        <img src="../images/ic_respond.svg" alt="" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -379,13 +380,13 @@ const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
   }
   
-  ManageUsers = connect(
+  CustomerQueries = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
       merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
     }),
     mapDispatchToProps,
-  )(ManageUsers)
+  )(CustomerQueries)
   
-  export default reduxForm({form: 'FrmManageUsers'})(ManageUsers)
+  export default reduxForm({form: 'FrmCustomerQueries'})(CustomerQueries)

@@ -16,10 +16,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
 
 //Components
@@ -42,34 +38,6 @@ const styles = {
       selectControl:{
         fontSize: '12px',
       },
-      root: {
-        width: '100%',
-        marginTop: 2 * 1,
-        marginLeft: 2 * 1,
-      },
-      head: {
-        backgroundColor: 'black',
-        color: 'white',
-      },
-      row: {
-        '&:nthOfType(odd)': {
-          backgroundColor: '#f2f4f6',
-        },
-      },
-      titleGreen: {
-        backgroundColor: '#2EC55D',
-        height:'10%',
-        width:'150%',
-        borderRadius: '12px',
-        textAlign:'center',
-       },
-       titleRed: {
-        backgroundColor: '#DE3630',
-        height:'10%',
-        width:'150%',
-        borderRadius: '12px',
-        textAlign:'center',
-       }
 };
 
 class MerchantsList extends Component {
@@ -306,7 +274,7 @@ class MerchantsList extends Component {
                         { 
                             (merchantList !== "") ? (
                             (merchantList.length === 0) ? 
-                                (<TableRow style={styles.row}>
+                                (<TableRow>
                                     <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
                                 </TableRow>)
                                 : (
@@ -314,14 +282,14 @@ class MerchantsList extends Component {
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
-                                    <TableRow style={styles.row} key={object.id} hover onClick={event => this.handleClick(event, object.id)}>
+                                    <TableRow className="tableRow" key={object.id} hover onClick={event => this.handleClick(event, object.id)}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.first_v + " " + object.last_v}</TableCell>
                                         <TableCell>{object.city_v}</TableCell>
                                         <TableCell>{object.email_v}</TableCell>
                                         <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
                                         <TableCell>
-                                            <div style={object.inactive_v === 1 ? styles.titleRed : styles.titleGreen}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
+                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                         </TableCell>
                                     </TableRow>
                                     );

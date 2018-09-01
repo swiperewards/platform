@@ -21,6 +21,15 @@ import MerchantsList from './containers/merchant/merchantList'
 import ManageDeals from './containers/deals/manageDeals'
 import AddNewDeal from './containers/deals/addNewDeal'
 
+import ManageRedeemModes from './containers/redeem/manageRedeemModes'
+import AddNewRedeemMode from './containers/redeem/addNewRedeemMode'
+
+import ManageRedemption from './containers/redemption/manageRedemption'
+import CustomerQueries from './containers/customerQueries/customerQueries'
+
+import ManageTickets from './containers/ticket/manageTickets'
+import AddNewTicket from './containers/ticket/addNewTicket'
+
 import SuperAdminDashboard from './containers/superAdmin/superAdminDashboard'
 import AdminDashboard from './containers/admin/adminDashboard'
 
@@ -57,6 +66,12 @@ class Routes extends Component {
                             <Route exact path="/addNewDeal" component={AddNewDeal}/>
                             <Route exact path="/editUserProfile" component={UserProfile}/>
                             <Route exact path="/merchantList" component={MerchantsList}/>
+                            <Route exact path="/manageredeemmode" component={ManageRedeemModes}/>
+                            <Route exact path="/addNewRedeemMode" component={AddNewRedeemMode}/>
+                            <Route exact path="/managetickets" component={ManageTickets}/>
+                            <Route exact path="/addNewTicket" component={AddNewTicket}/>
+                            <Route exact path="/manageredemption" component={ManageRedemption}/>
+                            <Route exact path="/customerqueries" component={CustomerQueries}/>
                         </App>
                     </Switch>
                 </div>

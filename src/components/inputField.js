@@ -65,8 +65,7 @@ function maskInputFields(pattern) {
     const { inputRef, ...other } = props;
     return (
       <MaskedInput
-        {...other}
-        ref={inputRef}
+        {...props}
         mask={pattern}
         placeholderChar={'\u2000'}
         showMask={false}
@@ -79,7 +78,7 @@ function maskInputFields(pattern) {
 //Mask textfield control based on maskValue passed
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
-  console.log("Mask Reg"+props.maskReg);
+  console.log("Mask Reg"+props.mymask);
     return (
       <MaskedInput
       {...other}
@@ -133,7 +132,8 @@ function CustomizedInputs(props) {
             root: classes.bootstrapRoot,
             input: classes.bootstrapInput,
           },
-          //inputComponent:(props.masked ? (props.myMaskType === 'text'? TextMaskCustom : NumberFormatCustom) : null),
+          inputComponent:(props.masked ? (props.myMaskType === 'text'? maskInputFields(props.maskReg) : NumberFormatCustom) : null),
+          mymask: props.maskReg,
         }}
       />
   );
