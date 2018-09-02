@@ -19,7 +19,7 @@ import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
 
 //Actions
-import { getMerchantDetailsAPI, updateMerchantDetails } from '../../actions/merchantAction';
+import { updateMerchantDetails } from '../../actions/merchantAction';
 
 //Data
 import Data from '../../staticData'

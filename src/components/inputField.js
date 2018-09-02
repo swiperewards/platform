@@ -62,7 +62,6 @@ var maskValue;
 
 function maskInputFields(pattern) {
   return (props) => {
-    const { inputRef, ...other } = props;
     return (
       <MaskedInput
         {...props}

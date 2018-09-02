@@ -16,9 +16,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
 
@@ -26,6 +23,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import InputField from '../../components/inputField';
 import TablePaginationActions from '../../components/tableGrid';
 import {renderSelectField} from '../../components/selectControl';
+import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
@@ -152,6 +150,11 @@ class ManageUsers extends Component {
 
         const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const actions = [
+            <Button onClick={this.handleClose} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
 
         return (
           <div className="row">
@@ -159,17 +162,11 @@ class ManageUsers extends Component {
             <Loader status={this.state.showLoader} />
 
             <div>
-                <Dialog
-                    open={dialogOpen}
-                    aria-labelledby="alert-dialog-title"
-                >
-                    <DialogTitle id="alert-dialog-title">{"Merchant deleted successfully"}</DialogTitle>
-                    <DialogActions>
-                    <Button onClick={this.handleClose} color="primary" autoFocus>
-                        OK
-                    </Button>
-                    </DialogActions>
-                </Dialog>
+                <DialogBox 
+                    displayDialogBox={dialogOpen} 
+                    message="User deleted successfully" 
+                    actions={actions} 
+                />
             </div> 
 
             <div className="row">

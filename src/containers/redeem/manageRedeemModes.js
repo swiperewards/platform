@@ -13,15 +13,13 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
 
 //Components
 import TablePaginationActions from '../../components/tableGrid';
-import Loader from '../../components/loader'
+import DialogBox from '../../components/alertDialog';
+import Loader from '../../components/loader';
 
 //Actions
 import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
@@ -61,18 +59,6 @@ class ManageRedeemModes extends Component {
           }
         }
     }
-
-    //Method to handle change event for dropdown
-    handleChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
-
-        if(this.state.name!=="" && this.state.status!=="" && this.state.location!==""){
-            this.setState({disableReset: true});
-        }
-        else{
-            this.setState({disableReset:false});
-        }
-    };
 
     handleChangePage = (event, page) => {
         this.setState({ page });
@@ -134,6 +120,11 @@ class ManageRedeemModes extends Component {
 
         const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const actions = [
+            <Button onClick={this.handleClose} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
 
         return (
           <div className="row">
@@ -141,17 +132,11 @@ class ManageRedeemModes extends Component {
             <Loader status={this.state.showLoader} />
 
             <div>
-                <Dialog
-                    open={dialogOpen}
-                    aria-labelledby="alert-dialog-title"
-                >
-                    <DialogTitle id="alert-dialog-title">{"Merchant deleted successfully"}</DialogTitle>
-                    <DialogActions>
-                    <Button onClick={this.handleClose} color="primary" autoFocus>
-                        OK
-                    </Button>
-                    </DialogActions>
-                </Dialog>
+                <DialogBox 
+                    displayDialogBox={dialogOpen} 
+                    message="Mode deleted successfully" 
+                    actions={actions} 
+                />
             </div> 
 
             <div className="row">

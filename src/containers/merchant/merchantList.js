@@ -49,7 +49,6 @@ class MerchantsList extends Component {
         merchantList:'',
         page: 0,
         rowsPerPage: 5,
-        dialogOpen: false,
         disableReset: true,
     };
 
@@ -150,7 +149,7 @@ class MerchantsList extends Component {
 
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
+        const { merchantList, rowsPerPage, page } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
 
         return (

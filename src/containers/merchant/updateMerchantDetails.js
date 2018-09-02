@@ -4,18 +4,13 @@ import { reduxForm } from 'redux-form'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
-import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
 
 //Containers
 import UpdateBusinessDetails from '../../containers/merchant/updateMerchantBusiness';
@@ -25,10 +20,6 @@ import UpdateBankAccount from '../../containers/merchant/updateMerchantBankAccou
 
 //Components
 import Loader from '../../components/loader'
-
-//Actions
-import { addNewMerchant } from '../../actions/merchantAction';
-
 
 const styles = theme => ({
     root: {
@@ -102,15 +93,8 @@ const styles = theme => ({
 class UpdateMerchant extends Component {
 
     state = {
-        status: '',
-        location:'',
         activeStep: 0,
-        open: false,
         completed: new Set(),
-      };
-
-      handleChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
       };
 
       handleStep = step => () => {
@@ -123,91 +107,6 @@ class UpdateMerchant extends Component {
         return this.state.completed.has(step);
       }
 
-      handleNext = () => {
-        const { activeStep } = this.state;
-        this.setState({
-          activeStep: activeStep + 1,
-        });
-      };
-    
-      handleBack = () => {
-        const { activeStep } = this.state;
-        this.setState({
-          activeStep: activeStep - 1,
-        });
-      };
-    
-      handleReset = () => {
-        this.setState({
-          activeStep: 0,
-        });
-      };
-
-      onSubmit(values) {
-        const steps = getSteps();
-        const { activeStep } = this.state;
-        if (activeStep < steps.length-1){
-          this.setState({
-            activeStep: activeStep + 1,
-          });
-        }
-        else{
-          this.setState({showLoader:true})
-          this.props.addNewMerchant(values, this.props.userData.user.responseData.token)
-        }
-      }
-
-      handleClickOpen = () => {
-        this.setState({ open: true });
-      };
-    
-      handleClose = () => {
-        this.setState({ open: false });
-        this.props.history.push('/managemerchants');
-      };
-
-    componentWillMount()
-    {
-        this.setState({open: false});        
-    }
-
-    componentWillReceiveProps(nextProps) {
-
-      if (nextProps) {
-        if (nextProps.merchantPayload){
-          if(nextProps.merchantPayload.data){
-            if(nextProps.merchantPayload.data.status === 200){
-                errorMessage = <div></div>
-                this.handleClickOpen()
-            }
-            else{
-              if(nextProps.merchantPayload.data.status === 5001){
-                errorMessage =
-                nextProps.merchantPayload.data.responseData.map((error, index) =>
-                    <div key={index} style={{
-                        padding: '5px 20px',
-                        margin: '5px',
-                        marginBottom: '10px',
-                        fontSize: 13,
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
-                        borderRadius: '5px',
-                        color: '#86181d',
-                        backgroundColor: '#ffdce0',
-                        borderColor: 'rgba(27, 31, 35, 0.15)',
-                        textAlign: 'center'
-                    }}>
-                      {error.field + ' : ' + error.msg}
-                    </div >
-                  )
-              }
-            }
-          }
-        }
-      }
-      this.setState({showLoader:false})
-    }
-
     render() {
         const { classes } = this.props;
         const steps = getSteps();
@@ -216,19 +115,6 @@ class UpdateMerchant extends Component {
         return (
             <div>
                 <Loader status={this.state.showLoader} />
-                <div>
-                    <Dialog
-                      open={this.state.open}
-                      aria-labelledby="alert-dialog-title"
-                    >
-                      <DialogTitle id="alert-dialog-title">{"Congratulations! You've successfully updated merchant details."}</DialogTitle>
-                      <DialogActions>
-                        <Button onClick={this.handleClose} color="primary" autoFocus>
-                          OK
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  </div> 
                 <div>
                     <Paper className="pagePaper">
                         <div className="formContent">
@@ -273,15 +159,10 @@ UpdateMerchant.propTypes = {
     classes : PropTypes.object,
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ addNewMerchant }, dispatch)
-}
-
 UpdateMerchant = connect(
   state => ({
     userData: state.account === undefined ? undefined : state.account,
   }),
-  mapDispatchToProps,
 )(UpdateMerchant)
 
 export default reduxForm({

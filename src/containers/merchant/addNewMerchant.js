@@ -14,9 +14,8 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
+import DialogBox from '../../components/alertDialog'
+
 
 //Containers
 import BusinessDetails from '../../containers/merchant/merchantBusinessDetails';
@@ -207,23 +206,21 @@ class AddMerchant extends Component {
         const { classes } = this.props;
         const steps = getSteps();
         const { activeStep } = this.state;
-
+        const actions = [
+          <Button onClick={this.handleClose} color="primary" autoFocus>
+              OK
+          </Button>
+        ];
         return (
             <div>
                 <Loader status={this.state.showLoader} />
                 <div>
-                    <Dialog
-                      open={this.state.open}
-                      aria-labelledby="alert-dialog-title"
-                    >
-                      <DialogTitle id="alert-dialog-title">{"Congratulations! You've successfully created a new merchant account."}</DialogTitle>
-                      <DialogActions>
-                        <Button onClick={this.handleClose} color="primary" autoFocus>
-                          OK
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  </div> 
+                  <DialogBox 
+                      displayDialogBox={this.state.open} 
+                      message="Congratulations! You've successfully created a new merchant account." 
+                      actions={actions} 
+                  />
+                </div> 
                 <div>
                     <Paper className="pagePaper">
                         <div className="formContent">
