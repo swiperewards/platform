@@ -102,6 +102,13 @@ export function ClearMerchantState() {
     }
 }
 
+export function clearMerchantUpdateState() {
+    return {
+        type: 'UPDATE_MERCHANTDETAILS',
+        payload: undefined
+    }
+}
+
 
 //Function to delete merchant from splash payment system
 export function deleteMerchant(merchantId,token) {
@@ -294,32 +301,43 @@ export function updateMerchantDetails(values, screenType, token) {
                     },
                     "isRecordUpdated":screenType === "bankAccount" ? "1" : "0"
                 },
-                "memberData": 
-                    values.owners.map((owner)=>(
-                        {
-                            "merchant":owner.merchantId,
-                            "memberId":owner.memberId,
-                            "title": owner.ownerBusinessTitle,
-                            "first": owner.ownerFirstName,
-                            "last": owner.ownerLastName,
-                            "dob": owner.ownerDob === undefined ? undefined : (owner.ownerDob).replace(normalizedPhone,''),
-                            "ownership": (parseFloat(owner.ownership)) * 100,
-                            "email":owner.ownerEmail,
-                            "ssn":owner.ownerSsn === undefined ? undefined : (owner.ownerSsn).replace(normalizedPhone,''),
-                            "address1":owner.ownerAddress,
-                            "address2":owner.ownerAddress2,
-                            "city":owner.ownerCity,	
-                            "state":owner.ownerState,
-                            "zip":owner.ownerZip === undefined ? undefined : (owner.ownerZip).replace(normalizedPhone,''),
-                            "country":"USA",
-                            "timezone":"est",
-                            "dl":owner.ownerDrivingLicense,
-                            "dlstate":owner.ownerDlState,
-                            "phone":owner.ownerPhone === undefined ? undefined : (owner.ownerPhone).replace(normalizedPhone,''),
+                "memberData":
+                    values.owners !== undefined 
+                    ?
+                        (
+                            values.owners.map((owner)=>(
+                                {
+                                    "merchant":owner.merchantId,
+                                    "memberId":owner.memberId,
+                                    "title": owner.ownerBusinessTitle,
+                                    "first": owner.ownerFirstName,
+                                    "last": owner.ownerLastName,
+                                    "dob": owner.ownerDob === undefined ? undefined : (owner.ownerDob).replace(normalizedPhone,''),
+                                    "ownership": (parseFloat(owner.ownership)) * 100,
+                                    "email":owner.ownerEmail,
+                                    "ssn":owner.ownerSsn === undefined ? undefined : (owner.ownerSsn).replace(normalizedPhone,''),
+                                    "address1":owner.ownerAddress,
+                                    "address2":owner.ownerAddress2,
+                                    "city":owner.ownerCity,	
+                                    "state":owner.ownerState,
+                                    "zip":owner.ownerZip === undefined ? undefined : (owner.ownerZip).replace(normalizedPhone,''),
+                                    "country":"USA",
+                                    "timezone":"est",
+                                    "dl":owner.ownerDrivingLicense,
+                                    "dlstate":owner.ownerDlState,
+                                    "phone":owner.ownerPhone === undefined ? undefined : (owner.ownerPhone).replace(normalizedPhone,''),
+                                    "isRecordUpdated":screenType === "memberDetails" ? "1" : "0",
+                                    "isNewRecord":  "0"
+                                }
+                            )
+                        )
+                    )
+                    :
+                    (
+                        [{
                             "isRecordUpdated":screenType === "memberDetails" ? "1" : "0",
                             "isNewRecord":  "0"
-                        }
-                        )
+                        }]
                     ),
                 "merchantData": {
                     "merchant":values.merchantId,
