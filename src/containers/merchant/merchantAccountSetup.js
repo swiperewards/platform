@@ -18,7 +18,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 //Validation
-import {required, dropDownRequired, ipAddressMatch} from '../../utilities/validation'
+import {dropDownRequired, ipAddressMatch} from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
@@ -26,7 +26,7 @@ import {renderSelectField} from '../../components/selectControl';
 
 //Data
 import Data from '../../staticData'
-import { Input, TextField } from '@material-ui/core';
+import { Input } from '@material-ui/core';
 
 const styles = {
     formControl: {

@@ -314,7 +314,6 @@ class UpdateOwnerDetails extends Component {
         name: '',
         stateName: '',
         dlStateName: '',
-        merchantObject:'',
     };
 
     componentWillMount(){
@@ -385,7 +384,7 @@ class UpdateOwnerDetails extends Component {
 
     render() {
         const { pristine, submitting } = this.props
-        const { expanded, merchantObject } = this.state;
+        const { expanded } = this.state;
         const actions = [
             <Button key="ok" onClick={this.handleCloseAlert} color="primary" autoFocus>
                 OK
