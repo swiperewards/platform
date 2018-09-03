@@ -168,26 +168,17 @@ class AddMerchant extends Component {
         if (nextProps.merchantPayload){
           if(nextProps.merchantPayload.data){
             if(nextProps.merchantPayload.data.status === 200){
-                errorMessage = <div></div>
+                errorMessage = undefined
                 this.handleClickOpen()
             }
             else{
               if(nextProps.merchantPayload.data.status === 1082){
                 errorMessage =
                 nextProps.merchantPayload.data.responseData.map((error, index) =>
-                    <div key={index} style={{
-                        padding: '5px 20px',
-                        margin: '5px',
-                        marginBottom: '10px',
-                        fontSize: 13,
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
-                        borderRadius: '5px',
-                        color: '#86181d',
-                        backgroundColor: '#ffdce0',
-                        borderColor: 'rgba(27, 31, 35, 0.15)',
-                        textAlign: 'center'
-                    }}>
+                    <div 
+                      key={index} 
+                      className="errorDiv"
+                    >
                       {error.field + ' : ' + error.msg}
                     </div >
                   )

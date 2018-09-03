@@ -10,16 +10,19 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
+import Button from '@material-ui/core/Button';
 
 //Validation
 import {required, dropDownRequired, between5to20} from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
+import DialogBox from '../../components/alertDialog'
 import {renderSelectField} from '../../components/selectControl';
+import Loader from '../../components/loader'
 
 //Actions
-import { updateMerchantDetails } from '../../actions/merchantAction';
+import { getMerchantDetailsAPI, updateMerchantDetails, clearMerchantUpdateState } from '../../actions/merchantAction';
 
 //Data
 import Data from '../../staticData'
@@ -41,23 +44,96 @@ class UpdateBankAccount extends Component {
     state = {
         account: '',
         merchantObject:'',
+        openAlert:false,
       };
 
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
       };
+
+      componentWillMount(){
+        this.setState({ openAlert: false });
+        this.props.clearMerchantUpdateState()
+        errorMessage = undefined
+
+        if(this.props.userData.user.responseData.token && this.props.merchant){
+            this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
+        }
+      }
     
+      componentWillReceiveProps(nextProps) {
+
+        if (nextProps) {
+          if (nextProps.updateBankResponse){
+            this.setState({showLoader:false})
+            nextProps.updateBankResponse
+            .map((response)=>{
+                if(response.code === 200 || response.code === 201){
+                    errorMessage = errorMessage !== undefined ? errorMessage : undefined
+                }
+                else{
+                    if(response.code === 1084){
+                        errorMessage =
+                        response.data.map((error, index) =>
+                            <div 
+                                key={index} 
+                                className="errorDiv"
+                            >
+                            {error.field + ' : ' + error.msg}
+                            </div >
+                        )
+                    }
+                    else{
+                        errorMessage =
+                            <div 
+                                className="errorDiv"
+                            >
+                            {response.description}
+                            </div >
+                    }
+                }
+            })
+
+            if(errorMessage === undefined){
+                this.handleOpenAlert()
+            }
+          }
+        }
+        
+      }
+
+      handleOpenAlert = () => {
+        this.setState({ openAlert: true });
+      };
+
+      handleCloseAlert = () => {
+        this.setState({ openAlert: false });
+      };
+
       onSubmit(values) {
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.updateMerchantDetails(values, "bankAccount" ,this.props.userData.user.responseData.token)
         }
       }
 
     render() {
         const { pristine, submitting } = this.props
+        const actions = [
+            <Button onClick={this.handleCloseAlert} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
+
     return (
         <div style={{paddingBottom:'20px'}}>
+            <Loader status={this.state.showLoader} />
+            <DialogBox 
+                displayDialogBox={this.state.openAlert} 
+                message="Merchant details updated successfully" 
+                actions={actions} 
+            />
             <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
             <Paper className="pagePaper">
                 <div className="formContent">
@@ -133,7 +209,7 @@ class UpdateBankAccount extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ updateMerchantDetails }, dispatch)
+    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails, clearMerchantUpdateState }, dispatch)
   }
 
 UpdateBankAccount = reduxForm({
@@ -143,6 +219,7 @@ UpdateBankAccount = reduxForm({
 UpdateBankAccount = connect(
     state => ({
         userData: state.account === undefined ? undefined : state.account,
+        updateBankResponse: state.merchant.updateMerchant === undefined ? undefined : state.merchant.updateMerchant.responseData,
         initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
     }),
     mapDispatchToProps,

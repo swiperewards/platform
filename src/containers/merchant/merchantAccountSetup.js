@@ -26,6 +26,7 @@ import {renderSelectField} from '../../components/selectControl';
 
 //Data
 import Data from '../../staticData'
+import { Input, TextField } from '@material-ui/core';
 
 const styles = {
     formControl: {
@@ -83,9 +84,7 @@ class AccountSetup extends Component {
       };
 
       selectMCCCode = (code) => {
-
-          //this.props.change('mccNumber',code)
-            //document.getElementsByName("mccNumber").item.value = code
+          this.setState({'mccCode':code})  
           this.handleClose();
       }
 
@@ -155,15 +154,17 @@ class AccountSetup extends Component {
                             }
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    name="mccNumber" 
-                                    myType="number"
-                                    ref="mccNumber" 
-                                    fullWidth={true} 
-                                    component={InputField} 
-                                    validate={this.state.boardingStatus === "0" ? undefined : required} 
+                                <Input
+                                    name="mccNumber"
+                                    type="number"
+                                    value={this.state.mccCode}
+                                    fullWidth
+                                    required
+                                    inputProps={{
+                                    'aria-label': 'Description',
+                                    }}
                                     onFocus={this.handleMCCPopUp}
-                                /> 
+                                />
                                 <Dialog
                                     open={this.state.openMCCPopUp}
                                     onClose={this.handleClose}

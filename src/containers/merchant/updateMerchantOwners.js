@@ -15,6 +15,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import FormLabel from '@material-ui/core/FormLabel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Button from '@material-ui/core/Button';
 
 //Validation
 import {required, dropDownRequired, email, ssnMask, phoneMask, zipMask, percentage, drivingLicenseMask} from '../../utilities/validation'
@@ -22,9 +23,11 @@ import {required, dropDownRequired, email, ssnMask, phoneMask, zipMask, percenta
 //Components
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
+import DialogBox from '../../components/alertDialog'
+import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantDetailsAPI, updateMerchantDetails } from '../../actions/merchantAction';
+import { getMerchantDetailsAPI, updateMerchantDetails, clearMerchantUpdateState } from '../../actions/merchantAction';
 
 //Data
 import Data from '../../staticData';
@@ -56,7 +59,7 @@ const styles = {
       },
   };
 
-  let renderOwners = ({ fields, members, meta: { touched, error, submitFailed } }) => {
+  let renderOwners = ({ fields, meta: { touched, error, submitFailed } }) => {
 
     return(  
     <React.Fragment>
@@ -314,12 +317,68 @@ class UpdateOwnerDetails extends Component {
         merchantObject:'',
     };
 
+    componentWillMount(){
+        this.setState({ openAlert: false });
+        this.props.clearMerchantUpdateState()
+        errorMessage = undefined
+      }
+    
+      componentWillReceiveProps(nextProps) {
+
+        if (nextProps) {
+          if (nextProps.updateOwnerResponse){
+            this.setState({showLoader:false})
+            nextProps.updateOwnerResponse
+            .map((response)=>{
+                if(response.code === 200 || response.code === 201){
+                    errorMessage = errorMessage !== undefined ? errorMessage : undefined
+                }
+                else{
+                    if(response.code === 1084){
+                        errorMessage =
+                        response.data.map((error, index) =>
+                            <div 
+                                key={index} 
+                                className="errorDiv"
+                            >
+                            {error.field + ' : ' + error.msg}
+                            </div >
+                        )
+                    }
+                    else{
+                        errorMessage =
+                            <div 
+                                className="errorDiv"
+                            >
+                            {response.description}
+                            </div >
+                    }
+                }
+            })
+
+            if(errorMessage === undefined){
+                this.handleOpenAlert()
+            }
+          }
+        }
+        
+      }
+
+      handleOpenAlert = () => {
+        this.setState({ openAlert: true });
+      };
+
+      handleCloseAlert = () => {
+        this.setState({ openAlert: false });
+      };
+
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
     };
 
     onSubmit(values) {
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.updateMerchantDetails(values, "memberDetails" ,this.props.userData.user.responseData.token)
         }
     }
@@ -327,9 +386,20 @@ class UpdateOwnerDetails extends Component {
     render() {
         const { pristine, submitting } = this.props
         const { expanded, merchantObject } = this.state;
-
+        const actions = [
+            <Button onClick={this.handleCloseAlert} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
+        
         return (
             <div style={{paddingBottom:'20px'}}>
+                <Loader status={this.state.showLoader} />
+                <DialogBox 
+                    displayDialogBox={this.state.openAlert} 
+                    message="Merchant details updated successfully" 
+                    actions={actions} 
+                />
                 <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
                 <Paper className="pagePaper">
                     <div className="formContent">
@@ -349,7 +419,7 @@ class UpdateOwnerDetails extends Component {
                         </div>
                         <Divider style={{marginBottom:'20px'}} />
 
-                        <FieldArray name="owners" members={merchantObject} component={renderOwners} expand={expanded}/>
+                        <FieldArray name="owners" component={renderOwners} expand={expanded}/>
                     </div>
                 </Paper>   
                 </form>                 
@@ -362,17 +432,17 @@ class UpdateOwnerDetails extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails }, dispatch)
+    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails, clearMerchantUpdateState }, dispatch)
 }
 
 UpdateOwnerDetails = reduxForm({
     form: 'frmUpdateOwnerDetails',
-    enableReinitialize: true,
 })(UpdateOwnerDetails)
 
 UpdateOwnerDetails = connect(
     state => ({
         userData: state.account === undefined ? undefined : state.account,
+        updateOwnerResponse: state.merchant.updateMerchant === undefined ? undefined : state.merchant.updateMerchant.responseData,
         initialValues: {
             owners: state.merchant.merchantDetails === undefined 
             ? undefined 

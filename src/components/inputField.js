@@ -121,7 +121,6 @@ function CustomizedInputs(props) {
         helperText={props.meta.touched ? props.meta.error : ''}
         placeholder={props.myPlaceHolder}
         id={props.id}
-        ref={props.ref}
         type={props.myType}
         fullWidth = {props.fullWidth}
         width = {props.minWidth}
@@ -131,8 +130,7 @@ function CustomizedInputs(props) {
             root: classes.bootstrapRoot,
             input: classes.bootstrapInput,
           },
-          inputComponent:(props.masked ? (props.myMaskType === 'text'? maskInputFields(props.maskReg) : NumberFormatCustom) : null),
-          mymask: props.maskReg,
+          //inputComponent:(props.masked ? (props.myMaskType === 'text'? maskInputFields(props.maskReg) : NumberFormatCustom) : null),
         }}
       />
   );

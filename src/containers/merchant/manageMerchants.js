@@ -163,16 +163,16 @@ class ManageMerchants extends Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
 
         const actions = [
-            <Button onClick={this.handleClose} color="primary" autoFocus>
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
         ];
 
         const permissionActions = [
-            <Button onClick={this.handleClose} color="primary" autoFocus>
+            <Button key="no" onClick={this.handleClose} color="primary">
                 No
             </Button>,
-            <Button onClick={this.deleteMerchant} color="primary" autoFocus>
+            <Button key="yes" onClick={this.deleteMerchant} color="primary" autoFocus>
                 Yes
             </Button>,
         ];

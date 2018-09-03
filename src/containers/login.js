@@ -90,19 +90,9 @@ class Login extends Component {
                     }
                     else{
                         errorMessage =
-                            <div style={{
-                                padding: '5px 20px',
-                                margin: '5px',
-                                marginBottom: '10px',
-                                fontSize: 13,
-                                borderStyle: 'solid',
-                                borderWidth: '1px',
-                                borderRadius: '5px',
-                                color: '#86181d',
-                                backgroundColor: '#ffdce0',
-                                borderColor: 'rgba(27, 31, 35, 0.15)',
-                                textAlign: 'center'
-                            }}>{nextProps.validateAction_Data.user.message}</div >
+                            <div 
+                                className="errorDiv"
+                            >{nextProps.validateAction_Data.user.message}</div >
                     }
                 }
             }

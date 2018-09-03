@@ -11,14 +11,17 @@ import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
+import Button from '@material-ui/core/Button';
 
 //Components
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
 import RenderCheckbox from '../../components/renderCheckbox'
+import DialogBox from '../../components/alertDialog'
+import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantDetailsAPI, updateMerchantDetails } from '../../actions/merchantAction';
+import { getMerchantDetailsAPI, updateMerchantDetails, clearMerchantUpdateState } from '../../actions/merchantAction';
 
 //Validation
 import {required, exact9, between1to100, dropDownRequired, email, website, phoneMask, taxNumberMask, zipMask, normalizedPhone} from '../../utilities/validation'
@@ -40,20 +43,6 @@ const styles = {
         fontSize: '12px',
       }
 };
-
-function validate(formProps) {  
-    const errors = {};
-  
-    if (!formProps.businessType) {
-      errors.firstName = 'Select business Type';
-    }
-  
-    if (!formProps.businessName) {
-      errors.lastName = 'Please enter a Business name';
-    }
-  
-    return errors;
-  }
 
 class UpdateBusinessDetails extends Component {
 
@@ -93,26 +82,68 @@ class UpdateBusinessDetails extends Component {
         }
       }
 
-    componentWillMount() {
-
+      componentWillMount(){
+        this.setState({ openAlert: false });
+        this.props.clearMerchantUpdateState()
+        errorMessage = undefined
+        
         if(this.props.userData.user.responseData.token && this.props.merchant){
             this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
         }
-    }
-
-    componentWillReceiveProps(nextProps) {
+      }
     
-    }  
+      componentWillReceiveProps(nextProps) {
 
-    handleInitialize(entityDetails) {
-        if(entityDetails !== undefined){
-            this.props.initialize(entityDetails);
+        if (nextProps) {
+          if (nextProps.updateBusinessResponse){
+            this.setState({showLoader:false})
+            nextProps.updateBusinessResponse
+            .map((response)=>{
+                if(response.code === 200 || response.code === 201){
+                    errorMessage = errorMessage !== undefined ? errorMessage : undefined
+                }
+                else{
+                    if(response.code === 1084){
+                        errorMessage =
+                        response.data.map((error, index) =>
+                            <div 
+                                key={index} 
+                                className="errorDiv"
+                            >
+                            {error.field + ' : ' + error.msg}
+                            </div >
+                        )
+                    }
+                    else{
+                        errorMessage =
+                            <div 
+                                className="errorDiv"
+                            >
+                            {response.description}
+                            </div >
+                    }
+                }
+            })
+
+            if(errorMessage === undefined){
+                this.handleOpenAlert()
+            }
+          }
         }
+        
       }
 
-      onSubmit(values) {
+      handleOpenAlert = () => {
+        this.setState({ openAlert: true });
+      };
 
+      handleCloseAlert = () => {
+        this.setState({ openAlert: false });
+      };
+
+      onSubmit(values) {
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.updateMerchantDetails(values, "businessDetails", this.props.userData.user.responseData.token)
         }
       }
@@ -120,9 +151,20 @@ class UpdateBusinessDetails extends Component {
     render() {
 
         const { pristine, submitting } = this.props
+        const actions = [
+            <Button onClick={this.handleCloseAlert} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
 
         return (
             <div style={{paddingBottom:'20px'}}>
+                <Loader status={this.state.showLoader} />
+                <DialogBox 
+                    displayDialogBox={this.state.openAlert} 
+                    message="Merchant details updated successfully" 
+                    actions={actions} 
+                />
                 <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
 
                 <Paper className="pagePaper">
@@ -475,18 +517,17 @@ class UpdateBusinessDetails extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails }, dispatch)
+    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails, clearMerchantUpdateState }, dispatch)
   }
 
 UpdateBusinessDetails = reduxForm({
     form: 'frmUpdateBusinessDetails',
-    enableReinitialize: true,
-    validate
 })(UpdateBusinessDetails)
 
 UpdateBusinessDetails = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
+       updateBusinessResponse: state.merchant.updateMerchant === undefined ? undefined : state.merchant.updateMerchant.responseData,
        initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
     }),
     mapDispatchToProps,

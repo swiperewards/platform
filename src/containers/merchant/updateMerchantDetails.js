@@ -78,11 +78,11 @@ const styles = theme => ({
       case 0:
         return (<UpdateBusinessDetails merchant= {merchantId}/>);
       case 1:
-        return (<UpdateOwnerDetails />);
+        return (<UpdateOwnerDetails merchant= {merchantId}/>);
       case 2:
-        return (<UpdateAccountSetup />);
+        return (<UpdateAccountSetup merchant= {merchantId}/>);
       case 3:
-        return (<UpdateBankAccount />);
+        return (<UpdateBankAccount merchant= {merchantId}/>);
       default:
         return 'Uknown stepIndex';
     }
