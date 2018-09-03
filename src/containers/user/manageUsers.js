@@ -151,7 +151,7 @@ class ManageUsers extends Component {
         const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
         const actions = [
-            <Button onClick={this.handleClose} color="primary" autoFocus>
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
         ];

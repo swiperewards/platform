@@ -152,7 +152,7 @@ class UpdateBusinessDetails extends Component {
 
         const { pristine, submitting } = this.props
         const actions = [
-            <Button onClick={this.handleCloseAlert} color="primary" autoFocus>
+            <Button key="ok" onClick={this.handleCloseAlert} color="primary" autoFocus>
                 OK
             </Button>
         ];

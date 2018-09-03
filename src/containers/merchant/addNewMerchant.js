@@ -198,7 +198,7 @@ class AddMerchant extends Component {
         const steps = getSteps();
         const { activeStep } = this.state;
         const actions = [
-          <Button onClick={this.handleClose} color="primary" autoFocus>
+          <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
               OK
           </Button>
         ];

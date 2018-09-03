@@ -387,7 +387,7 @@ class UpdateOwnerDetails extends Component {
         const { pristine, submitting } = this.props
         const { expanded, merchantObject } = this.state;
         const actions = [
-            <Button onClick={this.handleCloseAlert} color="primary" autoFocus>
+            <Button key="ok" onClick={this.handleCloseAlert} color="primary" autoFocus>
                 OK
             </Button>
         ];
