@@ -2,7 +2,8 @@ import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
-
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 
 /**
  * Alerts are urgent interruptions, requiring acknowledgement, that inform the user about a situation.
@@ -16,7 +17,13 @@ const DialogBox = (props) => {
                 open={displayDialogBox}
                 aria-labelledby="alert-dialog-title"
             >
-                <DialogTitle id="alert-dialog-title">{message}</DialogTitle>
+                <DialogTitle id="alert-dialog-title"></DialogTitle>
+
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {message}                        
+                    </DialogContentText>
+                </DialogContent>
 
                 <DialogActions>
                     {actions}

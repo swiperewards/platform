@@ -340,8 +340,7 @@ export function updateMerchantDetails(values, screenType, token) {
                         }]
                     ),
                 "merchantData": {
-                    "merchant":values.merchantId,
-                    "memberId":values.memberId,
+                    "merchantId":values.merchantId,
                     "new": values.isCreditCardYes ? "0" : "1",
                     "established": values.businessPeriod === undefined ? undefined : (values.businessPeriod).replace(normalizedPhone,''), 
                     "annualCCSales": values.isCreditCardYes ? "0" : (values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedPhone,'')),

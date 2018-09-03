@@ -63,7 +63,7 @@ const styles = {
         {   
          fields.map((member, idx) =>
             <div style={styles.root} key={'fragment' + idx}>
-            <ExpansionPanel>
+            <ExpansionPanel defaultExpanded>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                     <div style={styles.column}>
                         <Typography style={styles.heading}>{idx === 0 ? "Primary Owner" : "Additional Owner"}</Typography>
@@ -173,11 +173,6 @@ const styles = {
                                         }
                                     </Field>    
                                 </FormControl>   
-                            </div>
-                        </div>
-                        <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <button type="button" className="small">COPY FROM BUSINESS</button>           
                             </div>
                         </div>
                         <div className="row middle-md">
