@@ -290,6 +290,10 @@ class OwnerDetails extends Component {
         expanded: false,
       };
 
+      componentWillMount(){
+          console.log("entered values : ")
+      }
+
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
       };

@@ -283,13 +283,13 @@ class BusinessDetails extends Component {
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">   
                                 <Field 
-                                    mytype="text" 
+                                    myType="text" 
                                     name="businessFax" 
-                                    fullwidth={true} 
+                                    fullWidth={true} 
                                     component={InputField} 
-                                    masked="true"
-                                    mymasktype="text"
-                                    maskreg={phoneMask}
+                                    masked={true}
+                                    myMaskType="text"
+                                    maskReg={phoneMask}
                                 />  
                             </div>
                         </div>

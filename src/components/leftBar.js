@@ -43,7 +43,7 @@ const styles = theme => ({
     padding:'0px',
   },
   appBar: {
-    position: 'absolute',
+    position: 'fixed',
     marginLeft: drawerWidth,
     [theme.breakpoints.up('md')]: {
       width: `calc(100% - ${drawerWidth}px)`,
@@ -56,20 +56,25 @@ const styles = theme => ({
   },
   toolbar: { 
     height:'64px',
-    backgroundColor:'#FFFFFF'
+    backgroundColor:'#FFFFFF',
   },
   drawerPaper: {
     width: drawerWidth,
     backgroundColor: '#252b34',
     [theme.breakpoints.up('md')]: {
-      position: 'relative',
+      position: 'fixed',
     },
   },
   content: {
     flexGrow: 1,
-    paddingTop: '65px',
-    paddingRight: '0px',
-    width:'50%',
+    marginTop:'70px',
+    padding : '5px',
+    [theme.breakpoints.down('md')]: {
+      marginLeft: '0px',
+    },
+    [theme.breakpoints.up('md')]: {
+      marginLeft: drawerWidth,
+    },
   },
   logo:{
      margin: 'auto',

@@ -73,9 +73,7 @@ class UpdateAccountSetup extends Component {
         this.props.clearMerchantUpdateState()
         errorMessage = undefined
         
-        if(this.props.userData.user.responseData.token && this.props.merchant){
-            this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
-        }
+        this.getMerchantDetails()
       }
     
       componentWillReceiveProps(nextProps) {
@@ -112,11 +110,19 @@ class UpdateAccountSetup extends Component {
             })
 
             if(errorMessage === undefined){
+                this.getMerchantDetails()
                 this.handleOpenAlert()
+                this.props.clearMerchantUpdateState()
             }
           }
         }
         
+      }
+
+      getMerchantDetails(){
+        if(this.props.userData.user.responseData.token && this.props.merchant){
+            this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
+        }
       }
 
       handleOpenAlert = () => {

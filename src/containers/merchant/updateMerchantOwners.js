@@ -357,6 +357,8 @@ class UpdateOwnerDetails extends Component {
 
             if(errorMessage === undefined){
                 this.handleOpenAlert()
+                this.props.clearMerchantUpdateState()
+
             }
           }
         }

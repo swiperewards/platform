@@ -86,10 +86,7 @@ class UpdateBusinessDetails extends Component {
         this.setState({ openAlert: false });
         this.props.clearMerchantUpdateState()
         errorMessage = undefined
-        
-        if(this.props.userData.user.responseData.token && this.props.merchant){
-            this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
-        }
+        this.getMerchantDetails()
       }
     
       componentWillReceiveProps(nextProps) {
@@ -126,11 +123,18 @@ class UpdateBusinessDetails extends Component {
             })
 
             if(errorMessage === undefined){
+                this.getMerchantDetails()
                 this.handleOpenAlert()
+                this.props.clearMerchantUpdateState()
             }
           }
         }
-        
+      }
+
+      getMerchantDetails(){
+        if(this.props.userData.user.responseData.token && this.props.merchant){
+            this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
+        }
       }
 
       handleOpenAlert = () => {
@@ -297,7 +301,7 @@ class UpdateBusinessDetails extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Years in Business*
+                                Years in Business
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
@@ -306,7 +310,7 @@ class UpdateBusinessDetails extends Component {
                                     fullWidth={true} 
                                     onChange={this.handleChange}
                                     component={InputField} 
-                                    validate={required}/>  
+                                />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Website*

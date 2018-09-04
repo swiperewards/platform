@@ -227,7 +227,7 @@ export function getMerchantDetailsAPI(merchantId,token) {
                     "businessStateName":responseDetails.state_v,
                     "boardingStatus":responseDetails.status_v,
                     "mccNumber":responseDetails.mcc_v,
-                    "merchantType":responseDetails.type_v,
+                    "merchantType":responseDetails.environment_v,
                     "acceptanceDate":moment((responseDetails.tcAcceptDate_v).substring(0,8)).format('YYYY-MM-DD') ,
                     "ipAddress":responseDetails.tcAcceptIp_v,
                     "acceptanceTime":moment((responseDetails.tcAcceptDate_v).substring(9,12)).format('HH:MM'),
@@ -346,6 +346,8 @@ export function updateMerchantDetails(values, screenType, token) {
                     "annualCCSales": values.isCreditCardYes ? "0" : (values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedPhone,'')),
                     "dba":values.dba,
                     "mcc":values.mccNumber,
+                    "environment":values.merchantType,
+                    "status":values.boardingStatus,
                     "isRecordUpdated": screenType === "businessDetails" ? "1" : "0"
                 },
                 "entityData": {

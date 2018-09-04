@@ -1,6 +1,5 @@
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
@@ -17,8 +16,6 @@ const DialogBox = (props) => {
                 open={displayDialogBox}
                 aria-labelledby="alert-dialog-title"
             >
-                <DialogTitle id="alert-dialog-title"></DialogTitle>
-
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         {message}                        
