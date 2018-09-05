@@ -55,7 +55,7 @@ export function addNewMerchant(values, token) {
                         "first": owner.ownerFirstName,
                         "last": owner.ownerLastName,
                         "dob": owner.ownerDob === undefined ? undefined : (owner.ownerDob).replace(normalizedPhone,''),
-                        "ownership": (parseFloat(owner.ownership)) * 100,
+                        "ownership": values.businessType !== "0" ? (parseFloat(owner.ownership)) * 100 : (parseFloat("100")) * 100,
                         "email":owner.ownerEmail,
                         "ssn":owner.ownerSsn === undefined ? undefined : (owner.ownerSsn).replace(normalizedPhone,''),
                         "address1":owner.ownerAddress,

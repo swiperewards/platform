@@ -1,6 +1,6 @@
 //react redux
 import React, { Component } from 'react';
-import { reduxForm } from 'redux-form'
+import { reduxForm, formValueSelector } from 'redux-form'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
@@ -97,7 +97,7 @@ class AddMerchant extends Component {
           case 0:            
             return (<BusinessDetails />);
           case 1:
-            return (<OwnerDetails />);
+            return (<OwnerDetails myProps={this.props.businessType} />);
           case 2:
             return (<AccountSetup  myProps={this.props} />);
           case 3:
@@ -292,10 +292,14 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({ addNewMerchant, ClearMerchantState }, dispatch)
 }
 
+const selector = formValueSelector('FrmAddMerchant') // <-- same as form name
+
 AddMerchant = connect(
   state => ({
     userData: state.account === undefined ? undefined : state.account,
-    merchantPayload: state.merchant === undefined ? undefined : state.merchant
+    merchantPayload: state.merchant === undefined ? undefined : state.merchant,
+    businessType: selector(state, 'businessType')
+
   }),
   mapDispatchToProps,
 )(AddMerchant)

@@ -52,7 +52,7 @@ const styles = {
       },
   };
 
-  let renderOwners = ({ fields, expand, meta: { touched, error, submitFailed } }) => {
+  let renderOwners = ({ fields, businessType, meta: { touched, error, submitFailed } }) => {
     if(fields.length === 0){
         fields.push({})
     }
@@ -128,12 +128,21 @@ const styles = {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field myType="text" name={`${member}.ownerBusinessTitle`} fullWidth={true} component={InputField} validate={required}/>  
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                OwnerShip %*
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="number" name={`${member}.ownership`} fullWidth={true} component={InputField} validate={[required, percentage]}/>  
-                            </div>
+                            {
+                                businessType !== "0"
+                                ?
+                                    <React.Fragment>
+                                        <div className="col-xs-12 col-sm-6 col-md-3">
+                                            OwnerShip %*
+                                        </div>
+                                        <div className="col-xs-12 col-sm-6 col-md-3">    
+                                            <Field myType="number" name={`${member}.ownership`} fullWidth={true} component={InputField} validate={[required, percentage]}/>  
+                                        </div>
+                                    </React.Fragment>    
+                                :
+                                    null
+                            }
+                            
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
@@ -267,15 +276,22 @@ const styles = {
             </ExpansionPanel>
             </div>
         )}
-        <div style={{marginTop:'10px'}}>
-            <button 
-                type="button" 
-                onClick={() => fields.push({})} 
-                className="button"
-                style={{backgroundColor:'#27A24F'}}>
-                + Add additional owner
-            </button>           
-        </div>
+        {
+            businessType !== "0"
+            ?
+                <div style={{marginTop:'10px'}}>
+                    <button 
+                        type="button" 
+                        onClick={() => fields.push({})} 
+                        className="button"
+                        style={{backgroundColor:'#27A24F'}}>
+                        + Add additional owner
+                    </button>           
+                </div>
+            :
+                null
+        }
+        
     </React.Fragment>
     )
 }
@@ -287,11 +303,12 @@ class OwnerDetails extends Component {
         name: '',
         stateName: '',
         dlStateName: '',
+        businessType:'',
         expanded: false,
       };
 
       componentWillMount(){
-          console.log("entered values : ")
+          this.setState({businessType:this.props.myProps});
       }
 
       handleChange = event => {
@@ -300,7 +317,7 @@ class OwnerDetails extends Component {
 
     render() {
 
-        const { expanded } = this.state;
+        const { expanded, businessType } = this.state;
 
         return (
             <div style={{paddingBottom:'20px'}}>
@@ -317,7 +334,7 @@ class OwnerDetails extends Component {
                         </div>
                         <Divider style={{marginBottom:'20px'}} />
 
-                        <FieldArray name="owners" component={renderOwners} expand={expanded}/>
+                        <FieldArray name="owners" businessType={businessType} component={renderOwners}/>
                     </div>
                 </Paper>                    
             </div>
