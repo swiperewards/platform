@@ -7,8 +7,8 @@ var axios = require('axios');
 //Function to add new merchant to processing system
 export function addNewMerchant(values, token) {
 
-    var acceptanceDate = (values.acceptanceDate === undefined ? "00000000" : (values.acceptanceDate).replace(normalizedPhone,''))
-    var acceptanceTime = (values.acceptanceTime === undefined ? "0000" : (values.acceptanceTime).replace(normalizedPhone,''))
+    var acceptanceDate = (values.acceptanceDate === undefined ? undefined : (values.acceptanceDate).replace(normalizedPhone,''))
+    var acceptanceTime = (values.acceptanceTime === undefined ? undefined : (values.acceptanceTime).replace(normalizedPhone,''))
     var acceptanceDateTime = acceptanceDate + acceptanceTime
 
     var setting = {
@@ -312,20 +312,20 @@ export function updateMerchantDetails(values, screenType, token) {
                                     "title": owner.ownerBusinessTitle,
                                     "first": owner.ownerFirstName,
                                     "last": owner.ownerLastName,
-                                    "dob": owner.ownerDob === undefined ? undefined : (owner.ownerDob).replace(normalizedPhone,''),
+                                    "dob": (owner.ownerDob === undefined ? undefined : (owner.ownerDob).replace(normalizedPhone,'')),
                                     "ownership": (parseFloat(owner.ownership)) * 100,
                                     "email":owner.ownerEmail,
-                                    "ssn":owner.ownerSsn === undefined ? undefined : (owner.ownerSsn).replace(normalizedPhone,''),
+                                    "ssn":(owner.ownerSsn === undefined ? undefined : (owner.ownerSsn).replace(normalizedPhone,'')),
                                     "address1":owner.ownerAddress,
                                     "address2":owner.ownerAddress2,
                                     "city":owner.ownerCity,	
                                     "state":owner.ownerState,
-                                    "zip":owner.ownerZip === undefined ? undefined : (owner.ownerZip).replace(normalizedPhone,''),
+                                    "zip":(owner.ownerZip === undefined ? undefined : (owner.ownerZip).replace(normalizedPhone,'')),
                                     "country":"USA",
                                     "timezone":"est",
                                     "dl":owner.ownerDrivingLicense,
                                     "dlstate":owner.ownerDlState,
-                                    "phone":owner.ownerPhone === undefined ? undefined : (owner.ownerPhone).replace(normalizedPhone,''),
+                                    "phone":(owner.ownerPhone === undefined ? undefined : (owner.ownerPhone).replace(normalizedPhone,'')),
                                     "isRecordUpdated":screenType === "memberDetails" ? "1" : "0",
                                     "isNewRecord":  "0"
                                 }
@@ -342,8 +342,8 @@ export function updateMerchantDetails(values, screenType, token) {
                 "merchantData": {
                     "merchantId":values.merchantId,
                     "new": values.isCreditCardYes ? "0" : "1",
-                    "established": values.businessPeriod === undefined ? undefined : (values.businessPeriod).replace(normalizedPhone,''), 
-                    "annualCCSales": values.isCreditCardYes ? "0" : (values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedPhone,'')),
+                    "established": (values.businessPeriod === undefined ? undefined : (values.businessPeriod).replace(normalizedPhone,'')), 
+                    "annualCCSales": (values.isCreditCardYes ? "0" : (values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedPhone,''))),
                     "dba":values.dba,
                     "mcc":values.mccNumber,
                     "environment":values.merchantType,

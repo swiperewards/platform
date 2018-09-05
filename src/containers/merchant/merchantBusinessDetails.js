@@ -13,7 +13,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 //Components
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
-import RenderCheckbox from '../../components/renderCheckbox'
+import RenderCheckbox from '../../components/renderCheckbox';
+import RenderSwitch from '../../components/switchControl';
 
 
 //Validation
@@ -50,17 +51,10 @@ class BusinessDetails extends Component {
 
       handleCheckboxChange = name => event => {
         this.setState({[name]: event.target.checked});
-
-        if (name === "creditCheckedYes"){
-            this.setState({creditCheckedNo: !event.target.checked});
-        }
-        else if (name === "creditCheckedNo"){
-            this.setState({creditCheckedYes: !event.target.checked});
-        }
       };
 
       //Enables "Public Company" option if not following cases
-      renderSwitch(param) {
+      availPublic(param) {
         switch(param) {
           case '0':
             return true;
@@ -74,8 +68,15 @@ class BusinessDetails extends Component {
       }
 
       componentDidMount(){
+        if(this.refs.isCreditCardYes){
+            this.setState({isCreditCardYes:this.refs.isCreditCardYes.value})
+        }
 
-      }
+        if(this.refs.businessType){
+            this.setState({businessType:this.refs.businessType.value})
+        }
+    }
+
     render() {
 
         return (
@@ -94,6 +95,7 @@ class BusinessDetails extends Component {
                                 <FormControl style={styles.formControl}>
                                         <Field
                                             name="businessType"
+                                            ref="businessType"
                                             component={renderSelectField}
                                             fullWidth={true}
                                             onChange={this.handleChange}
@@ -110,7 +112,7 @@ class BusinessDetails extends Component {
                                             })
                                         }
                                         {
-                                            !this.renderSwitch(this.state.businessType) ?(
+                                            !this.availPublic(this.state.businessType) ?(
                                             <MenuItem>
                                                 <FormControlLabel
                                                     control={
@@ -211,37 +213,16 @@ class BusinessDetails extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Currently accept credit cards
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">                               
-                                <FormControlLabel
-                                    control={
-                                        <Field 
-                                            name="isCreditCardNo" 
-                                            id="creditCardNo" 
-                                            ref="creditCardNo"
-                                            myStyle={styles} 
-                                            myChecked={this.state.creditCheckedNo}
-                                            onChange={this.handleCheckboxChange('creditCheckedNo')}
-                                            component={RenderCheckbox} 
-                                        />
-                                    }
-                                    label="No"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Field 
-                                            name="isCreditCardYes" 
-                                            id="creditCardYes"
-                                            ref="creditCardYes" 
-                                            myStyle={styles} 
-                                            myChecked= {this.state.creditCheckedYes}
-                                            onChange={this.handleCheckboxChange('creditCheckedYes')}
-                                            component={RenderCheckbox} 
-                                        />
-                                    }
-                                    label="Yes"
-                                />
+                            <div className="col-xs-12 col-sm-6 col-md-3">  
+                                <Field
+                                    name="isCreditCardYes" 
+                                    ref="isCreditCardYes"
+                                    id="creditCardYes" 
+                                    component={RenderSwitch}
+                                    onChange={this.handleCheckboxChange('isCreditCardYes')}
+                                />                             
                             </div>
-                            {this.state.creditCheckedYes === true && this.state.creditCheckedNo === false ? (
+                            {this.state.isCreditCardYes === true ? (
                                 <React.Fragment>
                                 <div className="col-xs-12 col-sm-6 col-md-3">
                                         Annual CC Sales*

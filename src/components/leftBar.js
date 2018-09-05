@@ -75,6 +75,7 @@ const styles = theme => ({
     [theme.breakpoints.up('md')]: {
       marginLeft: drawerWidth,
     },
+    width:'50%'
   },
   logo:{
      margin: 'auto',
@@ -148,7 +149,7 @@ class ResponsiveDrawer extends React.Component {
         <div className={classes.toolbar} >
             <div>    
                 <NavLink to={'/dashboard'}>
-                    <img src="../images/logo_medium.png" alt="logo" className={classes.logo} />
+                    <img src="../images/vc_nouvo.svg" alt="logo" className={classes.logo} />
                 </NavLink>
             </div>    
         </div>

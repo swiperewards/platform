@@ -43,7 +43,7 @@ class ForgotPassword extends Component {
                 <div className="pageContainer">
                     <Paper className="pagePaper">
                         <div className="logo">
-                            <img src="../images/logo1.png" alt="Logo" />
+                            <img src="../images/logo.png" alt="Logo" />
                         </div>
                         <div className="formContent">
                             <form size='large' className="form-horizontal" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>

@@ -80,22 +80,6 @@ const styles = theme => ({
     return ['About the Business', 'About the Owners', 'Account Setup', 'Add Bank Account'];
   }
   
-  //Function to navigate to respective step based on active index
-  function getStepContent(stepIndex) {
-    switch (stepIndex) {
-      case 0:
-        return (<BusinessDetails />);
-      case 1:
-        return (<OwnerDetails />);
-      case 2:
-        return (<AccountSetup />);
-      case 3:
-        return (<BankAccount />);
-      default:
-        return 'Uknown stepIndex';
-    }
-  }
-
   let errorMessage
 
 class AddMerchant extends Component {
@@ -106,6 +90,22 @@ class AddMerchant extends Component {
         activeStep: 0,
         open: false,
       };
+
+      //Function to navigate to respective step based on active index
+      getStepContent(stepIndex) {
+        switch (stepIndex) {
+          case 0:            
+            return (<BusinessDetails />);
+          case 1:
+            return (<OwnerDetails />);
+          case 2:
+            return (<AccountSetup  myProps={this.props} />);
+          case 3:
+            return (<BankAccount />);
+          default:
+            return 'Uknown stepIndex';
+        }
+      }
 
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
@@ -232,7 +232,7 @@ class AddMerchant extends Component {
                                     </Stepper>
                                     <div>
                                        {
-                                          getStepContent(activeStep)
+                                          this.getStepContent(activeStep)
                                         }
                                     {this.state.activeStep === steps.length-1 ? (
                                         <div>
