@@ -17,7 +17,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 //Validation
-import { dropDownRequired, ipAddressMatch } from '../../utilities/validation'
+import { required, dropDownRequired, ipAddressMatch } from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
@@ -155,10 +155,7 @@ class AccountSetup extends Component {
                                 </FormControl>
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                {
-                                    this.state.boardingStatus === "0" ?
-                                        "Add MCC" : "Add MCC*"
-                                }
+                                Add MCC* 
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field
@@ -169,6 +166,7 @@ class AccountSetup extends Component {
                                     fullWidth={true}
                                     onFocus={this.handleMCCPopUp}
                                     component={InputField}
+                                    validate={required}
                                 />
                                 <Dialog
                                     open={this.state.openMCCPopUp}

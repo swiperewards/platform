@@ -31,6 +31,7 @@ import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
 import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
+import RenderSwitch from '../../components/switchControl';
 
 //Data
 import Data from '../../staticData'
@@ -60,7 +61,6 @@ class UpdateAccountSetup extends Component {
         this.state = {
             boardingStatus: '',
             merchanttype: '',
-            termsCheckedNo: true,
             termsCheckedYes: false,
             openMCCPopUp: false,
             updatedList:Data.mccCodes, 
@@ -79,6 +79,11 @@ class UpdateAccountSetup extends Component {
       componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
+
+        if(nextProps.initialValues && this.state.boardingStatus === undefined) {
+            this.setState({boardingStatus:nextProps.initialValues.boardingStatus})
+        }
+
           if (nextProps.updateAccountResponse){
             this.setState({showLoader:false})
             nextProps.updateAccountResponse
@@ -139,12 +144,6 @@ class UpdateAccountSetup extends Component {
 
       handleCheckboxChange = name => event => {
         this.setState({ [name]: event.target.checked });
-
-        if (name === "termsCheckedYes"){
-            this.setState({termsCheckedNo: !event.target.checked})
-        }else if (name === "termsCheckedNo"){
-            this.setState({termsCheckedYes: !event.target.checked})
-        }
       };
 
       handleMCCPopUp = (event) => {
@@ -234,33 +233,37 @@ class UpdateAccountSetup extends Component {
                                 Boarding Status*
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <FormControl style={styles.formControl}>
-                                            <Field
-                                                name="boardingStatus"
-                                                component={renderSelectField}
-                                                fullWidth={true}
-                                                onChange={this.handleChange('boardingStatus')}
-                                                ref="boardingStatus"
-                                                validate={dropDownRequired}
-                                            >
-                                        {
-                                            Data.boardingStatus.map((item) =>{
-                                               return <MenuItem 
-                                                    style={styles.selectControl}
-                                                    key={item.id}
-                                                    value={item.id}>
-                                                    {item.name}
-                                               </MenuItem>
-                                            })
-                                        }
-                                    </Field>    
-                                </FormControl>  
+                                {
+                                    this.state.boardingStatus === "0" 
+                                    ?
+                                        <FormControl style={styles.formControl}>
+                                                <Field
+                                                    name="boardingStatus"
+                                                    component={renderSelectField}
+                                                    fullWidth={true}
+                                                    onChange={this.handleChange('boardingStatus')}
+                                                    ref="boardingStatus"
+                                                    validate={dropDownRequired}
+                                                >
+                                            {
+                                                Data.boardingStatus.map((item) =>{
+                                                return <MenuItem 
+                                                        style={styles.selectControl}
+                                                        key={item.id}
+                                                        value={item.id}>
+                                                        {item.name}
+                                                </MenuItem>
+                                                })
+                                            }
+                                        </Field>    
+                                    </FormControl> 
+                                :
+                                    "Successfully Boarded"
+                                }
+                                 
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                            {   
-                                this.state.boardingStatus === "0" ? 
-                                    "Add MCC" : "Add MCC*"
-                            }
+                                Add MCC*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
@@ -269,7 +272,7 @@ class UpdateAccountSetup extends Component {
                                     ref="mccNumber" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={this.state.boardingStatus === "0" ? undefined : required} 
+                                    validate={required} 
                                     onFocus={this.handleMCCPopUp}
                                 /> 
                                 <Dialog
@@ -330,63 +333,57 @@ class UpdateAccountSetup extends Component {
                                     </FormControl>  
                             </div>
                         </div>
-                        <div className="row">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                Accept Terms and Conditions
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                        checked={this.state.termsCheckedNo}
-                                        onChange={this.handleCheckboxChange('termsCheckedNo')}
-                                        value="termsCheckedNo"
-                                        color="primary"
-                                        />
-                                    }
-                                    label="No"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                        checked={this.state.termsCheckedYes}
-                                        onChange={this.handleCheckboxChange('termsCheckedYes')}
-                                        value="termsCheckedYes"
-                                        color="primary"
-                                        />
-                                    }
-                                    label="Yes"
-                                />
-                            </div>
-                        </div>
-                        {this.state.termsCheckedYes === true && this.state.termsCheckedNo === false ? (
+                        {
+                            this.state.boardingStatus === "0"
+                            ?
                             <React.Fragment>
                                 <div className="row">
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        Date of Acceptance
+                                        Accept Terms and Conditions
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="date" name="acceptanceDate" fullWidth={true} component={InputField} />  
-                                    </div>
-                                    <div className="col-xs-12 col-sm-6 col-md-3">
-                                        IP Address
-                                    </div>
-                                    <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="text" name="ipAddress" fullWidth={true} component={InputField} validate={ipAddressMatch}/>  
+                                        <Field
+                                            name="termsCheckedYes" 
+                                            ref="termsCheckedYes"
+                                            id="termsCheckedYes" 
+                                            component={RenderSwitch}
+                                            onChange={this.handleCheckboxChange('termsCheckedYes')}
+                                        />     
                                     </div>
                                 </div>
-                                <div className="row">
-                                    <div className="col-xs-12 col-sm-6 col-md-3">
-                                        Time
-                                    </div>
-                                    <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="time" name="acceptanceTime" fullWidth={true} component={InputField} />  
-                                    </div>
-                                </div>
-                            </React.Fragment>
-
-                                ) : ( null
-                            )}
+                                (this.state.termsCheckedYes === true ? (
+                                    <React.Fragment>
+                                        <div className="row">
+                                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                                Date of Acceptance
+                                            </div>
+                                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                                <Field myType="date" name="acceptanceDate" fullWidth={true} component={InputField} />  
+                                            </div>
+                                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                                IP Address
+                                            </div>
+                                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                                <Field myType="text" name="ipAddress" fullWidth={true} component={InputField} validate={ipAddressMatch}/>  
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                                Time
+                                            </div>
+                                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                                <Field myType="time" name="acceptanceTime" fullWidth={true} component={InputField} />  
+                                            </div>
+                                        </div>
+                                    </React.Fragment>
+                                    ) : ( 
+                                        null
+                                    ))
+                                    </React.Fragment>
+                                :
+                                null
+                        }
+                        
                     </div>            
                 </Paper>  
                 </form>     

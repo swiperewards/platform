@@ -184,7 +184,12 @@ class AddMerchant extends Component {
                   )
                 }
                 else{
-                  //TODO: Handle error condition
+                  errorMessage = 
+                    <div 
+                      className="errorDiv"
+                    >
+                      {nextProps.merchantPayload.data.message}
+                    </div>
                 }
             }
           }

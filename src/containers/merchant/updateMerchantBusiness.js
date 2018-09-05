@@ -19,6 +19,7 @@ import {renderSelectField} from '../../components/selectControl';
 import RenderCheckbox from '../../components/renderCheckbox'
 import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
+import RenderSwitch from '../../components/switchControl';
 
 //Actions
 import { getMerchantDetailsAPI, updateMerchantDetails, clearMerchantUpdateState } from '../../actions/merchantAction';
@@ -49,7 +50,6 @@ class UpdateBusinessDetails extends Component {
     state = {
         businessType: '',
         stateName:'',
-        creditCheckedNo: true,
         creditCheckedYes: false,
       };
 
@@ -59,13 +59,6 @@ class UpdateBusinessDetails extends Component {
 
       handleCheckboxChange = name => event => {
         this.setState({[name]: event.target.checked});
-
-        if (name === "creditCheckedYes"){
-            this.setState({creditCheckedNo: !event.target.checked});
-        }
-        else if (name === "creditCheckedNo"){
-            this.setState({creditCheckedYes: !event.target.checked});
-        }
       };
 
       //Enables "Public Company" option if not following cases
@@ -92,6 +85,11 @@ class UpdateBusinessDetails extends Component {
       componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
+
+           if(nextProps.initialValues && this.state.isCreditCardYes === undefined) {
+               this.setState({isCreditCardYes:nextProps.initialValues.isCreditCardYes})
+           }
+
           if (nextProps.updateBusinessResponse){
             this.setState({showLoader:false})
             nextProps.updateBusinessResponse
@@ -332,34 +330,16 @@ class UpdateBusinessDetails extends Component {
                                 Currently accept credit cards
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <FormControlLabel
-                                    control={
-                                        <Field 
-                                            name="isCreditCardNo" 
-                                            id="creditCardNo" 
-                                            myStyle={styles} 
-                                            value={this.state.creditCheckedNo}
-                                            onChange={this.handleCheckboxChange('creditCheckedNo')}
-                                            component={RenderCheckbox} 
-                                        />
-                                    }
-                                    label="No"
-                                />
-                                <FormControlLabel
-                                    control={
-                                        <Field 
-                                            name="isCreditCardYes" 
-                                            id="creditCardYes" 
-                                            myStyle={styles} 
-                                            value= {this.state.creditCheckedYes}
-                                            onChange={this.handleCheckboxChange('creditCheckedYes')}
-                                            component={RenderCheckbox} 
-                                        />
-                                    }
-                                    label="Yes"
-                                />
+                                <Field
+                                    name="isCreditCardYes" 
+                                    ref="isCreditCardYes"
+                                    id="creditCardYes" 
+                                    component={RenderSwitch}
+                                    onChange={this.handleCheckboxChange('isCreditCardYes')}
+                                />    
                             </div>
-                            {this.state.creditCheckedYes === true && this.state.creditCheckedNo === false ? (
+                            {
+                                this.state.isCreditCardYes === true ? (
                                 <React.Fragment>
                                 <div className="col-xs-12 col-sm-6 col-md-3">
                                         Annual CC Sales*
