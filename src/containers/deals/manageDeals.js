@@ -42,7 +42,7 @@ const styles = {
       },
 };
 
-class ManageUsers extends Component {
+class ManageDeals extends Component {
 
     state = {
         name:'',
@@ -129,8 +129,8 @@ class ManageUsers extends Component {
         this.setState({ dialogOpen: false });
     };
 
-    addNewAdmin(){
-        this.props.history.push('/addNewAdmin')
+    addNewDeal(){
+        this.props.history.push('/merchantList')
     }
 
     onHandleReset(){
@@ -150,6 +150,7 @@ class ManageUsers extends Component {
 
         const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
@@ -164,7 +165,7 @@ class ManageUsers extends Component {
             <div>
                 <DialogBox 
                     displayDialogBox={dialogOpen} 
-                    message="User deleted successfully" 
+                    message="Merchant deleted successfully" 
                     actions={actions} 
                 />
             </div> 
@@ -174,7 +175,7 @@ class ManageUsers extends Component {
             <Paper className="pagePaper">
                 <form size='large' className="form-horizontal">
                     <div className="row appTitleLabel">
-                        MANAGE USERS
+                        MANAGE DEALS
                     </div>
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-2">
@@ -236,33 +237,8 @@ class ManageUsers extends Component {
                                     }
                                 </Field>    
                             </FormControl>  
-                        </div>  
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="type"
-                                    component={renderSelectField}
-                                    fullWidth={true}
-                                    onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Type
-                                    </MenuItem>
-                                    {
-                                    Data.states.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.prefix}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
-                                    }
-                                </Field>    
-                            </FormControl>  
-                        </div>  
-                        <div className="col-xs-12 col-sm-6 col-md-4">
+                        </div>    
+                        <div className="col-xs-12 col-sm-6 col-md-3">
                             <button 
                                 type="button"
                                 onClick={this.onHandleReset.bind(this)}
@@ -275,9 +251,17 @@ class ManageUsers extends Component {
                                 type="button"
                                 onClick={this.onHandleSearch.bind(this)}
                                 className="button"
-                                > Search
+                                > Filter
                             </button> 
                         </div>       
+                        <div className="col-xs-12 col-sm-6 col-md-3 end-md">
+                            <button 
+                            type="button"
+                            onClick={this.addNewDeal.bind(this)}
+                            className="button"
+                            style={{backgroundColor:'#27A24F'}}
+                            > +Add Deal</button> 
+                        </div>
                     </div>
                 </form>
             </Paper> 
@@ -292,10 +276,10 @@ class ManageUsers extends Component {
                         <TableHead>
                             <TableRow>
                                 <TableCell numeric>#</TableCell>
-                                <TableCell>User Name</TableCell>
-                                <TableCell>Email Address</TableCell>
+                                <TableCell>Merchant Name</TableCell>
                                 <TableCell>Location</TableCell>
-                                <TableCell>Phone Number</TableCell>
+                                <TableCell>Period</TableCell>
+                                <TableCell>Cashback</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Actions</TableCell>
                             </TableRow>
@@ -315,8 +299,8 @@ class ManageUsers extends Component {
                                     <TableRow className="tableRow" key={object.id}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.first_v + " " + object.last_v}</TableCell>
-                                        <TableCell>{object.email_v}</TableCell>
                                         <TableCell>{object.city_v}</TableCell>
+                                        <TableCell>{object.email_v}</TableCell>
                                         <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
                                         <TableCell>
                                             <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
@@ -376,13 +360,13 @@ const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
   }
   
-  ManageUsers = connect(
+  ManageDeals = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
       merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
     }),
     mapDispatchToProps,
-  )(ManageUsers)
+  )(ManageDeals)
   
-  export default reduxForm({form: 'FrmManageUsers'})(ManageUsers)
+  export default reduxForm({form: 'FrmManageDeals'})(ManageDeals)

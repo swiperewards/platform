@@ -16,18 +16,16 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
 
 //Components
 import InputField from '../../components/inputField';
 import TablePaginationActions from '../../components/tableGrid';
 import {renderSelectField} from '../../components/selectControl';
-import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { getMerchantListWithFilter } from '../../actions/merchantAction';
 
 //Data
 import Data from '../../staticData';
@@ -42,7 +40,7 @@ const styles = {
       },
 };
 
-class ManageUsers extends Component {
+class MerchantsList extends Component {
 
     state = {
         name:'',
@@ -51,7 +49,6 @@ class ManageUsers extends Component {
         merchantList:'',
         page: 0,
         rowsPerPage: 5,
-        dialogOpen: false,
         disableReset: true,
     };
 
@@ -129,8 +126,8 @@ class ManageUsers extends Component {
         this.setState({ dialogOpen: false });
     };
 
-    addNewAdmin(){
-        this.props.history.push('/addNewAdmin')
+    addNewMerchant(){
+        this.props.history.push('/addNewMerchant')
     }
 
     onHandleReset(){
@@ -143,38 +140,36 @@ class ManageUsers extends Component {
         if(this.props.userData.user.responseData.token){
             this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
         }
-    
+    }
+
+    handleClick = (event, id) => {
+        this.props.history.push({pathname:'/addNewDeal',state: { detail: id }})
+
     }
 
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
+        const { merchantList, rowsPerPage, page } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
-        const actions = [
-            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
-                OK
-            </Button>
-        ];
 
         return (
           <div className="row">
             <div className="col-xs-12">
             <Loader status={this.state.showLoader} />
 
-            <div>
-                <DialogBox 
-                    displayDialogBox={dialogOpen} 
-                    message="User deleted successfully" 
-                    actions={actions} 
-                />
-            </div> 
-
             <div className="row">
             <div className="col-xs-12">
             <Paper className="pagePaper">
                 <form size='large' className="form-horizontal">
-                    <div className="row appTitleLabel">
-                        MANAGE USERS
+                    <div className="appTitleLabel row">
+                            <div className="col-xs-12 col-md-2">
+                            <FormLabel component="legend">ADD DEAL</FormLabel>
+                            </div>  
+                            <div className="col-xs-12 col-md-10">
+                                <div className="appDescriptionLabel">
+                                    Select a merchant from list to proceed add new Deal.
+                                </div>
+                            </div>                           
                     </div>
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-2">
@@ -236,33 +231,8 @@ class ManageUsers extends Component {
                                     }
                                 </Field>    
                             </FormControl>  
-                        </div>  
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="type"
-                                    component={renderSelectField}
-                                    fullWidth={true}
-                                    onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Type
-                                    </MenuItem>
-                                    {
-                                    Data.states.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.prefix}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
-                                    }
-                                </Field>    
-                            </FormControl>  
-                        </div>  
-                        <div className="col-xs-12 col-sm-6 col-md-4">
+                        </div>    
+                        <div className="col-xs-12 col-sm-6 col-md-6">
                             <button 
                                 type="button"
                                 onClick={this.onHandleReset.bind(this)}
@@ -275,7 +245,7 @@ class ManageUsers extends Component {
                                 type="button"
                                 onClick={this.onHandleSearch.bind(this)}
                                 className="button"
-                                > Search
+                                > Filter
                             </button> 
                         </div>       
                     </div>
@@ -292,12 +262,11 @@ class ManageUsers extends Component {
                         <TableHead>
                             <TableRow>
                                 <TableCell numeric>#</TableCell>
-                                <TableCell>User Name</TableCell>
-                                <TableCell>Email Address</TableCell>
+                                <TableCell>Merchant Name</TableCell>
                                 <TableCell>Location</TableCell>
+                                <TableCell>Email Address</TableCell>
                                 <TableCell>Phone Number</TableCell>
                                 <TableCell>Status</TableCell>
-                                <TableCell>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -312,29 +281,15 @@ class ManageUsers extends Component {
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
-                                    <TableRow className="tableRow" key={object.id}>
+                                    <TableRow className="tableRow" key={object.id} hover onClick={event => this.handleClick(event, object.id)}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.first_v + " " + object.last_v}</TableCell>
-                                        <TableCell>{object.email_v}</TableCell>
                                         <TableCell>{object.city_v}</TableCell>
+                                        <TableCell>{object.email_v}</TableCell>
                                         <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
                                         <TableCell>
                                             <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                         </TableCell>
-                                        <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_edit.svg" alt="" /> 
-                                                    </button>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_delete.svg" alt="" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </TableCell>    
                                     </TableRow>
                                     );
                                 })
@@ -373,16 +328,15 @@ class ManageUsers extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({ getMerchantListWithFilter }, dispatch)
   }
   
-  ManageUsers = connect(
+  MerchantsList = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
-      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
     }),
     mapDispatchToProps,
-  )(ManageUsers)
+  )(MerchantsList)
   
-  export default reduxForm({form: 'FrmManageUsers'})(ManageUsers)
+  export default reduxForm({form: 'FrmMerchantsList'})(MerchantsList)

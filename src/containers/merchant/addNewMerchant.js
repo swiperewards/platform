@@ -1,6 +1,6 @@
 //react redux
 import React, { Component } from 'react';
-import { reduxForm } from 'redux-form'
+import { reduxForm, formValueSelector } from 'redux-form'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
@@ -14,9 +14,8 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
+import DialogBox from '../../components/alertDialog'
+
 
 //Containers
 import BusinessDetails from '../../containers/merchant/merchantBusinessDetails';
@@ -81,22 +80,6 @@ const styles = theme => ({
     return ['About the Business', 'About the Owners', 'Account Setup', 'Add Bank Account'];
   }
   
-  //Function to navigate to respective step based on active index
-  function getStepContent(stepIndex) {
-    switch (stepIndex) {
-      case 0:
-        return (<BusinessDetails />);
-      case 1:
-        return (<OwnerDetails />);
-      case 2:
-        return (<AccountSetup />);
-      case 3:
-        return (<BankAccount />);
-      default:
-        return 'Uknown stepIndex';
-    }
-  }
-
   let errorMessage
 
 class AddMerchant extends Component {
@@ -107,6 +90,22 @@ class AddMerchant extends Component {
         activeStep: 0,
         open: false,
       };
+
+      //Function to navigate to respective step based on active index
+      getStepContent(stepIndex) {
+        switch (stepIndex) {
+          case 0:            
+            return (<BusinessDetails />);
+          case 1:
+            return (<OwnerDetails myProps={this.props.businessType} />);
+          case 2:
+            return (<AccountSetup  myProps={this.props} />);
+          case 3:
+            return (<BankAccount />);
+          default:
+            return 'Uknown stepIndex';
+        }
+      }
 
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
@@ -160,6 +159,7 @@ class AddMerchant extends Component {
         //to clear old payment state
         this.props.ClearMerchantState();
         this.setState({open: false});
+        errorMessage="";
     }
 
     componentWillReceiveProps(nextProps) {
@@ -168,32 +168,28 @@ class AddMerchant extends Component {
         if (nextProps.merchantPayload){
           if(nextProps.merchantPayload.data){
             if(nextProps.merchantPayload.data.status === 200){
-                errorMessage = <div></div>
+                errorMessage = undefined
                 this.handleClickOpen()
             }
             else{
               if(nextProps.merchantPayload.data.status === 1082){
                 errorMessage =
                 nextProps.merchantPayload.data.responseData.map((error, index) =>
-                    <div key={index} style={{
-                        padding: '5px 20px',
-                        margin: '5px',
-                        marginBottom: '10px',
-                        fontSize: 13,
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
-                        borderRadius: '5px',
-                        color: '#86181d',
-                        backgroundColor: '#ffdce0',
-                        borderColor: 'rgba(27, 31, 35, 0.15)',
-                        textAlign: 'center'
-                    }}>
+                    <div 
+                      key={index} 
+                      className="errorDiv"
+                    >
                       {error.field + ' : ' + error.msg}
                     </div >
                   )
                 }
                 else{
-                  //TODO: Handle error condition
+                  errorMessage = 
+                    <div 
+                      className="errorDiv"
+                    >
+                      {nextProps.merchantPayload.data.message}
+                    </div>
                 }
             }
           }
@@ -206,23 +202,21 @@ class AddMerchant extends Component {
         const { classes } = this.props;
         const steps = getSteps();
         const { activeStep } = this.state;
-
+        const actions = [
+          <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+              OK
+          </Button>
+        ];
         return (
             <div>
                 <Loader status={this.state.showLoader} />
                 <div>
-                    <Dialog
-                      open={this.state.open}
-                      aria-labelledby="alert-dialog-title"
-                    >
-                      <DialogTitle id="alert-dialog-title">{"Congratulations! You've successfully created a new merchant account."}</DialogTitle>
-                      <DialogActions>
-                        <Button onClick={this.handleClose} color="primary" autoFocus>
-                          OK
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  </div> 
+                  <DialogBox 
+                      displayDialogBox={this.state.open} 
+                      message="Congratulations! You've successfully created a new merchant account." 
+                      actions={actions} 
+                  />
+                </div> 
                 <div>
                     <Paper className="pagePaper">
                         <div className="formContent">
@@ -243,7 +237,7 @@ class AddMerchant extends Component {
                                     </Stepper>
                                     <div>
                                        {
-                                          getStepContent(activeStep)
+                                          this.getStepContent(activeStep)
                                         }
                                     {this.state.activeStep === steps.length-1 ? (
                                         <div>
@@ -298,10 +292,14 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({ addNewMerchant, ClearMerchantState }, dispatch)
 }
 
+const selector = formValueSelector('FrmAddMerchant') // <-- same as form name
+
 AddMerchant = connect(
   state => ({
     userData: state.account === undefined ? undefined : state.account,
-    merchantPayload: state.merchant === undefined ? undefined : state.merchant
+    merchantPayload: state.merchant === undefined ? undefined : state.merchant,
+    businessType: selector(state, 'businessType')
+
   }),
   mapDispatchToProps,
 )(AddMerchant)

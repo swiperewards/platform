@@ -43,7 +43,7 @@ const styles = theme => ({
     padding:'0px',
   },
   appBar: {
-    position: 'absolute',
+    position: 'fixed',
     marginLeft: drawerWidth,
     [theme.breakpoints.up('md')]: {
       width: `calc(100% - ${drawerWidth}px)`,
@@ -56,18 +56,26 @@ const styles = theme => ({
   },
   toolbar: { 
     height:'64px',
-    backgroundColor:'#FFFFFF'
+    backgroundColor:'#FFFFFF',
   },
   drawerPaper: {
     width: drawerWidth,
     backgroundColor: '#252b34',
     [theme.breakpoints.up('md')]: {
-      position: 'relative',
+      position: 'fixed',
     },
   },
   content: {
     flexGrow: 1,
-    padding: '0px',
+    marginTop:'70px',
+    padding : '5px',
+    [theme.breakpoints.down('md')]: {
+      marginLeft: '0px',
+    },
+    [theme.breakpoints.up('md')]: {
+      marginLeft: drawerWidth,
+    },
+    width:'50%'
   },
   logo:{
      margin: 'auto',
@@ -122,7 +130,7 @@ class ResponsiveDrawer extends React.Component {
   };
 
   handleDrawerToggle = () => {
-    this.setState(state => ({ mobileOpen: !state.mobileOpen }));
+    this.setState({ mobileOpen: !this.state.mobileOpen });
   };
 
   render() {
@@ -133,7 +141,7 @@ class ResponsiveDrawer extends React.Component {
         padding:'0px',
         backgroundColor: '#5cbbff'
     }
-    const { auth, anchorEl } = this.state;
+    const { auth, anchorEl, mobileOpen } = this.state;
     const open = Boolean(anchorEl);
 
     const drawer = (
@@ -141,7 +149,7 @@ class ResponsiveDrawer extends React.Component {
         <div className={classes.toolbar} >
             <div>    
                 <NavLink to={'/dashboard'}>
-                    <img src="../images/logo_medium.png" alt="logo" className={classes.logo} />
+                    <img src="../images/vc_nouvo.svg" alt="logo" className={classes.logo} />
                 </NavLink>
             </div>    
         </div>
@@ -209,9 +217,16 @@ class ResponsiveDrawer extends React.Component {
                         open={open}
                         onClose={this.handleClose}
                         >
-                        <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                        <MenuItem onClick={this.handleClose}>Settings</MenuItem>
-                        <MenuItem><NavLink to="/logout" style={{textDecoration:'none', color:'#000'}}>Logout</NavLink></MenuItem>
+                        <MenuItem>
+                          <NavLink to="/editUserProfile" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
+                            Profile
+                          </NavLink>
+                        </MenuItem>
+                        <MenuItem>
+                            <NavLink to="/logout" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
+                            Logout
+                            </NavLink>
+                        </MenuItem>
                         </Menu>
                     </div>
                     )}
@@ -219,11 +234,11 @@ class ResponsiveDrawer extends React.Component {
             </div>
           </Toolbar>
         </AppBar>
-        <Hidden mdUp>
+         <Hidden mdUp>
           <Drawer
             variant="temporary"
             anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-            open={this.state.mobileOpen}
+            open={mobileOpen}
             onClose={this.handleDrawerToggle.bind(this)}
             classes={{
               paper: classes.drawerPaper,
@@ -238,7 +253,7 @@ class ResponsiveDrawer extends React.Component {
         <Hidden smDown implementation="css">
           <Drawer
             variant="permanent"
-            open
+            open={mobileOpen}
             classes={{
               paper: classes.drawerPaper,
             }}
@@ -247,7 +262,6 @@ class ResponsiveDrawer extends React.Component {
           </Drawer>
         </Hidden>
         <main className={classes.content}>
-          <div className={classes.toolbar} />
           {children}
         </main>
       </div>

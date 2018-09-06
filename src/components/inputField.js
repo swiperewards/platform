@@ -1,7 +1,5 @@
-import React from 'react';
-import MaskedInput from 'react-text-mask';
+import React,{Component} from 'react';
 import NumberFormat from "react-number-format";
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import purple from '@material-ui/core/colors/purple';
@@ -58,77 +56,73 @@ const styles = theme => ({
   },
 });
 
-var maskValue;
+class CustomizedInputs extends Component {
+    render(){
+      const { classes } = this.props;
 
-//Mask textfield control based on maskValue passed
-function TextMaskCustom(props) {
-  const { inputRef, ...other } = props;
-  return (
-    <MaskedInput
-      {...other}
-      ref={inputRef}
-      mask={maskValue}
-      placeholderChar={'\u2000'}
-      showMask={false}
-      guide={false}
-    />
-  );
+      return(
+        this.props.masked ?
+          (this.props.myMaskType === "text" ?
+            <NumberFormat {...this.props.input} 
+              error={this.props.meta.touched ? this.props.meta.invalid : false}
+              helperText={this.props.meta.touched ? this.props.meta.error : ''}
+              inputRef = {(el) => this.inputElem = el}
+              placeholder={this.props.myPlaceHolder}
+              id={this.props.id}
+              type={this.props.myType}
+              fullWidth = {this.props.fullWidth}
+              width = {this.props.minWidth} 
+              customInput={TextField} 
+              InputProps={{
+                disableUnderline: false,
+                classes: {
+                  root: classes.bootstrapRoot,
+                  input: classes.bootstrapInput,
+                },
+              }}
+              format={this.props.maskReg}
+              mask="_"
+            />
+            :
+            <NumberFormat {...this.props.input} 
+              error={this.props.meta.touched ? this.props.meta.invalid : false}
+              helperText={this.props.meta.touched ? this.props.meta.error : ''}
+              inputRef = {(el) => this.inputElem = el}
+              placeholder={this.props.myPlaceHolder}
+              id={this.props.id}
+              type={this.props.myType}
+              fullWidth = {this.props.fullWidth}
+              width = {this.props.minWidth} 
+              customInput={TextField} 
+              InputProps={{
+                disableUnderline: false,
+                classes: {
+                  root: classes.bootstrapRoot,
+                  input: classes.bootstrapInput,
+                },
+              }}
+              thousandSeparator
+            />)
+          :
+          <TextField {...this.props.input}
+            error={this.props.meta.touched ? this.props.meta.invalid : false}
+            helperText={this.props.meta.touched ? this.props.meta.error : ''}
+            placeholder={this.props.myPlaceHolder}
+            id={this.props.id}
+            type={this.props.myType}
+            fullWidth = {this.props.fullWidth}
+            width = {this.props.minWidth}
+            InputProps={{
+              disableUnderline: false,
+              classes: {
+                root: classes.bootstrapRoot,
+                input: classes.bootstrapInput,
+              },
+            }}
+          >
+          </TextField>
+      )
+    }
 }
-
-TextMaskCustom.propTypes = {
-  inputRef: PropTypes.func.isRequired,
-};
-
-
-function NumberFormatCustom(props) {
-  const { inputRef, onChange, ...other } = props;
-
-  return (
-    <NumberFormat
-      {...other}
-      ref={inputRef}
-      thousandSeparator
-    />
-  );
-}
-
-NumberFormatCustom.propTypes = {
-  inputRef: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
-
-
-function CustomizedInputs(props) {
-  const { classes } = props;
-  maskValue = props.maskReg;
-  return (
-      <TextField {...props.input}
-        error={props.meta.touched ? props.meta.invalid : false}
-        helperText={props.meta.touched ? props.meta.error : ''}
-        placeholder={props.myPlaceHolder}
-        id={props.id}
-        type={props.myType}
-        fullWidth = {props.fullWidth}
-        width = {props.minWidth}
-        value={props.myValue === undefined ? props.input.value : props.myValue}
-        InputProps={{
-          disableUnderline: false,
-          classes: {
-            root: classes.bootstrapRoot,
-            input: classes.bootstrapInput,
-          },
-          inputComponent: (props.masked ? (props.myMaskType === 'text'? TextMaskCustom : NumberFormatCustom) : undefined),
-        }}
-        InputLabelProps={{
-          shrink: false,
-          className: classes.bootstrapFormLabel,
-        }}
-      />
-  );
-}
-
-CustomizedInputs.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(CustomizedInputs);

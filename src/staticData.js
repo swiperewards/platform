@@ -68,13 +68,13 @@ const data={
     ],
     merchantType: [
         { id:'1', prefix:'0', name: 'None '},
-        { id:'2', prefix:'1', name: 'Grocery/Food Market'},
-        { id:'3', prefix:'2', name: 'Mail/Telephone Order'},
-        { id:'4', prefix:'3', name: 'Retail'},
-        { id:'6', prefix:'4', name: 'Fuel'},
-        { id:'7', prefix:'5', name: 'Service Stations'},
-        { id:'7', prefix:'6', name: 'Restaurants & Food'},
-        { id:'7', prefix:'7', name: 'E-commerce'}
+        { id:'2', prefix:'supermarket', name: 'Grocery/Food Market'},
+        { id:'3', prefix:'moto', name: 'Mail/Telephone Order'},
+        { id:'4', prefix:'cardPresent', name: 'Retail'},
+        { id:'6', prefix:'fuel', name: 'Fuel'},
+        { id:'7', prefix:'serviceStation', name: 'Service Stations'},
+        { id:'8', prefix:'restaurant', name: 'Restaurants & Food'},
+        { id:'9', prefix:'ecommerce', name: 'E-commerce'}
 
     ],
     boardingStatus: [
@@ -82,7 +82,6 @@ const data={
         {id:'1', name: 'Board Immediately'}
     ],
     searchStatus: [
-      {id:'', name: 'None'},
       {id:'0', name: 'Activate'},
       {id:'1', name: 'Deactivate'}
     ],

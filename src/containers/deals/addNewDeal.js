@@ -10,7 +10,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
-import Avatar from '@material-ui/core/Avatar';
 
 //Components
 import InputField from '../../components/inputField';
@@ -34,7 +33,7 @@ const styles = {
       },
       selectControl:{
         fontSize: '12px',
-      },
+      }
 };
 
 function validate(formProps) {  
@@ -51,7 +50,7 @@ function validate(formProps) {
     return errors;
   }
 
-class AddAdmin extends Component {
+class AddNewDeal extends Component {
 
     state = {
         businessType: '',
@@ -124,7 +123,7 @@ class AddAdmin extends Component {
                     <div className="formContent">
                         <div className="appTitleLabel row">
                             <div className="col-xs-12 col-md-12">
-                            <FormLabel component="legend">ADD ADMIN</FormLabel>
+                            <FormLabel component="legend">ADD DEAL</FormLabel>
                             </div>                            
                         </div>
 
@@ -132,43 +131,74 @@ class AddAdmin extends Component {
 
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Admin Name*
+                                Merchant Id
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    myType="text" 
-                                    name="adminName" 
-                                    fullWidth={true} 
-                                    component={InputField} 
-                                    validate={required}
-                                />  
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                Email*
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    myType="text" 
-                                    name="email" 
-                                    fullWidth={true} 
-                                    component={InputField} 
-                                    validate={required}
-                                />  
+                                {this.props.location.state !== undefined ? this.props.location.state.detail : undefined}
                             </div>
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Phone*
+                                Location
+                            </div>    
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <FormControl style={styles.formControl}>
+                                    <Field
+                                        name="location"
+                                        component={renderSelectField}
+                                        fullWidth={true}
+                                        onChange={this.handleChange}
+                                        validate={dropDownRequired}
+                                    >
+                                    {
+                                        Data.states.map((item) =>{
+                                            return <MenuItem 
+                                                style={styles.selectControl}
+                                                key={item.id}
+                                                value={item.prefix}>
+                                                {item.name}
+                                            </MenuItem>
+                                        })
+                                    }
+                                    </Field>    
+                                </FormControl>  
+                            </div>  
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                From Date*
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    myType="date" 
+                                    name="fromDate" 
+                                    fullWidth={true} 
+                                    component={InputField} />  
+                            </div>
+                        </div>
+                        <div className="row middle-md">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Cash Bonus (%)*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     myType="text" 
-                                    name="phone" 
+                                    name="cashBonus" 
                                     fullWidth={true} 
                                     component={InputField} 
                                     validate={required}
                                 />  
                             </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                To Date*
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    myType="date" 
+                                    name="toDate" 
+                                    fullWidth={true} 
+                                    component={InputField} />  
+                            </div>
+                        </div>
+                        <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Status*
                             </div>
@@ -195,23 +225,6 @@ class AddAdmin extends Component {
                                 </FormControl>  
                             </div>
                         </div> 
-                        <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Avatar
-                                    alt="Adelle Charles"
-                                    src="../images/profile.png"
-                                    className="bigAvatar"
-                                />
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <input
-                                    accept="image/*"
-                                    id="raised-button-file"
-                                    multiple
-                                    type="file"
-                                />
-                            </div>            
-                        </div>
                         <div className="row end-xs">
                             <div className="col-xs-12 col-sm-6 col-md-6">
                                 <button 
@@ -245,17 +258,17 @@ const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails }, dispatch)
   }
 
-  AddAdmin = reduxForm({
-    form: 'frmAddAdmin',
+  AddNewDeal = reduxForm({
+    form: 'frmAddNewDeal',
     enableReinitialize: true,
     validate
-})(AddAdmin)
+})(AddNewDeal)
 
-AddAdmin = connect(
+AddNewDeal = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
     }),
     mapDispatchToProps,
-  )(AddAdmin)
+  )(AddNewDeal)
 
-export default AddAdmin;
+export default AddNewDeal;

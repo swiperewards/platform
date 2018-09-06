@@ -16,9 +16,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
 
@@ -26,10 +23,11 @@ import FormLabel from '@material-ui/core/FormLabel';
 import InputField from '../../components/inputField';
 import TablePaginationActions from '../../components/tableGrid';
 import {renderSelectField} from '../../components/selectControl';
+import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant, getMerchantDetailsAPI } from '../../actions/merchantAction';
+import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
 
 //Data
 import Data from '../../staticData';
@@ -42,40 +40,6 @@ const styles = {
       selectControl:{
         fontSize: '12px',
       },
-      root: {
-        width: '100%',
-        marginTop: 2 * 1,
-        marginLeft: 2 * 1,
-      },
-      table: {
-        minWidth: 320,
-      },
-      tableWrapper: {
-        overflowX: 'auto',
-      },
-      head: {
-        backgroundColor: 'black',
-        color: 'white',
-      },
-      row: {
-        '&:nthOfType(odd)': {
-          backgroundColor: '#f2f4f6',
-        },
-      },
-      titleGreen: {
-        backgroundColor: '#2EC55D',
-        height:'10%',
-        width:'150%',
-        borderRadius: '12px',
-        textAlign:'center',
-       },
-       titleRed: {
-        backgroundColor: '#DE3630',
-        height:'10%',
-        width:'150%',
-        borderRadius: '12px',
-        textAlign:'center',
-       }
 };
 
 class ManageMerchants extends Component {
@@ -88,7 +52,9 @@ class ManageMerchants extends Component {
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
+        permissionDisplayBox: false,
         disableReset: true,
+        merchantId:'',
     };
 
     componentWillMount()
@@ -147,25 +113,31 @@ class ManageMerchants extends Component {
         this.getAllMerchants();
     }
 
+
     deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
+        if (this.state.permissionDisplayBox) {
+            this.handleClose();
+            if(this.props.userData.user.responseData.token){
+                this.setState({showLoader:true})
+                this.props.deleteMerchant(this.state.merchantId, this.props.userData.user.responseData.token);
+            }
+            else{
+                //#TODO: Handle token expire case here
+            }
         }
         else{
-            //#TODO: Handle token expire case here
+            this.setState({ permissionDisplayBox: true, merchantId: merchantId });
         }
+        
     }
 
     updateMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.props.getMerchantDetailsAPI(merchantId, this.props.userData.user.responseData.token)
-        }
-        this.props.history.push('/updateMerchant')
+        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
+        this.setState({ permissionDisplayBox: false });
     };
 
     addNewMerchant(){
@@ -187,30 +159,47 @@ class ManageMerchants extends Component {
 
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
+        const { merchantList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
 
+        const actions = [
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
+
+        const permissionActions = [
+            <Button key="no" onClick={this.handleClose} color="primary">
+                No
+            </Button>,
+            <Button key="yes" onClick={this.deleteMerchant} color="primary" autoFocus>
+                Yes
+            </Button>,
+        ];
+
         return (
-          <div>
+          <div className="row">
+            <div className="col-xs-12">
             <Loader status={this.state.showLoader} />
 
             <div>
-                <Dialog
-                    open={dialogOpen}
-                    aria-labelledby="alert-dialog-title"
-                >
-                    <DialogTitle id="alert-dialog-title">{"Merchant deleted successfully"}</DialogTitle>
-                    <DialogActions>
-                    <Button onClick={this.handleClose} color="primary" autoFocus>
-                        OK
-                    </Button>
-                    </DialogActions>
-                </Dialog>
+                <DialogBox 
+                    displayDialogBox={dialogOpen} 
+                    message="Merchant deleted successfully" 
+                    actions={actions} 
+                />
+                <DialogBox 
+                    displayDialogBox={permissionDisplayBox} 
+                    message="Are you sure to delete merchant?" 
+                    actions={permissionActions} 
+                />
             </div> 
 
+            <div className="row">
+            <div className="col-xs-12">
             <Paper className="pagePaper">
                 <form size='large' className="form-horizontal">
-                    <div className="appTitleLabel">
+                    <div className="row appTitleLabel">
                         MANAGE MERCHANT
                     </div>
                     <div className="row middle-md">
@@ -299,93 +288,101 @@ class ManageMerchants extends Component {
                             > +Add Merchant</button> 
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="col-md-12">
-                                <Paper style={styles.root}>
-                                <div style={styles.tableWrapper}>
-                                <Table style={styles.table} padding='dense'>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell numeric>#</TableCell>
-                                            <TableCell>Merchant Name</TableCell>
-                                            <TableCell>Location</TableCell>
-                                            <TableCell>Email Address</TableCell>
-                                            <TableCell>Phone Number</TableCell>
-                                            <TableCell>Status</TableCell>
-                                            <TableCell>Actions</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                    { 
-                                        (merchantList.length === 0) ? 
-                                        (<TableRow style={styles.row}>
-                                            <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                        </TableRow>)
-                                        : (
-                                        merchantList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((object, index) => {
-                                            return (
-                                            <TableRow style={styles.row} key={object.id}>
-                                                <TableCell numeric>{object.serial_number}</TableCell>
-                                                <TableCell>{object.first_v + " " + object.last_v}</TableCell>
-                                                <TableCell>{object.city_v}</TableCell>
-                                                <TableCell>{object.email_v}</TableCell>
-                                                <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
-                                                <TableCell>
-                                                    <div style={object.inactive_v === 1 ? styles.titleRed : styles.titleGreen}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
-                                                </TableCell>
-                                                <TableCell> 
-                                                    <div className="row start-md middle-md">
-                                                        <div className="col-md-6">
-                                                            <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                                <img src="../images/ic_edit.svg" alt="" /> 
-                                                            </button>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                                <img src="../images/ic_delete.svg" alt="" />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </TableCell>    
-                                            </TableRow>
-                                            );
-                                        })
-                                        )
-                                        }
-                                        {emptyRows > 0 && (
-                                            <TableRow style={{ height: 48 * emptyRows }}>
-                                            <TableCell colSpan={6} />
-                                            </TableRow>
-                                        )}
-                                    </TableBody>
-                                    <TableFooter>
-                                        <TableRow>
-                                            <TablePagination
-                                            colSpan={3}
-                                            count={merchantList.length}
-                                            rowsPerPage={rowsPerPage}
-                                            page={page}
-                                            onChangePage={this.handleChangePage}
-                                            onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                                            ActionsComponent={TablePaginationActions}
-                                            />
-                                        </TableRow>
-                                    </TableFooter>
-                                </Table>
-                                </div>
-                            </Paper>
-                        </div>
-                    </div>
                 </form>
-            </Paper>  
-           </div> 
+            </Paper> 
+            </div>
+            </div>
+
+            <div className="row">
+            <div className="col-xs-12">
+                    <Paper className="pagePaper">
+                    <div className="tableWrapperMaterial">
+                    <Table className="tableMaterial">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell numeric>#</TableCell>
+                                <TableCell>Merchant Name</TableCell>
+                                <TableCell>Location</TableCell>
+                                <TableCell>Email Address</TableCell>
+                                <TableCell>Phone Number</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        { 
+                            (merchantList !== "") ? (
+                            (merchantList.length === 0) ? 
+                                (<TableRow>
+                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
+                                </TableRow>)
+                                : (
+                                merchantList
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((object, index) => {
+                                    return (
+                                    <TableRow className="tableRow" key={object.id}>
+                                        <TableCell numeric>{object.serial_number}</TableCell>
+                                        <TableCell>{object.first_v + " " + object.last_v}</TableCell>
+                                        <TableCell>{object.city_v}</TableCell>
+                                        <TableCell>{object.email_v}</TableCell>
+                                        <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
+                                        <TableCell>
+                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
+                                        </TableCell>
+                                        <TableCell> 
+                                            <div className="row start-md middle-md">
+                                                <div className="col-md-6">
+                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                        <img src="../images/ic_edit.svg" alt="" /> 
+                                                    </button>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                        <img src="../images/ic_delete.svg" alt="" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </TableCell>    
+                                    </TableRow>
+                                    );
+                                })
+                                )
+                                ):(null)
+                            }
+                            {emptyRows > 0 && (
+                                <TableRow style={{ height: 48 * emptyRows }}>
+                                <TableCell colSpan={6} />
+                                </TableRow>
+                            )}
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                colSpan={3}
+                                count={merchantList.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onChangePage={this.handleChangePage}
+                                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                                ActionsComponent={TablePaginationActions}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                    </div>
+                </Paper>
+              </div>
+            </div>   
+        </div> 
+        </div>
         );
     }
 }
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant, getMerchantDetailsAPI }, dispatch)
+    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
   }
   
   ManageMerchants = connect(

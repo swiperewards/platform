@@ -2,7 +2,7 @@
 //Regex expressions for form control validations
 const required = value => value && value.trim() !== "" ? undefined : `Required`
 
-const dropDownRequired = value => (value == null ? 'Please Select Value' : undefined)
+const dropDownRequired = value => (value === undefined ? 'Please Select Value' : undefined)
 
 const email = value =>
     value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value) ?
@@ -21,17 +21,17 @@ const between1to100 = value => value && !/^.{1,100}$/.test(value) ? 'This field 
 
 const between5to20 = value => value && !/^.{5,20}$/.test(value) ? 'This field only accepts characters strings between 5 and 20 characters long' : undefined
 
-const exact9 = value => value && !/^.{10,10}$/.test(value) ? 'Field should be 9 chatacters long' : undefined
+const exact9 = value => value && !/^.{9,9}$/.test(value.replace(normalizedPhone,'')) ? 'Field should be 9 chatacters long' : undefined
 
 const percentage = value => value && !/(^100(\.0{1,2})?$)|(^([1-9]([0-9])?|0)(\.[0-9]{1,2})?$)/i.test(value) ?
 'Invalid percent value' : undefined
 
 //Expression array for Input control masking
-const phoneMask = ['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
-const taxNumberMask = [/[1-9]/, /\d/, '-', /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/];
-const zipMask = [/[1-9]/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
-const ssnMask = [/[1-9]/, /\d/, /\d/, '-', /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
-const drivingLicenseMask = [/[1-9]/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/];
+const phoneMask = "(###) ###-####"; 
+const taxNumberMask = "##-#######"; 
+const zipMask = "#####-####"; 
+const ssnMask = "###-##-####"; 
+const drivingLicenseMask = "###############"; 
 
 
 const normalizedPhone = /\D/g;

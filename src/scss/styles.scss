@@ -170,7 +170,7 @@ $primary-Text-Color:#231f20;
   .pagePaper{
     background: #ffffff;
     padding: 20px 25px;
-    margin: 5px;
+    margin: 0px;
     overflow: auto;
     border-radius: 1px;
     box-shadow: 0 0 6px #cccccc;
@@ -276,7 +276,7 @@ $primary-Text-Color:#231f20;
   display: inline-block;
   font-size: 14px;
   border-radius: 5px;
-  margin-left: 10px;
+  margin: 5px;
 }
 
 .disabledButton {
@@ -286,4 +286,67 @@ $primary-Text-Color:#231f20;
 
 .enabledButton  {
   opacity: 1.0;
+}
+
+.tableMaterial {
+  width:'100%';
+}
+
+.tableWrapperMaterial {
+  overflow-x: 'auto';
+}
+
+.titleGreen {
+  background-color: #2EC55D;
+  height:10%;
+  width:100%;
+  border-radius: 12px;
+  text-align:center;
+  padding-left: 5px;
+  padding-right: 5px;
+ }
+
+ .titleRed {
+  background-color: #DE3630;
+  height:10%;
+  width:100%;
+  border-radius: 12px;
+  text-align:center;
+  padding-left: 5px;
+  padding-right: 5px;
+ }
+
+ .bigAvatar {
+  width: 60;
+  height: 60;
+}
+
+.tableRow{
+    &:nth-of-type(odd){
+      background-color: #f2f6f2;
+    }
+}
+
+.dashboardBox{
+  height:80%;
+  width:80%;
+  text-align:center;
+  padding: 40px 5px;
+  border: solid rgb(226, 226, 226);
+  border-width: 1px;
+  border-radius: 1px;
+}
+
+.errorDiv{
+  padding: 5px 20px;
+  margin: 5px;
+  margin-Bottom: 10px;
+  font-Size: 13;
+  border-Style: solid;
+  border-Width: 1px;
+  border-Radius: 5px;
+  color: #86181d;
+  background-Color: #ffdce0;
+  border-Color: rgba(27, 31, 35, 0.15);
+  text-Align: center;
 }

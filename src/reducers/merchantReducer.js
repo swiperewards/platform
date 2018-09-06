@@ -16,6 +16,10 @@ export default function (state = {}, action) {
             return{
                 ...state, merchantDetails: action.payload
             }   
+        case 'UPDATE_MERCHANTDETAILS':
+            return{
+                updateMerchant: action.payload
+            }    
         default:
             return state;
     }

@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Switch, HashRouter } from 'react-router-dom'
 
-// authorization wrapper
-import { userIsAuthenticated } from './components/authorization'
-
 // CONTAINERS
 import Login from './containers/login'
 import ForgetPassword from './containers/forgotPassword'
@@ -12,15 +9,28 @@ import Logout from './containers/logout'
 
 import ManageAdmins from './containers/admin/manageAdmins'
 import ManageMerchants from './containers/merchant/manageMerchants'
-import ManageDeals from './containers/admin/manageDeals'
 import ManageUsers from './containers/user/manageUsers'
 import AddAdmin from './containers/admin/addNewAdmin'
 import AddMerchant from './containers/merchant/addNewMerchant'
 import UpdateMerchant from './containers/merchant/updateMerchantDetails'
+import MerchantsList from './containers/merchant/merchantList'
 
+import ManageDeals from './containers/deals/manageDeals'
+import AddNewDeal from './containers/deals/addNewDeal'
+
+import ManageRedeemModes from './containers/redeem/manageRedeemModes'
+import AddNewRedeemMode from './containers/redeem/addNewRedeemMode'
+
+import ManageRedemption from './containers/redemption/manageRedemption'
+import CustomerQueries from './containers/customerQueries/customerQueries'
+
+import ManageTickets from './containers/ticket/manageTickets'
+import AddNewTicket from './containers/ticket/addNewTicket'
 
 import SuperAdminDashboard from './containers/superAdmin/superAdminDashboard'
 import AdminDashboard from './containers/admin/adminDashboard'
+
+import UserProfile from './containers/editUserProfile'
 
 import App from './App'
 
@@ -41,7 +51,7 @@ class Routes extends Component {
                         <Route exact path="/logout" component={Logout} />
 
                         <App>
-                            <Route exact path="/admindashboard" component={userIsAuthenticated(AdminDashboard)} />
+                            <Route exact path="/admindashboard" component={AdminDashboard} />
                             <Route exact path="/superAdminDashboard" component={SuperAdminDashboard} />
                             <Route exact path="/managemerchants" component={ManageMerchants} />
                             <Route exact path="/managedeals" component={ManageDeals} />
@@ -50,6 +60,15 @@ class Routes extends Component {
                             <Route exact path="/addNewAdmin" component={AddAdmin} />
                             <Route exact path="/addNewMerchant" component={AddMerchant} />
                             <Route exact path="/updateMerchant" component={UpdateMerchant}/>
+                            <Route exact path="/addNewDeal" component={AddNewDeal}/>
+                            <Route exact path="/editUserProfile" component={UserProfile}/>
+                            <Route exact path="/merchantList" component={MerchantsList}/>
+                            <Route exact path="/manageredeemmode" component={ManageRedeemModes}/>
+                            <Route exact path="/addNewRedeemMode" component={AddNewRedeemMode}/>
+                            <Route exact path="/managetickets" component={ManageTickets}/>
+                            <Route exact path="/addNewTicket" component={AddNewTicket}/>
+                            <Route exact path="/manageredemption" component={ManageRedemption}/>
+                            <Route exact path="/customerqueries" component={CustomerQueries}/>
                         </App>
                     </Switch>
                 </div>

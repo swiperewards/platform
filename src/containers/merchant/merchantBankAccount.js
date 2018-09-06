@@ -19,8 +19,6 @@ import {renderSelectField} from '../../components/selectControl';
 //Data
 import Data from '../../staticData'
 
-let errorMessage
-
 const styles = {
     formControl: {
         minWidth: '100%',
@@ -93,10 +91,7 @@ class BankAccount extends Component {
                             </div>
                         </div>
                     </div>            
-                </Paper>                    
-                <div>
-                    {errorMessage}
-                </div>
+                </Paper>                   
             </div>
         );
     }
