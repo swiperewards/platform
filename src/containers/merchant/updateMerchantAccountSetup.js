@@ -117,8 +117,10 @@ class UpdateAccountSetup extends Component {
             if(errorMessage === undefined){
                 this.getMerchantDetails()
                 this.handleOpenAlert()
-                this.props.clearMerchantUpdateState()
             }
+
+            this.props.clearMerchantUpdateState()
+
           }
         }
         
@@ -189,6 +191,7 @@ class UpdateAccountSetup extends Component {
 
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
+            errorMessage = undefined
             this.props.updateMerchantDetails(values, "businessDetails" ,this.props.userData.user.responseData.token)
         }
       }

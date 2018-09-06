@@ -17,7 +17,7 @@ export function addNewMerchant(values, token) {
         data: {
 	        "requestData":{
 		        "new": values.isCreditCardYes ? "0" : "1",
-                "established": values.businessPeriod === undefined ? undefined : (values.businessPeriod).replace(normalizedPhone,''),
+                "established": values.businessPeriod === undefined || values.businessPeriod === "" ? undefined : (values.businessPeriod).replace(normalizedPhone,''),
                 "annualCCSales": values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedPhone,''),
                 "mcc": values.mccNumber,
                 "dba": values.dba,
@@ -283,8 +283,8 @@ export function getMerchantDetailsAPI(merchantId,token) {
 //Function to update merchant details to processing system
 export function updateMerchantDetails(values, screenType, token) {
 
-    var acceptanceDate = (values.acceptanceDate === undefined ? "00000000" : (values.acceptanceDate).replace(normalizedPhone,''))
-    var acceptanceTime = (values.acceptanceTime === undefined ? "0000" : (values.acceptanceTime).replace(normalizedPhone,''))
+    var acceptanceDate = (values.acceptanceDate === undefined || values.acceptanceDate === null ? "00000000" : (values.acceptanceDate).replace(normalizedPhone,''))
+    var acceptanceTime = (values.acceptanceTime === undefined || values.acceptanceTime === null ? "0000" : (values.acceptanceTime).replace(normalizedPhone,''))
     var acceptanceDateTime = acceptanceDate + acceptanceTime
 
     var setting = {
@@ -342,7 +342,7 @@ export function updateMerchantDetails(values, screenType, token) {
                 "merchantData": {
                     "merchantId":values.merchantId,
                     "new": values.isCreditCardYes ? "0" : "1",
-                    "established": (values.businessPeriod === undefined ? undefined : (values.businessPeriod).replace(normalizedPhone,'')), 
+                    "established": (values.businessPeriod === undefined || values.businessPeriod === "" ? undefined : (values.businessPeriod).replace(normalizedPhone,'')), 
                     "annualCCSales": (values.isCreditCardYes === false ? "0" : (values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedPhone,''))),
                     "dba":values.dba,
                     "mcc":values.mccNumber,
@@ -360,15 +360,14 @@ export function updateMerchantDetails(values, screenType, token) {
                     "state": values.businessStateName,
                     "zip": values.businessZip === undefined ? undefined : (values.businessZip).replace(normalizedPhone,''),
                     "phone": values.businessPhone === undefined ? undefined : (values.businessPhone).replace(normalizedPhone,''),
-                    "fax":  values.businessFax === undefined ? undefined : (values.businessFax).replace(normalizedPhone,''),
+                    "fax":  values.businessFax === undefined || values.businessFax === null ? undefined : (values.businessFax).replace(normalizedPhone,''),
                     "email": values.businessEmail,
                     "website": values.businessWebsite,
                     "ein": values.taxId === undefined ? undefined : (values.taxId).replace(normalizedPhone,''),
                     "public": values.publicCompany,
-                    "customerPhone": values.servicePhone === undefined ? undefined : (values.servicePhone).replace(normalizedPhone,''),
+                    "customerPhone": values.servicePhone === undefined || values.servicePhone === null ? undefined : (values.servicePhone).replace(normalizedPhone,''),
                     "tcAcceptDate": acceptanceDateTime,
                     "tcAcceptIp": values.ipAddress,
-                    //"boardingStatus":values.boardingStatus === "2" ? undefined : values.boardingStatus,
                     "merchantType":values.merchantType,
                     "isRecordUpdated":screenType === "businessDetails" ? "1" : "0",
                 }

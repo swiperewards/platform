@@ -357,9 +357,8 @@ class UpdateOwnerDetails extends Component {
 
             if(errorMessage === undefined){
                 this.handleOpenAlert()
-                this.props.clearMerchantUpdateState()
-
             }
+            this.props.clearMerchantUpdateState()
           }
         }
         
@@ -380,6 +379,7 @@ class UpdateOwnerDetails extends Component {
     onSubmit(values) {
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
+            errorMessage=undefined
             this.props.updateMerchantDetails(values, "memberDetails" ,this.props.userData.user.responseData.token)
         }
     }

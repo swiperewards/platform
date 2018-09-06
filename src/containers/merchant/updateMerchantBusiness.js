@@ -123,8 +123,10 @@ class UpdateBusinessDetails extends Component {
             if(errorMessage === undefined){
                 this.getMerchantDetails()
                 this.handleOpenAlert()
-                this.props.clearMerchantUpdateState()
             }
+
+            this.props.clearMerchantUpdateState()
+
           }
         }
       }
@@ -146,6 +148,7 @@ class UpdateBusinessDetails extends Component {
       onSubmit(values) {
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
+            errorMessage = undefined
             this.props.updateMerchantDetails(values, "businessDetails", this.props.userData.user.responseData.token)
         }
       }
