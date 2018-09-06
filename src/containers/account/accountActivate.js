@@ -25,7 +25,6 @@ const styles = {
     },
     accountTxt:{
         marginTop:'10px',
-        textAlign:'center',
         fontStyle:'italic',
     },
     greenBox:{
