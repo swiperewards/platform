@@ -11,11 +11,11 @@ import { connect } from 'react-redux';
 import Paper from '@material-ui/core/Paper';
 
 //Components
-import InputField from '../components/inputField'
-import RaiseButton from '../components/raiseButton'
+import InputField from '../../components/inputField'
+import RaiseButton from '../../components/raiseButton'
 
 //Validation
-import {required, email} from '../utilities/validation'
+import {required, email} from '../../utilities/validation'
 
 const styles = {
     signUpTxt :{

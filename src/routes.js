@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { Route, Switch, HashRouter } from 'react-router-dom'
 
 // CONTAINERS
-import Login from './containers/login'
-import ForgetPassword from './containers/forgotPassword'
-import Register from './containers/register'
-import Logout from './containers/logout'
+import Login from './containers/account/login'
+import ForgetPassword from './containers/account/forgotPassword'
+import Register from './containers/account/register'
+import Logout from './containers/account/logout'
+import UserProfile from './containers/account/editUserProfile'
+import AccountActivate from './containers/account/accountActivate'
 
 import ManageAdmins from './containers/admin/manageAdmins'
 import ManageMerchants from './containers/merchant/manageMerchants'
@@ -30,8 +32,6 @@ import AddNewTicket from './containers/ticket/addNewTicket'
 import SuperAdminDashboard from './containers/superAdmin/superAdminDashboard'
 import AdminDashboard from './containers/admin/adminDashboard'
 
-import UserProfile from './containers/editUserProfile'
-
 import App from './App'
 
 class Routes extends Component {
@@ -49,6 +49,7 @@ class Routes extends Component {
                         <Route exact path="/" component={Login} />
                         <Route exact path="/login" component={Login} />
                         <Route exact path="/logout" component={Logout} />
+                        <Route exact path="/accountActivate" component={AccountActivate} />
 
                         <App>
                             <Route exact path="/admindashboard" component={AdminDashboard} />

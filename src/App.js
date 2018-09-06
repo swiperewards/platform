@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import './scss/styles.css';
 
 import LeftBar from './components/leftBar'
-import Login from './containers/login';
+import Login from './containers/account/login';
 
 import {LARGE} from '@material-ui/core/utils/ownerWindow'
 

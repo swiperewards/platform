@@ -11,13 +11,13 @@ import Avatar from '@material-ui/core/Avatar';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 //Components
-import InputField from '../components/inputField';
-import RenderCheckbox from '../components/renderCheckbox';
+import InputField from '../../components/inputField';
+import RenderCheckbox from '../../components/renderCheckbox';
 
 //Action
 
 //Validation
-import {required, minimum8} from '../utilities/validation'
+import {required, minimum8} from '../../utilities/validation'
 
 let errorMessage
 

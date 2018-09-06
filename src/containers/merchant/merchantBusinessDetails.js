@@ -196,7 +196,7 @@ class BusinessDetails extends Component {
                                 <Field myType="date" name="businessPeriod" fullWidth={true} component={InputField}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Website*
+                                Website
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
                                 <Field 
@@ -205,7 +205,7 @@ class BusinessDetails extends Component {
                                     myPlaceHolder="http://www.example.com"
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={[required, website]}
+                                    validate={website}
                                 />  
                             </div>
                         </div>

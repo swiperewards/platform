@@ -36,74 +36,18 @@ const styles = {
       }
 };
 
-function validate(formProps) {  
-    const errors = {};
-  
-    if (!formProps.businessType) {
-      errors.firstName = 'Select business Type';
-    }
-  
-    if (!formProps.businessName) {
-      errors.lastName = 'Please enter a Business name';
-    }
-  
-    return errors;
-  }
-
 class AddNewDeal extends Component {
-
-    state = {
-        businessType: '',
-        stateName:'',
-        creditCheckedNo: true,
-        creditCheckedYes: false,
-      };
 
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
       };
-
-      handleCheckboxChange = name => event => {
-        this.setState({[name]: event.target.checked});
-
-        if (name === "creditCheckedYes"){
-            this.setState({creditCheckedNo: !event.target.checked});
-        }
-        else if (name === "creditCheckedNo"){
-            this.setState({creditCheckedYes: !event.target.checked});
-        }
-      };
-
-      //Enables "Public Company" option if not following cases
-      renderSwitch(param) {
-        switch(param) {
-          case '0':
-            return true;
-          case '5':
-            return true;  
-          case '6':
-            return true;
-          default:
-            return false;
-        }
-      }
 
     componentWillMount() {
 
         if(this.props.userData.user.responseData.token && this.props.merchant){
             this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
         }
-    }
-
-    componentWillReceiveProps(nextProps) {
-    
-    }  
-
-    handleInitialize(entityDetails) {
-        if(entityDetails !== undefined){
-            this.props.initialize(entityDetails);
-        }
-      }
+    } 
 
       onSubmit(values) {
 
@@ -171,7 +115,9 @@ class AddNewDeal extends Component {
                                     myType="date" 
                                     name="fromDate" 
                                     fullWidth={true} 
-                                    component={InputField} />  
+                                    component={InputField} 
+                                    validate={required}
+                                    />  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -195,7 +141,9 @@ class AddNewDeal extends Component {
                                     myType="date" 
                                     name="toDate" 
                                     fullWidth={true} 
-                                    component={InputField} />  
+                                    component={InputField} 
+                                    validate={required}
+                                    />  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -230,8 +178,7 @@ class AddNewDeal extends Component {
                                 <button 
                                     type="button"
                                     style={{backgroundColor:'#BCBCBC'}}
-                                    disabled={this.state.disableReset}
-                                    className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
+                                    className="enabledButton button"
                                     onClick={this.cancelClick.bind(this)}
                                     > Cancel
                                 </button>
@@ -260,8 +207,6 @@ const mapDispatchToProps = (dispatch) => {
 
   AddNewDeal = reduxForm({
     form: 'frmAddNewDeal',
-    enableReinitialize: true,
-    validate
 })(AddNewDeal)
 
 AddNewDeal = connect(

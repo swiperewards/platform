@@ -9,8 +9,6 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -86,8 +84,7 @@ class UpdateAccountSetup extends Component {
 
           if (nextProps.updateAccountResponse){
             this.setState({showLoader:false})
-            nextProps.updateAccountResponse
-            .map((response)=>{
+            nextProps.updateAccountResponse.forEach(response => {
                 if(response.code === 200 || response.code === 201){
                     errorMessage = errorMessage !== undefined ? errorMessage : undefined
                 }

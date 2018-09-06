@@ -327,8 +327,7 @@ class UpdateOwnerDetails extends Component {
         if (nextProps) {
           if (nextProps.updateOwnerResponse){
             this.setState({showLoader:false})
-            nextProps.updateOwnerResponse
-            .map((response)=>{
+            nextProps.updateOwnerResponse.forEach(response => {
                 if(response.code === 200 || response.code === 201){
                     errorMessage = errorMessage !== undefined ? errorMessage : undefined
                 }

@@ -12,15 +12,15 @@ import { connect } from 'react-redux';
 import Paper from '@material-ui/core/Paper';
 
 //Components
-import InputField from '../components/inputField'
-import RaiseButton from '../components/raiseButton'
-import Loader from '../components/loader'
+import InputField from '../../components/inputField'
+import RaiseButton from '../../components/raiseButton'
+import Loader from '../../components/loader'
 
 //Validation
-import {required} from '../utilities/validation'
+import {required} from '../../utilities/validation'
 
 //Actions
-import { validateUser, logout } from '../actions/accountAction';
+import { validateUser, logout } from '../../actions/accountAction';
 
 
 const styles = {

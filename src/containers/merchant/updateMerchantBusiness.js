@@ -92,8 +92,7 @@ class UpdateBusinessDetails extends Component {
 
           if (nextProps.updateBusinessResponse){
             this.setState({showLoader:false})
-            nextProps.updateBusinessResponse
-            .map((response)=>{
+            nextProps.updateBusinessResponse.forEach(response => {
                 if(response.code === 200 || response.code === 201){
                     errorMessage = errorMessage !== undefined ? errorMessage : undefined
                 }
@@ -314,7 +313,7 @@ class UpdateBusinessDetails extends Component {
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Website*
+                                Website
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
                                 <Field 
@@ -324,7 +323,7 @@ class UpdateBusinessDetails extends Component {
                                     fullWidth={true} 
                                     onChange={this.handleChange}
                                     component={InputField} 
-                                    validate={[required, website]}
+                                    validate={website}
                                 />  
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-import { hostURL, validateUserAPI, registerUserAPI } from '../app.config';
+import { hostURL, validateUserAPI, registerUserAPI, resendMailAPI } from '../app.config';
 var axios = require('axios');
 
 //To Validate and authenticate user for login
@@ -67,6 +67,46 @@ export function registerUser(values) {
 
     return {
         type: 'REGISTER_USER',
+        payload: response
+    }
+}
+
+export function clearRegisterUserState() {
+    return {
+        type: 'REGISTER_USER',
+        payload: undefined
+    }
+}
+
+//Function to resend verification mail for user activation
+export function resendVerificationMail(emailId) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + resendMailAPI,
+        data: {
+            "platform": 'Web',
+	        "requestData":{
+		        "emailId": emailId,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json'
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'RESEND_EMAIL',
         payload: response
     }
 }

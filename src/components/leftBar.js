@@ -218,12 +218,12 @@ class ResponsiveDrawer extends React.Component {
                         onClose={this.handleClose}
                         >
                         <MenuItem>
-                          <NavLink to="/editUserProfile" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
+                          <NavLink to="editUserProfile" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
                             Profile
                           </NavLink>
                         </MenuItem>
                         <MenuItem>
-                            <NavLink to="/logout" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
+                            <NavLink to="logout" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
                             Logout
                             </NavLink>
                         </MenuItem>
