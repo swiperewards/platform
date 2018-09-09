@@ -8,6 +8,7 @@ import Register from './containers/account/register'
 import Logout from './containers/account/logout'
 import UserProfile from './containers/account/editUserProfile'
 import AccountActivate from './containers/account/accountActivate'
+import ActivationComplete from './containers/account/activationComplete'
 
 import ManageAdmins from './containers/admin/manageAdmins'
 import ManageMerchants from './containers/merchant/manageMerchants'
@@ -50,6 +51,8 @@ class Routes extends Component {
                         <Route exact path="/login" component={Login} />
                         <Route exact path="/logout" component={Logout} />
                         <Route exact path="/accountActivate" component={AccountActivate} />
+                        <Route exact path="/activateAccount/:token" component={ActivationComplete} />
+                        <Route exact path="/activateAccount" component={ActivationComplete} />
 
                         <App>
                             <Route exact path="/admindashboard" component={AdminDashboard} />

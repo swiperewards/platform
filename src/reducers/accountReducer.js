@@ -4,6 +4,10 @@ export default function (state = {}, action) {
             return { ...state, user: action.payload };
         case 'REGISTER_USER':
             return { registerUser: action.payload };    
+        case 'ACTIVATE_USER':
+            return { activateUser: action.payload };    
+        case 'RESEND_EMAIL':
+            return { resendEmail: action.payload};    
         default:
             return state;
     }

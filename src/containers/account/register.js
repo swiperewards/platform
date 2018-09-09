@@ -15,8 +15,8 @@ import Button from '@material-ui/core/Button';
 import InputField from '../../components/inputField';
 import RaiseButton from '../../components/raiseButton';
 import Recaptcha from 'react-grecaptcha';
+import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader';
-import DialogBox from '../../components/alertDialog';
 
 //Validation
 import {required, email, minimum8} from '../../utilities/validation'
@@ -52,7 +52,9 @@ class Register extends Component {
         this.state = {
             loadStatus: false,
             invalidRecaptcha: true,
-            showError: false
+            showError: false,
+            dialogOpen: false,
+            message:'',
         }
     }
 
@@ -73,12 +75,18 @@ class Register extends Component {
                     errorMessage =
                         <div 
                             className="errorDiv"
-                        >{nextProps.registerUserResponse.message}</div >
+                        >{nextProps.registerUserResponse.message}</div>
+                        this.setState({message: nextProps.registerUserResponse.message})
+                        this.setState({ dialogOpen: true });
                 }
             }
         }
         this.setState({showLoader:false})
     }
+
+    handleClose = () => {
+        this.setState({ dialogOpen: false });
+    };
 
     onSubmit(values) {
         errorMessage = undefined
@@ -94,8 +102,10 @@ class Register extends Component {
 
     render() {
 
+        const {  dialogOpen } = this.state;
+
         const actions = [
-            <Button key="ok" onClick={this.handleCloseAlert} color="primary" autoFocus>
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
         ];
@@ -104,8 +114,8 @@ class Register extends Component {
             <div>
                 <Loader status={this.state.showLoader} />
                 <DialogBox 
-                    displayDialogBox={this.state.openAlert} 
-                    message="Merchant account created successfully" 
+                    displayDialogBox={dialogOpen} 
+                    message={this.state.message} 
                     actions={actions} 
                 />
                 <div className="pageContainer">

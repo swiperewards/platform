@@ -157,16 +157,20 @@ class ResponsiveDrawer extends React.Component {
         <List className={classes.list}>
           {
             <div style={{ color: '#FFFFFF', fontSize:'12px', paddingLeft: '0px' }}> 
-            {this.props.userData.user.responseData.menuList
-            .sort(((a,b) => a.displayOrder > b.displayOrder))
-            .map((value, index) => (
-              <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}}>
-                <ListItem button disableGutters className={classes.ListItem}>
-                  <img src={"../images/" + value.iconName + ".svg"} height="20px" alt="" style={{paddingLeft:'15px'}} />
-                  <ListItemText disableTypography primary={value.text} />
-                </ListItem>
-              </Link>
-            ))}
+              {
+                this.props.userData.user.responseData !== undefined ? (this.props.userData.user.responseData.menuList
+                .sort(((a,b) => a.displayOrder > b.displayOrder))
+                .map((value, index) => (
+                  <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}}>
+                    <ListItem button disableGutters className={classes.ListItem}>
+                      <img src={"../images/" + value.iconName + ".svg"} height="20px" alt="" style={{paddingLeft:'15px'}} />
+                      <ListItemText disableTypography primary={value.text} />
+                    </ListItem>
+                  </Link>
+                )))
+                :
+                (null)
+              }
             </div>
           }
         </List>

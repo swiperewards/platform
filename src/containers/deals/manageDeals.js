@@ -130,7 +130,11 @@ class ManageDeals extends Component {
     };
 
     addNewDeal(){
-        this.props.history.push('/merchantList')
+        if(this.props.userData.user.responseData.merchantId !== null){
+            this.props.history.push({pathname:'/addNewDeal',state: { detail: this.props.userData.user.responseData.merchantId }})
+        }else{
+            this.props.history.push('/merchantList')
+        }
     }
 
     onHandleReset(){

@@ -1,4 +1,4 @@
-import { hostURL, validateUserAPI, registerUserAPI, resendMailAPI } from '../app.config';
+import { hostURL, validateUserAPI, registerUserAPI, resendMailAPI, activateAccount } from '../app.config';
 var axios = require('axios');
 
 //To Validate and authenticate user for login
@@ -20,7 +20,11 @@ export function validateUser(values) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+
+        response => {
+            response.data.rememberme = values.rememberMe === undefined ? false : values.rememberMe
+            return response.data;
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -34,6 +38,14 @@ export function validateUser(values) {
         payload: response
     }
 }
+
+export function clearValidateUserResponse() {
+    return {
+        type: 'VALIDATE_USER',
+        payload: undefined
+    }
+}
+
 
 //To register merchant for dashboard access
 export function registerUser(values) {
@@ -110,6 +122,47 @@ export function resendVerificationMail(emailId) {
         payload: response
     }
 }
+
+export function clearResendMailResponse() {
+    return {
+        type: 'RESEND_EMAIL',
+        payload: undefined
+    }
+}
+
+//Function to Activate user account
+export function activateUserAccount(token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + activateAccount,
+        data: {
+            "platform": 'Web',
+	        "requestData":{
+                "activateToken": token
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'ACTIVATE_USER',
+        payload: response
+    }
+}
+
 
 export const AuthError = ()=>{
     return {
