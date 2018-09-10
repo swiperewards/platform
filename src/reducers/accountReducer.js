@@ -7,7 +7,9 @@ export default function (state = {}, action) {
         case 'ACTIVATE_USER':
             return { activateUser: action.payload };    
         case 'RESEND_EMAIL':
-            return { resendEmail: action.payload};    
+            return { resendEmail: action.payload};
+        case 'GET_USERPROFILE':
+            return { ...state, userProfile: action.payload};        
         default:
             return state;
     }

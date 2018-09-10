@@ -28,6 +28,7 @@ import Loader from '../../components/loader'
 
 //Actions
 import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { getUserProfile } from '../../actions/accountAction';
 
 //Data
 import Data from '../../staticData';
@@ -58,6 +59,11 @@ class ManageDeals extends Component {
     componentWillMount()
     {
         this.getAllMerchants();
+        const profileMerchantId = this.props.userProfile === undefined ? null : this.props.userProfile.responseData.merchantId
+        if(this.props.userData.user.responseData.token && profileMerchantId === null){
+            this.setState({showLoader:true})
+            this.props.getUserProfile(this.props.userData.user.responseData.token);
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -68,11 +74,22 @@ class ManageDeals extends Component {
                 this.setState({merchantList: nextProps.merchantPayload.responseData})
             }
           }
-          else if(nextProps.merchantDelete){
+          
+          if(nextProps.merchantDelete){
             if(nextProps.merchantDelete.status === 200){
                 this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
                 this.getAllMerchants();
+            }
+          }
+
+          if(nextProps.userProfile){
+            if(nextProps.userProfile.status === 200){
+                if(nextProps.userProfile.responseData){
+                    if(nextProps.userProfile.responseData.merchantId === null){
+                        this.props.history.push('/addNewMerchant');
+                    }
+                }
             }
           }
         }
@@ -361,14 +378,15 @@ class ManageDeals extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant, getUserProfile }, dispatch)
   }
   
   ManageDeals = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
-      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
+      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant,
+      userProfile: state.account.userProfile === undefined ? undefined : state.account.userProfile, 
     }),
     mapDispatchToProps,
   )(ManageDeals)

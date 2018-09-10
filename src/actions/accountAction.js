@@ -1,4 +1,4 @@
-import { hostURL, validateUserAPI, registerUserAPI, resendMailAPI, activateAccount } from '../app.config';
+import { hostURL, validateUserAPI, registerUserAPI, resendMailAPI, activateAccountAPI, userProfileAPI } from '../app.config';
 var axios = require('axios');
 
 //To Validate and authenticate user for login
@@ -135,7 +135,7 @@ export function activateUserAccount(token) {
 
     var setting = {
         method: 'post',
-        url: hostURL + activateAccount,
+        url: hostURL + activateAccountAPI,
         data: {
             "platform": 'Web',
 	        "requestData":{
@@ -163,6 +163,36 @@ export function activateUserAccount(token) {
     }
 }
 
+//Function to fetch user details
+export function getUserProfile(token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + userProfileAPI,
+        data: {
+            "platform": 'Web',
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_USERPROFILE',
+        payload: response
+    }
+}
 
 export const AuthError = ()=>{
     return {

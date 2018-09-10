@@ -11,6 +11,8 @@ import AccountActivate from './containers/account/accountActivate'
 import ActivationComplete from './containers/account/activationComplete'
 
 import ManageAdmins from './containers/admin/manageAdmins'
+
+import MerchantDashboard from './containers/merchant/merchantDashboard'
 import ManageMerchants from './containers/merchant/manageMerchants'
 import ManageUsers from './containers/user/manageUsers'
 import AddAdmin from './containers/admin/addNewAdmin'
@@ -57,6 +59,7 @@ class Routes extends Component {
                         <App>
                             <Route exact path="/admindashboard" component={AdminDashboard} />
                             <Route exact path="/superAdminDashboard" component={SuperAdminDashboard} />
+                            <Route exact path="/merchantdashboard" component={MerchantDashboard} />
                             <Route exact path="/managemerchants" component={ManageMerchants} />
                             <Route exact path="/managedeals" component={ManageDeals} />
                             <Route exact path="/manageadmins" component={ManageAdmins} />
