@@ -7,9 +7,7 @@ var axios = require('axios');
 //Function to add new merchant to processing system
 export function addNewMerchant(values, registeredEmail, token) {
 
-    var acceptanceDate = (values.acceptanceDate === undefined ? undefined : (values.acceptanceDate).replace(normalizedPhone,''))
-    var acceptanceTime = (values.acceptanceTime === undefined ? undefined : (values.acceptanceTime).replace(normalizedPhone,''))
-    var acceptanceDateTime = (acceptanceDate === undefined || acceptanceTime === undefined) ? undefined : (acceptanceDate + acceptanceTime)
+    var acceptanceDateTime = moment().format('YYYYMMDDHHMM')
 
     var setting = {
         method: 'post',
@@ -285,9 +283,7 @@ export function getMerchantDetailsAPI(merchantId,token) {
 //Function to update merchant details to processing system
 export function updateMerchantDetails(values, screenType, token) {
 
-    var acceptanceDate = (values.acceptanceDate === undefined || values.acceptanceDate === null ? "00000000" : (values.acceptanceDate).replace(normalizedPhone,''))
-    var acceptanceTime = (values.acceptanceTime === undefined || values.acceptanceTime === null ? "0000" : (values.acceptanceTime).replace(normalizedPhone,''))
-    var acceptanceDateTime = acceptanceDate + acceptanceTime
+    var acceptanceDateTime = moment().format('YYYYMMDDHHMM')
 
     var setting = {
         method: 'post',

@@ -193,12 +193,15 @@ class ResponsiveDrawer extends React.Component {
             <div style={{width:'100%'}}>
                 <div style={{float:'right', position:'relative', margin:'0px'}}>
                     <div className={classes.avatarDiv}>
-                        <Avatar src={this.props.userData.user.responseData.profilePicUrl}
+                    <NavLink to={'/editUserProfile'}>
+                      <Avatar src={this.props.userData.user.responseData.profilePicUrl}
                         className={classes.avatarIcon} />
+                    </NavLink>
+                        
                     </div>
                     {auth && (
                     <div style={{float:'right',verticalAlign:'middle'}}>
-                        <span className={classes.avatarSpan}>{this.props.userData.user.responseData.fullName}</span> 
+                        <span className={classes.avatarSpan} onClick={this.handleMenu}>{this.props.userData.user.responseData.fullName}</span> 
                         <IconButton
                         aria-owns={open ? 'menu-appbar' : null}
                         aria-haspopup="true"

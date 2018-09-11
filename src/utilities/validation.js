@@ -1,7 +1,7 @@
 
 //Regex expressions for form control validations
 const required = value => value && value.trim() !== "" ? undefined : `Required`
-
+const requiredCheckbox = value => value ? undefined : `Required`
 const dropDownRequired = value => (value === undefined ? 'Please Select Value' : undefined)
 
 const email = value =>
@@ -39,6 +39,7 @@ const normalizedPhone = /\D/g;
 export {
     required, 
     dropDownRequired, 
+    requiredCheckbox,
     email, 
     website, 
     minimum8, 

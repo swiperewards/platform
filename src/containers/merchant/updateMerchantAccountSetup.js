@@ -355,24 +355,10 @@ class UpdateAccountSetup extends Component {
                                     <React.Fragment>
                                         <div className="row">
                                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                                Date of Acceptance
-                                            </div>
-                                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="date" name="acceptanceDate" fullWidth={true} component={InputField} />  
-                                            </div>
-                                            <div className="col-xs-12 col-sm-6 col-md-3">
                                                 IP Address
                                             </div>
                                             <div className="col-xs-12 col-sm-6 col-md-3">
                                                 <Field myType="text" name="ipAddress" fullWidth={true} component={InputField} validate={ipAddressMatch}/>  
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                                Time
-                                            </div>
-                                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                                <Field myType="time" name="acceptanceTime" fullWidth={true} component={InputField} />  
                                             </div>
                                         </div>
                                     </React.Fragment>
