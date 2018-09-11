@@ -42,10 +42,13 @@ class MerchantDashboard extends Component {
     componentWillMount()
     {
         this.getAllMerchants();
-        const profileMerchantId = this.props.userProfile === undefined ? null : this.props.userProfile.responseData.merchantId
-        if(this.props.userData.user.responseData.token && profileMerchantId === null){
-            this.setState({showLoader:true})
-            this.props.getUserProfile(this.props.userData.user.responseData.token);
+
+        if(this.props.userData.user.responseData.role === 'merchant'){
+            const profileMerchantId = this.props.userProfile === undefined ? null : this.props.userProfile.responseData.merchantId
+            if(this.props.userData.user.responseData.token && profileMerchantId === null){
+                this.setState({showLoader:true})
+                this.props.getUserProfile(this.props.userData.user.responseData.token);
+            }
         }
     }
 

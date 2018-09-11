@@ -5,7 +5,7 @@ import moment from 'moment'
 var axios = require('axios');
 
 //Function to add new merchant to processing system
-export function addNewMerchant(values, token) {
+export function addNewMerchant(values, registeredEmail, token) {
 
     var acceptanceDate = (values.acceptanceDate === undefined ? undefined : (values.acceptanceDate).replace(normalizedPhone,''))
     var acceptanceTime = (values.acceptanceTime === undefined ? undefined : (values.acceptanceTime).replace(normalizedPhone,''))
@@ -38,6 +38,8 @@ export function addNewMerchant(values, token) {
                 "entityEin": values.taxId === undefined ? undefined : (values.taxId).replace(normalizedPhone,''),
                 "entityPublic": values.publicCompany,
                 "entityWebsite": values.businessWebsite,
+                "registeredWithNouvo": registeredEmail !== undefined ? true : false,
+                "registeredEmail": registeredEmail !== undefined ? registeredEmail : undefined,
                 "entityaccounts": [{
                     "primary": "1",
                     "accountMethod": values.bankAccountType,

@@ -9,6 +9,8 @@ import Logout from './containers/account/logout'
 import UserProfile from './containers/account/editUserProfile'
 import AccountActivate from './containers/account/accountActivate'
 import ActivationComplete from './containers/account/activationComplete'
+import ResetPassword from './containers/account/resetPasswordMail'
+import ChangePassword from './containers/account/changePassword'
 
 import ManageAdmins from './containers/admin/manageAdmins'
 
@@ -47,7 +49,6 @@ class Routes extends Component {
                 <div>
                     <Switch>
                         <Route exact path="/resetPassword" component={ForgetPassword} />
-                        <Route exact path="/resetPassword/:token" component={ForgetPassword} />
                         <Route exact path="/register" component={Register} />
                         <Route exact path="/" component={Login} />
                         <Route exact path="/login" component={Login} />
@@ -55,6 +56,9 @@ class Routes extends Component {
                         <Route exact path="/accountActivate" component={AccountActivate} />
                         <Route exact path="/activateAccount/:token" component={ActivationComplete} />
                         <Route exact path="/activateAccount" component={ActivationComplete} />
+                        <Route exact path="/resetPasswordMail" component={ResetPassword} />
+                        <Route exact path="/setPassword" component={ChangePassword}/> 
+                        <Route exact path="/setPassword/:token" component={ChangePassword} />
 
                         <App>
                             <Route exact path="/admindashboard" component={AdminDashboard} />

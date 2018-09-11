@@ -3,11 +3,13 @@ import { reducer as formReducer } from 'redux-form';
 import account from './accountReducer';
 import common from './commonReducer';
 import merchant from './merchantReducer';
+import deal from './dealReducer';
 
 const appReducer = combineReducers({
     account,
     common,
     merchant,
+    deal,
     form: formReducer,
 });
 

@@ -9,9 +9,13 @@ import { Link } from 'react-router-dom';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 
-import {resendVerificationMail, activateUserAccount} from '../../actions/accountAction';
-import { appName } from '../../app.config';
+//Action
+import {forgotPassword} from '../../actions/accountAction';
+
+//Components
+import DialogBox from '../../components/alertDialog'
 
 let errorMessage
 
@@ -41,46 +45,59 @@ const styles = {
     }
 };
 
-class ActivationComplete extends Component {
+class ResetPassword extends Component {
 
-    componentWillMount() {
-        if (this.props.match.params.token) {
-            this.props.activateUserAccount(this.props.match.params.token);
+    constructor(props) {
+        super(props)
+        this.state = {
+            dialogOpen: false,
+            message:'',
         }
     }
 
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
-            if (nextProps.activateUserResponse){
-                if (nextProps.activateUserResponse.status === 200) {
-                    errorMessage = undefined
+            if (nextProps.forgotPasswordResponse){
+                this.setState({showLoader:false})
+                if (nextProps.forgotPasswordResponse.status === 200) {
+                    this.setState({message: nextProps.forgotPasswordResponse.message})
+                    this.setState({ dialogOpen: true });
                 }
                 else{
-                    errorMessage =
-                        <div 
-                            className="errorDiv"
-                        >{nextProps.activateUserResponse.message}</div>
-                        this.setState({message: nextProps.activateUserResponse.message})
-                        this.setState({ dialogOpen: true });
+                    this.setState({message: nextProps.forgotPasswordResponse.message})
+                    this.setState({ dialogOpen: true });
                 }
             }
         }
-        this.setState({showLoader:false})
-    }
-
-
-    cancelClick(){
-        this.props.history.goBack();
     }
 
     resendMailClick(){
-        this.props.resendVerificationMail(this.props.location.state !== undefined ? this.props.location.state.detail : undefined)
+        this.props.forgotPassword(this.props.location.state !== undefined ? this.props.location.state.detail : undefined)
     }
+    
+    handleClose = () => {
+        this.setState({ dialogOpen: false });
+    };
+
 
     render() {
 
+        const {  dialogOpen } = this.state;
+
+        const actions = [
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
+        
         return (
+            <div>
+                <DialogBox 
+                        displayDialogBox={dialogOpen} 
+                        message={this.state.message} 
+                        actions={actions} 
+                />
             <div className="row">
                 <div className="col-md-6 pageContainer">
                     <Paper className="pagePaper">
@@ -95,21 +112,23 @@ class ActivationComplete extends Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-md-12">
-                                        We have sent a reset password email to {emailText} 
-                                        Please click the reset password link to set your new password.
+                                        We have sent a reset password email to <span style={styles.emailText}>{this.props.location.state !== undefined ? this.props.location.state.detail : undefined}</span> 
+                                        <br/>Please click the reset password link to set your new password.
                                     </div>    
                                 </div>
                                 <div className="row">   
                                     <div className="col-md-9 start-md">
-                                        <div style={styles.accountTxt}>
-                                            <span>Didn't receive the email yet?,</span>
+                                        <div>
+                                            <span>Didn't receive the email yet?</span>
+                                            <span>Please check your spam folder, or
                                             <button 
                                             type="button"
                                             onClick={this.resendMailClick.bind(this)}
                                             style={{color:'#3895D8', fontStyle:'italic', fontSize:'12px'}}
                                         > 
-                                            Resend activation mail
+                                            Resend
                                         </button>
+                                        the email.</span>
                                     </div>
                                     </div>  
                                     <div className="col-md-3 end-md bottom-md"> 
@@ -121,6 +140,7 @@ class ActivationComplete extends Component {
                     </Paper>
                 </div>
             </div>
+        </div>
         )
     }
 }
@@ -128,15 +148,15 @@ class ActivationComplete extends Component {
 const mapStateToProps = (state) => {
 
     return {
-            activateUserResponse: state.account.activateUser,
-        }
+        forgotPasswordResponse: state.account.forgotPassword,
+    }
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ resendVerificationMail, activateUserAccount }, dispatch)
+    return bindActionCreators({ forgotPassword }, dispatch)
 }
 
 export default reduxForm({
-    form: 'FrmActivationComplete'
+    form: 'FrmResetPassword'
 }
-)(connect(mapStateToProps, mapDispatchToProps)(ActivationComplete))
+)(connect(mapStateToProps, mapDispatchToProps)(ResetPassword))

@@ -142,7 +142,16 @@ class AddMerchant extends Component {
         }
         else{
           this.setState({showLoader:true})
-          this.props.addNewMerchant(values, this.props.userData.user.responseData.token)
+          let registerEmailId
+          if(this.props.userData.user.responseData.role === 'merchant'){
+            registerEmailId = this.props.userData.user.responseData.emailId
+          }
+          else{
+            registerEmailId = undefined
+          }
+
+          this.props.addNewMerchant(values, registerEmailId , this.props.userData.user.responseData.token)
+
         }
       }
 

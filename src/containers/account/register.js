@@ -66,6 +66,7 @@ class Register extends Component {
 
         if (nextProps) {
             if (nextProps.registerUserResponse){
+                this.setState({showLoader:false})
                 if (nextProps.registerUserResponse.status === 200) {
                     errorMessage = undefined
                     this.props.history.push({pathname:'/accountActivate',state: { detail: nextProps.registerUserResponse.responseData.emailId }})
@@ -81,7 +82,6 @@ class Register extends Component {
                 }
             }
         }
-        this.setState({showLoader:false})
     }
 
     handleClose = () => {

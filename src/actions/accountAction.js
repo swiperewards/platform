@@ -1,4 +1,4 @@
-import { hostURL, validateUserAPI, registerUserAPI, resendMailAPI, activateAccountAPI, userProfileAPI } from '../app.config';
+import { hostURL, validateUserAPI, registerUserAPI, resendMailAPI, activateAccountAPI, userProfileAPI, forgotPasswordAPI, setPasswordAPI } from '../app.config';
 var axios = require('axios');
 
 //To Validate and authenticate user for login
@@ -191,6 +191,80 @@ export function getUserProfile(token) {
     return {
         type: 'GET_USERPROFILE',
         payload: response
+    }
+}
+
+//Function to send mail for forgot password feature
+export function forgotPassword(emailId) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + forgotPasswordAPI,
+        data: {
+            "platform": 'Web',
+	        "requestData":{
+		        "emailId": emailId,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json'
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'FORGOT_PASSWORD',
+        payload: response
+    }
+}
+
+//Function to send mail for forgot password feature
+export function resetPassword(password, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + setPasswordAPI,
+        data: {
+            "platform": 'Web',
+	        "requestData":{
+                "resetToken": token,
+                "password": password,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json'
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'SET_PASSWORD',
+        payload: response
+    }
+}
+
+export function clearsetPasswordResponse() {
+    return {
+        type: 'SET_PASSWORD',
+        payload: undefined
     }
 }
 

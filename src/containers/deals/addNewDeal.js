@@ -11,12 +11,17 @@ import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
 
+import Button from '@material-ui/core/Button';
+
 //Components
+import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
+import Loader from '../../components/loader'
 
 //Actions
 import { getMerchantDetailsAPI, updateMerchantDetails } from '../../actions/merchantAction';
+import { addNewDeal } from '../../actions/dealAction';
 
 //Validation
 import {required, dropDownRequired} from '../../utilities/validation'
@@ -38,9 +43,35 @@ const styles = {
 
 class AddNewDeal extends Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            dialogOpen: false,
+            message:'',
+        }
+    }
+
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
       };
+
+      componentWillReceiveProps(nextProps) {
+        if (nextProps) {
+          if (nextProps.newDealResponse){
+            this.setState({showLoader:false})
+            if(nextProps.newDealResponse.status === 200){
+                this.setState({message: nextProps.newDealResponse.message})
+                this.setState({ dialogOpen: true });
+            }
+            else{
+                errorMessage =
+                            <div 
+                                className="errorDiv"
+                            >{nextProps.newDealResponse.message}</div>
+            }
+          }
+        }
+    }
 
     componentWillMount() {
 
@@ -51,16 +82,42 @@ class AddNewDeal extends Component {
 
       onSubmit(values) {
 
-        console.log(values);
+        if(this.props.userData.user.responseData.token){
+            let merchantId = this.props.location.state !== undefined ? this.props.location.state.detail : undefined
+            if(merchantId !== undefined){
+                this.setState({showLoader:true})
+                this.props.addNewDeal(values, merchantId, this.props.userData.user.responseData.token)
+            }
+        }
       }
 
-      cancelClick(){
+    handleClose = () => {
+        this.setState({ dialogOpen: false });
+        this.props.history.push('/managedeals');
+    };
+
+
+    cancelClick(){
         this.props.history.goBack();
     }
 
     render() {
+        const {  dialogOpen } = this.state;
+
+        const actions = [
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
+
         return (
             <div style={{paddingBottom:'20px'}}>
+                <Loader status={this.state.showLoader} />
+                <DialogBox 
+                        displayDialogBox={dialogOpen} 
+                        message={this.state.message} 
+                        actions={actions} 
+                />  
                 <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
 
                 <Paper className="pagePaper">
@@ -202,7 +259,7 @@ class AddNewDeal extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails }, dispatch)
+    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails, addNewDeal }, dispatch)
   }
 
   AddNewDeal = reduxForm({
@@ -212,6 +269,7 @@ const mapDispatchToProps = (dispatch) => {
 AddNewDeal = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
+       newDealResponse: state.deal === undefined ? undefined : state.deal.addDeal 
     }),
     mapDispatchToProps,
   )(AddNewDeal)
