@@ -1,6 +1,5 @@
 //react-redux
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 
 //redux-form
@@ -35,23 +34,6 @@ const validate = values => {
 
     return errors;
 }
-
-const styles = {
-    signUpTxt :{
-        color:'#424242',
-        textDecorator:'none',
-        fontSize:'14px',
-        fontWeight:'normal'
-    },
-    signupLink:{
-        textDecoration: 'none', 
-        color:'#3895D8'
-    },
-    accountTxt:{
-        marginTop:'10px',
-        textAlign:'center'
-    }
-};
 
 class ChangePassword extends Component {
     constructor(props) {

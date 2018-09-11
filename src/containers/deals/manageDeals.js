@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import NumberFormat from "react-number-format";
 import moment from 'moment'
 
 //material-ui
@@ -29,7 +28,7 @@ import Loader from '../../components/loader'
 
 //Actions
 import { getUserProfile } from '../../actions/accountAction';
-import { getDealsListWithFilter, deleteDeal } from '../../actions/dealAction';
+import { getDealsListWithFilter, deleteDeal, getDealDetails } from '../../actions/dealAction';
 
 //Data
 import Data from '../../staticData';
@@ -83,6 +82,7 @@ class ManageDeals extends Component {
           }
           
           if(nextProps.dealDelete){
+            this.setState({showLoader:false})
             if(nextProps.dealDelete.status === 200){
                 this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
@@ -141,7 +141,7 @@ class ManageDeals extends Component {
             this.handleClose();
             if(this.props.userData.user.responseData.token){
                 this.setState({showLoader:true})
-                this.props.deleteDeal(dealId, this.props.userData.user.responseData.token);
+                this.props.deleteDeal(this.state.dealId, this.props.userData.user.responseData.token);
             }
             else{
                 //#TODO: Handle token expire case here
@@ -152,8 +152,12 @@ class ManageDeals extends Component {
         }
     }
 
-    updateMerchant = (merchantId) => {
-        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
+    updateDeal = (dealId) =>{
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getDealDetails(dealId, this.props.userData.user.responseData.token)
+            this.props.history.push('/updateDeal')
+        }
     }
 
     handleClose = () => {
@@ -197,7 +201,7 @@ class ManageDeals extends Component {
             <Button key="no" onClick={this.handleClose} color="primary">
                 No
             </Button>,
-            <Button key="yes" onClick={this.deleteMerchant} color="primary" autoFocus>
+            <Button key="yes" onClick={this.deleteDealById} color="primary" autoFocus>
                 Yes
             </Button>,
         ];
@@ -380,7 +384,7 @@ class ManageDeals extends Component {
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.status === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" disabled={object.status === 1 ? true : false} onClick={() => this.updateDeal(object.id)} className={object.status === 1 ? "disabledButton" : "enabledButton"}> 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
@@ -429,7 +433,7 @@ class ManageDeals extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getDealsListWithFilter, deleteDeal, getUserProfile }, dispatch)
+    return bindActionCreators({ getDealsListWithFilter, deleteDeal, getUserProfile, getDealDetails }, dispatch)
   }
   
   ManageDeals = connect(

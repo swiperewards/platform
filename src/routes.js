@@ -24,6 +24,7 @@ import MerchantsList from './containers/merchant/merchantList'
 
 import ManageDeals from './containers/deals/manageDeals'
 import AddNewDeal from './containers/deals/addNewDeal'
+import UpdateDeal from './containers/deals/updateDeal'
 
 import ManageRedeemModes from './containers/redeem/manageRedeemModes'
 import AddNewRedeemMode from './containers/redeem/addNewRedeemMode'
@@ -72,6 +73,7 @@ class Routes extends Component {
                             <Route exact path="/addNewMerchant" component={AddMerchant} />
                             <Route exact path="/updateMerchant" component={UpdateMerchant}/>
                             <Route exact path="/addNewDeal" component={AddNewDeal}/>
+                            <Route exact path="/updateDeal" component={UpdateDeal} />
                             <Route exact path="/editUserProfile" component={UserProfile}/>
                             <Route exact path="/merchantList" component={MerchantsList}/>
                             <Route exact path="/manageredeemmode" component={ManageRedeemModes}/>

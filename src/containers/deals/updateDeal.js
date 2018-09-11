@@ -20,7 +20,7 @@ import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
 
 //Actions
-import { addNewDeal } from '../../actions/dealAction';
+import { updateDeal } from '../../actions/dealAction';
 
 //Validation
 import {required, dropDownRequired} from '../../utilities/validation'
@@ -40,7 +40,7 @@ const styles = {
       }
 };
 
-class AddNewDeal extends Component {
+class UpdateDeal extends Component {
 
     constructor(props) {
         super(props)
@@ -56,17 +56,17 @@ class AddNewDeal extends Component {
 
       componentWillReceiveProps(nextProps) {
         if (nextProps) {
-          if (nextProps.newDealResponse){
+          if (nextProps.updateDealResponse){
             this.setState({showLoader:false})
-            if(nextProps.newDealResponse.status === 200){
-                this.setState({message: nextProps.newDealResponse.message})
+            if(nextProps.updateDealResponse.status === 200){
+                this.setState({message: nextProps.updateDealResponse.message})
                 this.setState({ dialogOpen: true });
             }
             else{
                 errorMessage =
                             <div 
                                 className="errorDiv"
-                            >{nextProps.newDealResponse.message}</div>
+                            >{nextProps.updateDealResponse.message}</div>
             }
           }
         }
@@ -75,10 +75,10 @@ class AddNewDeal extends Component {
       onSubmit(values) {
 
         if(this.props.userData.user.responseData.token){
-            let merchantId = this.props.location.state !== undefined ? this.props.location.state.detail : undefined
+            let merchantId = this.props.initialValues !== undefined ? this.props.initialValues.merchantId : undefined
             if(merchantId !== undefined){
                 this.setState({showLoader:true})
-                this.props.addNewDeal(values, merchantId, this.props.userData.user.responseData.token)
+                this.props.updateDeal(values, this.props.userData.user.responseData.token)
             }
         }
       }
@@ -95,6 +95,7 @@ class AddNewDeal extends Component {
 
     render() {
         const {  dialogOpen } = this.state;
+        const { pristine, submitting } = this.props
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -116,7 +117,7 @@ class AddNewDeal extends Component {
                     <div className="formContent">
                         <div className="appTitleLabel row">
                             <div className="col-xs-12 col-md-12">
-                            <FormLabel component="legend">ADD DEAL</FormLabel>
+                            <FormLabel component="legend">UPDATE DEAL</FormLabel>
                             </div>                            
                         </div>
 
@@ -127,7 +128,7 @@ class AddNewDeal extends Component {
                                 Merchant Id
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                {this.props.location.state !== undefined ? this.props.location.state.detail : undefined}
+                                {this.props.initialValues !== undefined ? this.props.initialValues.merchantId : ""}
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -162,7 +163,7 @@ class AddNewDeal extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     myType="date" 
-                                    name="fromDate" 
+                                    name="startDate" 
                                     fullWidth={true} 
                                     component={InputField} 
                                     validate={required}
@@ -188,7 +189,7 @@ class AddNewDeal extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     myType="date" 
-                                    name="toDate" 
+                                    name="endDate" 
                                     fullWidth={true} 
                                     component={InputField} 
                                     validate={required}
@@ -234,8 +235,9 @@ class AddNewDeal extends Component {
 
                                 <button 
                                     type="submit"
-                                    className="button"
-                                    > Add
+                                    disabled={pristine || submitting}
+                                    className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
+                                    > Update
                                 </button> 
                             </div>
                         </div>                       
@@ -251,19 +253,20 @@ class AddNewDeal extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ addNewDeal }, dispatch)
+    return bindActionCreators({ updateDeal }, dispatch)
   }
 
-  AddNewDeal = reduxForm({
-    form: 'frmAddNewDeal',
-})(AddNewDeal)
+  UpdateDeal = reduxForm({
+    form: 'frmUpdateDeal',
+})(UpdateDeal)
 
-AddNewDeal = connect(
+UpdateDeal = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
-       newDealResponse: state.deal === undefined ? undefined : state.deal.addDeal 
+       updateDealResponse: state.deal === undefined ? undefined : state.deal.updateDeal, 
+       initialValues: state.deal.dealDetails === undefined ? undefined : state.deal.dealDetails.responseData
     }),
     mapDispatchToProps,
-  )(AddNewDeal)
+  )(UpdateDeal)
 
-export default AddNewDeal;
+export default UpdateDeal;

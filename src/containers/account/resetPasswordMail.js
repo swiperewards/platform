@@ -17,8 +17,6 @@ import {forgotPassword} from '../../actions/accountAction';
 //Components
 import DialogBox from '../../components/alertDialog'
 
-let errorMessage
-
 const styles = {
     signUpTxt :{
         color:'#424242',
