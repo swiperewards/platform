@@ -15,6 +15,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
+import AddIcon from '@material-ui/icons/Add';
 
 //Components
 import TablePaginationActions from '../../components/tableGrid';
@@ -152,12 +153,13 @@ class ManageRedeemModes extends Component {
                             Number of Modes : 3
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-3 end-md">
-                            <button 
+                            <Button 
+                            variant="fab"
                             type="button"
+                            color="primary"
                             onClick={this.addNewMode.bind(this)}
-                            className="button"
                             style={{backgroundColor:'#27A24F'}}
-                            > +Add Mode</button> 
+                            > <AddIcon /></Button> 
                         </div>
                     </div>
                 </form>

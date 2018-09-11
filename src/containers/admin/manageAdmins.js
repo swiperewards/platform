@@ -19,6 +19,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
 import Avatar from '@material-ui/core/Avatar';
+import AddIcon from '@material-ui/icons/Add';
 
 //Components
 import InputField from '../../components/inputField';
@@ -232,12 +233,13 @@ class ManageAdmins extends Component {
                             </button> 
                         </div>       
                         <div className="col-xs-12 col-sm-6 col-md-3 end-md">
-                            <button 
+                            <Button 
+                            variant="fab"
                             type="button"
+                            color="primary"
                             onClick={this.addNewAdmin.bind(this)}
-                            className="button"
                             style={{backgroundColor:'#27A24F'}}
-                            > +Add Admin</button> 
+                            > <AddIcon /></Button> 
                         </div>
                     </div>
                 </form>
