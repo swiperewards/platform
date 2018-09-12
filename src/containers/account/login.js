@@ -10,17 +10,19 @@ import { connect } from 'react-redux';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 //Components
-import InputField from '../components/inputField'
-import RaiseButton from '../components/raiseButton'
-import Loader from '../components/loader'
+import InputField from '../../components/inputField'
+import RaiseButton from '../../components/raiseButton'
+import Loader from '../../components/loader'
+import RenderCheckbox from '../../components/renderCheckbox';
 
 //Validation
-import {required} from '../utilities/validation'
+import {required} from '../../utilities/validation'
 
 //Actions
-import { validateUser, logout } from '../actions/accountAction';
+import { validateUser, logout, clearValidateUserResponse } from '../../actions/accountAction';
 
 
 const styles = {
@@ -68,8 +70,28 @@ class Login extends Component {
     }
 
     componentWillMount() {
-        localStorage.clear();
-        errorMessage="";
+        //This will be case for remember me option
+        if(this.props.validateAction_Data){
+            if(this.props.validateAction_Data.user){
+                if(this.props.validateAction_Data.user.rememberme === true){
+                    if (this.props.validateAction_Data.user.responseData.role === 'superadmin') {
+                        this.props.history.push(`/superadmindashboard`);
+                    }
+                    else if(this.props.validateAction_Data.user.responseData.role === 'admin'){
+                        this.props.history.push(`/admindashboard`);
+                    }
+                    else if(this.props.validateAction_Data.user.responseData.role === 'merchant'){
+                        this.props.history.push(`/merchantdashboard`);
+                    }
+                }
+                else{
+                    //Not checked remember me option
+                    localStorage.clear();
+                    this.props.clearValidateUserResponse()
+                    errorMessage="";
+                }
+            }
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -130,7 +152,16 @@ class Login extends Component {
                                     <Field name="password" myType="password" fullWidth={true} component={InputField} validate={required} />
                                 </div>
                                 <div className="checkbox">
-                                    <label className="controlLabel"><input type="checkbox" ref="remember" name="remember"/> Remember me</label>                 
+                                <FormControlLabel
+                                                    control={
+                                                        <Field 
+                                                            name="rememberMe" 
+                                                            id="rememberMe" 
+                                                            myStyle={styles} 
+                                                            component={RenderCheckbox} />
+                                                    }
+                                                    label="Remember me"
+                                />                 
                                     <Link style={styles.forgotTxt} to={'/resetPassword'}> Forgot Password?</Link> 	
                                 </div>
                                 <div style={{paddingTop:'10px'}}> 
@@ -162,7 +193,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ validateUser, logout }, dispatch)
+    return bindActionCreators({ validateUser, logout, clearValidateUserResponse }, dispatch)
 }
 
 export default reduxForm({

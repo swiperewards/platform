@@ -28,6 +28,9 @@ import Loader from '../../components/loader'
 
 //Actions
 import { addNewMerchant, ClearMerchantState } from '../../actions/merchantAction';
+import { getUserProfile } from '../../actions/accountAction';
+
+import moment from 'moment'
 
 const styles = theme => ({
     root: {
@@ -141,7 +144,16 @@ class AddMerchant extends Component {
         }
         else{
           this.setState({showLoader:true})
-          this.props.addNewMerchant(values, this.props.userData.user.responseData.token)
+          let registerEmailId
+          if(this.props.userData.user.responseData.role === 'merchant'){
+            registerEmailId = this.props.userData.user.responseData.emailId
+          }
+          else{
+            registerEmailId = undefined
+          }
+
+          this.props.addNewMerchant(values, registerEmailId , this.props.userData.user.responseData.token)
+
         }
       }
 
@@ -151,11 +163,18 @@ class AddMerchant extends Component {
     
       handleClose = () => {
         this.setState({ open: false });
-        this.props.history.push('/managemerchants');
+        if(this.props.userData.user.responseData.role === 'merchant'){
+          this.props.history.push('/merchantdashboard');
+        }
+        else{
+          this.props.history.push('/managemerchants');
+        }
       };
 
     componentWillMount()
     {
+
+      console.log('Current TimeStamp' + moment().format('YYYYMMDDHHMM'));
         //to clear old payment state
         this.props.ClearMerchantState();
         this.setState({open: false});
@@ -169,6 +188,11 @@ class AddMerchant extends Component {
           if(nextProps.merchantPayload.data){
             if(nextProps.merchantPayload.data.status === 200){
                 errorMessage = undefined
+                if(this.props.userData.user.responseData.role === 'merchant'){
+                  if(this.props.userData.user.responseData.token){
+                    this.props.getUserProfile(this.props.userData.user.responseData.token);
+                  }
+                }
                 this.handleClickOpen()
             }
             else{
@@ -289,7 +313,7 @@ AddMerchant.propTypes = {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ addNewMerchant, ClearMerchantState }, dispatch)
+  return bindActionCreators({ addNewMerchant, ClearMerchantState, getUserProfile }, dispatch)
 }
 
 const selector = formValueSelector('FrmAddMerchant') // <-- same as form name

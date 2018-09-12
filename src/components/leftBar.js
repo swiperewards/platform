@@ -157,16 +157,20 @@ class ResponsiveDrawer extends React.Component {
         <List className={classes.list}>
           {
             <div style={{ color: '#FFFFFF', fontSize:'12px', paddingLeft: '0px' }}> 
-            {this.props.userData.user.responseData.menuList
-            .sort(((a,b) => a.displayOrder > b.displayOrder))
-            .map((value, index) => (
-              <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}}>
-                <ListItem button disableGutters className={classes.ListItem}>
-                  <img src={"../images/" + value.iconName + ".svg"} height="20px" alt="" style={{paddingLeft:'15px'}} />
-                  <ListItemText disableTypography primary={value.text} />
-                </ListItem>
-              </Link>
-            ))}
+              {
+                this.props.userData.user.responseData !== undefined ? (this.props.userData.user.responseData.menuList
+                .sort(((a,b) => a.displayOrder > b.displayOrder))
+                .map((value, index) => (
+                  <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}}>
+                    <ListItem button disableGutters className={classes.ListItem}>
+                      <img src={"../images/" + value.iconName + ".svg"} height="20px" alt="" style={{paddingLeft:'15px'}} />
+                      <ListItemText disableTypography primary={value.text} />
+                    </ListItem>
+                  </Link>
+                )))
+                :
+                (null)
+              }
             </div>
           }
         </List>
@@ -189,12 +193,15 @@ class ResponsiveDrawer extends React.Component {
             <div style={{width:'100%'}}>
                 <div style={{float:'right', position:'relative', margin:'0px'}}>
                     <div className={classes.avatarDiv}>
-                        <Avatar src={this.props.userData.user.responseData.profilePicUrl}
+                    <NavLink to={'/editUserProfile'}>
+                      <Avatar src={this.props.userData.user.responseData.profilePicUrl}
                         className={classes.avatarIcon} />
+                    </NavLink>
+                        
                     </div>
                     {auth && (
                     <div style={{float:'right',verticalAlign:'middle'}}>
-                        <span className={classes.avatarSpan}>{this.props.userData.user.responseData.fullName}</span> 
+                        <span className={classes.avatarSpan} onClick={this.handleMenu}>{this.props.userData.user.responseData.fullName}</span> 
                         <IconButton
                         aria-owns={open ? 'menu-appbar' : null}
                         aria-haspopup="true"
@@ -218,12 +225,12 @@ class ResponsiveDrawer extends React.Component {
                         onClose={this.handleClose}
                         >
                         <MenuItem>
-                          <NavLink to="/editUserProfile" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
+                          <NavLink to="editUserProfile" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
                             Profile
                           </NavLink>
                         </MenuItem>
                         <MenuItem>
-                            <NavLink to="/logout" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
+                            <NavLink to="logout" style={{textDecoration:'none', color:'#000', fontSize:'10pt'}}>
                             Logout
                             </NavLink>
                         </MenuItem>

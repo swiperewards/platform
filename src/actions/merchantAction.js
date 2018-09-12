@@ -5,11 +5,9 @@ import moment from 'moment'
 var axios = require('axios');
 
 //Function to add new merchant to processing system
-export function addNewMerchant(values, token) {
+export function addNewMerchant(values, registeredEmail, token) {
 
-    var acceptanceDate = (values.acceptanceDate === undefined ? undefined : (values.acceptanceDate).replace(normalizedPhone,''))
-    var acceptanceTime = (values.acceptanceTime === undefined ? undefined : (values.acceptanceTime).replace(normalizedPhone,''))
-    var acceptanceDateTime = (acceptanceDate === undefined || acceptanceTime === undefined) ? undefined : (acceptanceDate + acceptanceTime)
+    var acceptanceDateTime = moment().format('YYYYMMDDHHMM')
 
     var setting = {
         method: 'post',
@@ -38,6 +36,8 @@ export function addNewMerchant(values, token) {
                 "entityEin": values.taxId === undefined ? undefined : (values.taxId).replace(normalizedPhone,''),
                 "entityPublic": values.publicCompany,
                 "entityWebsite": values.businessWebsite,
+                "registeredWithNouvo": registeredEmail !== undefined ? true : false,
+                "registeredEmail": registeredEmail !== undefined ? registeredEmail : undefined,
                 "entityaccounts": [{
                     "primary": "1",
                     "accountMethod": values.bankAccountType,
@@ -212,7 +212,7 @@ export function getMerchantDetailsAPI(merchantId,token) {
                     "dba": responseDetails.dba_v,
                     "taxId": responseDetails.ein_v,
                     "servicePhone": responseDetails.customerPhone_v,
-                    "businessPeriod": moment(responseDetails.established_v).format('YYYY-MM-DD') ,  
+                    "businessPeriod":(responseDetails.established_v !== null) ?  moment(responseDetails.established_v).format('YYYY-MM-DD') : undefined ,  
                     "businessWebsite": responseDetails.website_v,
                     "isCreditCardYes": responseDetails.new_v === "1" ? false: true,
                     "ccSale":responseDetails.annualCCSales_v,    
@@ -227,9 +227,9 @@ export function getMerchantDetailsAPI(merchantId,token) {
                     "boardingStatus":responseDetails.status_v === "0" ? responseDetails.status_v : "2",
                     "mccNumber":responseDetails.mcc_v,
                     "merchantType":responseDetails.environment_v,
-                    "acceptanceDate":moment((responseDetails.tcAcceptDate_v).substring(0,8)).format('YYYY-MM-DD') ,
+                    "acceptanceDate":(responseDetails.tcAcceptDate_v !== null ) ? moment((responseDetails.tcAcceptDate_v).substring(0,8)).format('YYYY-MM-DD') : undefined ,
                     "ipAddress":responseDetails.tcAcceptIp_v,
-                    "acceptanceTime":moment((responseDetails.tcAcceptDate_v).substring(9,12)).format('HH:MM'),
+                    "acceptanceTime":(responseDetails.tcAcceptDate_v !== null ) ?  moment((responseDetails.tcAcceptDate_v).substring(9,12)).format('HH:MM') : undefined,
                     "bankAccountType":responseDetails.accounts.account_v.method.toString(),
                     "routeNumber":responseDetails.accounts.account_v.routing,
                     "accountNumber":responseDetails.accounts.account_v.number,
@@ -283,9 +283,7 @@ export function getMerchantDetailsAPI(merchantId,token) {
 //Function to update merchant details to processing system
 export function updateMerchantDetails(values, screenType, token) {
 
-    var acceptanceDate = (values.acceptanceDate === undefined || values.acceptanceDate === null ? "00000000" : (values.acceptanceDate).replace(normalizedPhone,''))
-    var acceptanceTime = (values.acceptanceTime === undefined || values.acceptanceTime === null ? "0000" : (values.acceptanceTime).replace(normalizedPhone,''))
-    var acceptanceDateTime = acceptanceDate + acceptanceTime
+    var acceptanceDateTime = moment().format('YYYYMMDDHHMM')
 
     var setting = {
         method: 'post',

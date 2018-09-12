@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import NumberFormat from "react-number-format";
+import moment from 'moment'
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -18,6 +18,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
+import AddIcon from '@material-ui/icons/Add';
 
 //Components
 import InputField from '../../components/inputField';
@@ -27,7 +28,8 @@ import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { getUserProfile } from '../../actions/accountAction';
+import { getDealsListWithFilter, deleteDeal, getDealDetails } from '../../actions/dealAction';
 
 //Data
 import Data from '../../staticData';
@@ -48,31 +50,54 @@ class ManageDeals extends Component {
         name:'',
         status: '',
         location:'',
-        merchantList:'',
+        fromDate:'',
+        toDate:'',
+        dealsList:'',
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
         disableReset: true,
+        permissionDisplayBox: false,
     };
 
     componentWillMount()
     {
-        this.getAllMerchants();
+        this.getAllDeals();
+
+        if(this.props.userData.user.responseData.role === 'merchant'){
+            const profileMerchantId = this.props.userProfile === undefined ? null : this.props.userProfile.responseData.merchantId
+            if(this.props.userData.user.responseData.token && profileMerchantId === null){
+                this.setState({showLoader:true})
+                this.props.getUserProfile(this.props.userData.user.responseData.token);
+            }
+        }
     }
 
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
-          if (nextProps.merchantPayload){
-            if(nextProps.merchantPayload.status === 200){
-                this.setState({merchantList: nextProps.merchantPayload.responseData})
+          if (nextProps.dealsPayload){
+            if(nextProps.dealsPayload.status === 200){
+                this.setState({dealsList: nextProps.dealsPayload.responseData})
             }
           }
-          else if(nextProps.merchantDelete){
-            if(nextProps.merchantDelete.status === 200){
+          
+          if(nextProps.dealDelete){
+            this.setState({showLoader:false})
+            if(nextProps.dealDelete.status === 200){
                 this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
-                this.getAllMerchants();
+                this.getAllDeals();
+            }
+          }
+
+          if(nextProps.userProfile){
+            if(nextProps.userProfile.status === 200){
+                if(nextProps.userProfile.responseData){
+                    if(nextProps.userProfile.responseData.merchantId === null){
+                        this.props.history.push('/addNewMerchant');
+                    }
+                }
             }
           }
         }
@@ -98,9 +123,9 @@ class ManageDeals extends Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    getAllMerchants(){
+    getAllDeals(){
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
+            this.props.getDealsListWithFilter(this.state.name, this.state.status, this.state.location, this.state.fromDate, this.state.toDate, this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
@@ -108,29 +133,45 @@ class ManageDeals extends Component {
     }
 
     onHandleSearch(){
-        this.getAllMerchants();
+        this.getAllDeals();
     }
 
-    deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
+    deleteDealById = (dealId) => {
+
+        if (this.state.permissionDisplayBox) {
+            this.handleClose();
+            if(this.props.userData.user.responseData.token){
+                this.setState({showLoader:true})
+                this.props.deleteDeal(this.state.dealId, this.props.userData.user.responseData.token);
+            }
+            else{
+                //#TODO: Handle token expire case here
+            }
         }
         else{
-            //#TODO: Handle token expire case here
+            this.setState({ permissionDisplayBox: true, dealId: dealId });
         }
     }
 
-    updateMerchant = (merchantId) => {
-        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
+    updateDeal = (dealId) =>{
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getDealDetails(dealId, this.props.userData.user.responseData.token)
+            this.props.history.push('/updateDeal')
+        }
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
+        this.setState({ permissionDisplayBox: false });
     };
 
     addNewDeal(){
-        this.props.history.push('/merchantList')
+        if(this.props.userData.user.responseData.merchantId !== null){
+            this.props.history.push({pathname:'/addNewDeal',state: { detail: this.props.userData.user.responseData.merchantId }})
+        }else{
+            this.props.history.push('/merchantList')
+        }
     }
 
     onHandleReset(){
@@ -141,20 +182,29 @@ class ManageDeals extends Component {
         this.props.reset();
 
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
+            this.props.getDealsListWithFilter("", "", "", this.props.userData.user.responseData.token)
         }
     
     }
 
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const { dealsList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, dealsList.length - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
+        ];
+
+        const permissionActions = [
+            <Button key="no" onClick={this.handleClose} color="primary">
+                No
+            </Button>,
+            <Button key="yes" onClick={this.deleteDealById} color="primary" autoFocus>
+                Yes
+            </Button>,
         ];
 
         return (
@@ -165,8 +215,14 @@ class ManageDeals extends Component {
             <div>
                 <DialogBox 
                     displayDialogBox={dialogOpen} 
-                    message="Merchant deleted successfully" 
+                    message="Deal deleted successfully" 
                     actions={actions} 
+                />
+
+                <DialogBox 
+                    displayDialogBox={permissionDisplayBox} 
+                    message="Are you sure to delete deal?" 
+                    actions={permissionActions} 
                 />
             </div> 
 
@@ -238,7 +294,26 @@ class ManageDeals extends Component {
                                 </Field>    
                             </FormControl>  
                         </div>    
-                        <div className="col-xs-12 col-sm-6 col-md-3">
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            <Field 
+                            myType="date"
+                            name="fromDate" 
+                            fullWidth={true} 
+                            component={InputField} 
+                            onChange={this.handleChange}
+                            />
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-2">
+                            <Field 
+                            myType="date"
+                            name="toDate" 
+                            myPlaceHolder="To Date" 
+                            fullWidth={true} 
+                            component={InputField} 
+                            onChange={this.handleChange}
+                            />
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-1">
                             <button 
                                 type="button"
                                 onClick={this.onHandleReset.bind(this)}
@@ -254,13 +329,14 @@ class ManageDeals extends Component {
                                 > Filter
                             </button> 
                         </div>       
-                        <div className="col-xs-12 col-sm-6 col-md-3 end-md">
-                            <button 
+                        <div className="col-xs-12 col-sm-6 col-md-2 end-md">
+                            <Button 
+                            variant="fab"
                             type="button"
+                            color="primary"
                             onClick={this.addNewDeal.bind(this)}
-                            className="button"
                             style={{backgroundColor:'#27A24F'}}
-                            > +Add Deal</button> 
+                            > <AddIcon /></Button> 
                         </div>
                     </div>
                 </form>
@@ -286,34 +362,36 @@ class ManageDeals extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
-                            (merchantList.length === 0) ? 
+                            (dealsList !== "") ? (
+                            (dealsList.length === 0) ? 
                                 (<TableRow>
                                     <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
                                 </TableRow>)
                                 : (
-                                merchantList
+                                dealsList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
                                     <TableRow className="tableRow" key={object.id}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>{object.first_v + " " + object.last_v}</TableCell>
-                                        <TableCell>{object.city_v}</TableCell>
-                                        <TableCell>{object.email_v}</TableCell>
-                                        <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
+                                        <TableCell>{object.entityName}</TableCell>
+                                        <TableCell>{object.location}</TableCell>
+                                        <TableCell>{moment(object.startDate).format('MM/DD/YYYY') + " - " + moment(object.endDate).format('MM/DD/YYYY')}</TableCell>
+                                        <TableCell>{object.cashBonus}%</TableCell>
                                         <TableCell>
-                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
+                                            <div className={object.status === 1 ? "titleRed" : "titleGreen"}>
+                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 1 ? "Expire" : "Active"}</FormLabel>
+                                            </div>
                                         </TableCell>
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" disabled={object.status === 1 ? true : false} onClick={() => this.updateDeal(object.id)} className={object.status === 1 ? "disabledButton" : "enabledButton"}> 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" disabled={object.status === 1 ? true : false} onClick={() => this.deleteDealById(object.id)} className={object.status === 1 ? "disabledButton" : "enabledButton"}> 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -335,7 +413,7 @@ class ManageDeals extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={3}
-                                count={merchantList.length}
+                                count={dealsList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}
@@ -357,14 +435,15 @@ class ManageDeals extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({ getDealsListWithFilter, deleteDeal, getUserProfile, getDealDetails }, dispatch)
   }
   
   ManageDeals = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
-      merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
-      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
+      dealsPayload: state.deal.dealList === undefined ? undefined : state.deal.dealList,
+      dealDelete: state.deal.deleteDeal === undefined ? undefined : state.deal.deleteDeal,
+      userProfile: state.account.userProfile === undefined ? undefined : state.account.userProfile, 
     }),
     mapDispatchToProps,
   )(ManageDeals)

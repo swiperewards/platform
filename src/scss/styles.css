@@ -81,8 +81,8 @@ FormLabel {
   width: 100%; }
 
 .recaptcha {
-  transform: scale(0.77) !important;
-  -webkit-transform: scale(0.77) !important;
+  transform: scale(1) !important;
+  -webkit-transform: scale(1) !important;
   transform-origin: 0 0 !important;
   -webkit-transform-origin: 0 0 !important; }
 

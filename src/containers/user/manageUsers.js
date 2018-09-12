@@ -68,7 +68,8 @@ class ManageUsers extends Component {
                 this.setState({merchantList: nextProps.merchantPayload.responseData})
             }
           }
-          else if(nextProps.merchantDelete){
+          
+          if(nextProps.merchantDelete){
             if(nextProps.merchantDelete.status === 200){
                 this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });

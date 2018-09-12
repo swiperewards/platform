@@ -17,7 +17,7 @@ import {required, dropDownRequired, between5to20} from '../../utilities/validati
 
 //Components
 import InputField from '../../components/inputField';
-import DialogBox from '../../components/alertDialog'
+import DialogBox from '../../components/alertDialog';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
 
@@ -64,8 +64,7 @@ class UpdateBankAccount extends Component {
         if (nextProps) {
           if (nextProps.updateBankResponse){
             this.setState({showLoader:false})
-            nextProps.updateBankResponse
-            .map((response)=>{
+            nextProps.updateBankResponse.forEach(response => {
                 if(response.code === 200 || response.code === 201){
                     errorMessage = errorMessage !== undefined ? errorMessage : undefined
                 }
@@ -95,8 +94,10 @@ class UpdateBankAccount extends Component {
             if(errorMessage === undefined){
                 this.getMerchantDetails()
                 this.handleOpenAlert()
-                this.props.clearMerchantUpdateState()
             }
+
+            this.props.clearMerchantUpdateState()
+
           }
         }
         
@@ -120,6 +121,7 @@ class UpdateBankAccount extends Component {
 
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
+            errorMessage = undefined
             this.props.updateMerchantDetails(values, "bankAccount" ,this.props.userData.user.responseData.token)
         }
       }

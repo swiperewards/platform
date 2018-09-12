@@ -317,7 +317,7 @@ class OwnerDetails extends Component {
 
     render() {
 
-        const { expanded, businessType } = this.state;
+        const { businessType } = this.state;
 
         return (
             <div style={{paddingBottom:'20px'}}>
