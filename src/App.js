@@ -70,7 +70,7 @@ class App extends Component {
     
     let { navDrawerOpen } = this.state;
     
-    if (this.props.userData) {      
+    if (this.props.userData.user) {      
       return(
             <div>
               <LeftBar navDrawerOpen={window.innerWidth > 1025 ? true : navDrawerOpen}
