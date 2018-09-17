@@ -11,16 +11,19 @@ import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
 import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
 
 //Components
+import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
+import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantDetailsAPI, updateMerchantDetails } from '../../actions/merchantAction';
+import { addNewAdmin } from '../../actions/adminAction';
 
 //Validation
-import {required, dropDownRequired} from '../../utilities/validation'
+import {required, dropDownRequired, phoneMask, email, between1to100} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -37,87 +40,82 @@ const styles = {
       },
 };
 
-function validate(formProps) {  
-    const errors = {};
-  
-    if (!formProps.businessType) {
-      errors.firstName = 'Select business Type';
-    }
-  
-    if (!formProps.businessName) {
-      errors.lastName = 'Please enter a Business name';
-    }
-  
-    return errors;
-  }
-
 class AddAdmin extends Component {
 
     state = {
-        businessType: '',
-        stateName:'',
-        creditCheckedNo: true,
-        creditCheckedYes: false,
+        image:'',
+        dialogOpen: false,
       };
 
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
       };
 
-      handleCheckboxChange = name => event => {
-        this.setState({[name]: event.target.checked});
-
-        if (name === "creditCheckedYes"){
-            this.setState({creditCheckedNo: !event.target.checked});
-        }
-        else if (name === "creditCheckedNo"){
-            this.setState({creditCheckedYes: !event.target.checked});
-        }
-      };
-
-      //Enables "Public Company" option if not following cases
-      renderSwitch(param) {
-        switch(param) {
-          case '0':
-            return true;
-          case '5':
-            return true;  
-          case '6':
-            return true;
-          default:
-            return false;
-        }
-      }
-
     componentWillMount() {
-
-        if(this.props.userData.user.responseData.token && this.props.merchant){
-            this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
-        }
+        errorMessage = "";
     }
 
     componentWillReceiveProps(nextProps) {
-    
+        if (nextProps) {
+            if (nextProps.newAdminResponse){
+              this.setState({showLoader:false})
+              if(nextProps.newAdminResponse.status === 200){
+                  this.setState({message: nextProps.newAdminResponse.message})
+                  this.setState({ dialogOpen: true });
+              }
+              else{
+                  errorMessage =
+                              <div 
+                                  className="errorDiv"
+                              >{nextProps.newAdminResponse.message}</div>
+              }
+            }
+          }
     }  
 
-    handleInitialize(entityDetails) {
-        if(entityDetails !== undefined){
-            this.props.initialize(entityDetails);
-        }
-      }
-
       onSubmit(values) {
-
-        console.log(values);
+        if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
+            this.props.addNewAdmin(values, this.state.image, this.props.userData.user.responseData.token)
+        }
       }
 
       cancelClick(){
         this.props.history.goBack();
     }
 
+    handleClose = () => {
+        this.setState({ dialogOpen: false });
+        this.props.history.push('/manageadmins');
+    };
+
+    onImageChange(event) {
+        if (event.target.files && event.target.files[0]) {
+            let reader = new FileReader();
+            reader.onload = (e) => {
+                this.setState({image: e.target.result});
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    }
+
     render() {
+
+        const {  dialogOpen } = this.state;
+
+        const actions = [
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
         return (
             <div style={{paddingBottom:'20px'}}>
+                <Loader status={this.state.showLoader} />
+                <DialogBox 
+                        displayDialogBox={dialogOpen} 
+                        message={this.state.message} 
+                        actions={actions} 
+                />  
                 <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
 
                 <Paper className="pagePaper">
@@ -152,13 +150,13 @@ class AddAdmin extends Component {
                                     name="email" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required, email, between1to100]}
                                 />  
                             </div>
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Phone*
+                                Phone
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
@@ -166,7 +164,9 @@ class AddAdmin extends Component {
                                     name="phone" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    masked={true}
+                                    myMaskType="text"
+                                    maskReg={phoneMask}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
@@ -199,17 +199,17 @@ class AddAdmin extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Avatar
                                     alt="Adelle Charles"
-                                    src="../images/profile.png"
+                                    src={this.state.image === '' ? "../images/profile.png" : this.state.image} 
                                     className="bigAvatar"
                                 />
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <input
-                                    accept="image/*"
-                                    id="raised-button-file"
-                                    multiple
-                                    type="file"
-                                />
+                                <input 
+                                    type="file" 
+                                    onChange={this.onImageChange.bind(this)} 
+                                    accept=".jpg"
+                                    />
+
                             </div>            
                         </div>
                         <div className="row end-xs">
@@ -242,18 +242,17 @@ class AddAdmin extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails }, dispatch)
+    return bindActionCreators({ addNewAdmin }, dispatch)
   }
 
   AddAdmin = reduxForm({
     form: 'frmAddAdmin',
-    enableReinitialize: true,
-    validate
 })(AddAdmin)
 
 AddAdmin = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
+       newAdminResponse: state.admin.addAdmin === undefined ? undefined : state.admin.addAdmin,
     }),
     mapDispatchToProps,
   )(AddAdmin)

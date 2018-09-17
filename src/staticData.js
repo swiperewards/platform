@@ -85,6 +85,10 @@ const data={
       {id:'0', name: 'Activate'},
       {id:'1', name: 'Deactivate'}
     ],
+    status: [
+      {id:'1', name: 'Activate'},
+      {id:'0', name: 'Deactivate'}
+    ],
     bankAccountType: [
         {id:'8', name: 'Checking'},
         {id:'9', name: 'Savings'},

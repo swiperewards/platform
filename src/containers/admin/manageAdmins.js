@@ -29,7 +29,7 @@ import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { getAdminListWithFilter, deleteAdmin, getAdminDetails } from '../../actions/adminAction';
 
 //Data
 import Data from '../../staticData';
@@ -49,33 +49,33 @@ class ManageAdmins extends Component {
     state = {
         name:'',
         status: '',
-        location:'',
-        merchantList:'',
+        adminList:'',
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
         disableReset: true,
+        permissionDisplayBox: false,
     };
 
     componentWillMount()
     {
-        this.getAllMerchants();
+        this.getAllAdmins();
     }
 
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
-          if (nextProps.merchantPayload){
-            if(nextProps.merchantPayload.status === 200){
-                this.setState({merchantList: nextProps.merchantPayload.responseData})
+          if (nextProps.adminPayload){
+            if(nextProps.adminPayload.status === 200){
+                this.setState({adminList: nextProps.adminPayload.responseData})
             }
           }
           
-          if(nextProps.merchantDelete){
-            if(nextProps.merchantDelete.status === 200){
-                this.setState({showLoader:false})
+          if(nextProps.adminDelete){
+            this.setState({showLoader:false})
+            if(nextProps.adminDelete.status === 200){
                 this.setState({ dialogOpen: true });
-                this.getAllMerchants();
+                this.getAllAdmins();
             }
           }
         }
@@ -85,7 +85,7 @@ class ManageAdmins extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name!=="" && this.state.status!=="" && this.state.location!==""){
+        if(this.state.name!=="" && this.state.status!==""){
             this.setState({disableReset: true});
         }
         else{
@@ -101,9 +101,9 @@ class ManageAdmins extends Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    getAllMerchants(){
+    getAllAdmins(){
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
+            this.props.getAdminListWithFilter(this.state.name, this.state.status, this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
@@ -111,25 +111,37 @@ class ManageAdmins extends Component {
     }
 
     onHandleSearch(){
-        this.getAllMerchants();
+        this.getAllAdmins();
     }
 
-    deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
+    deleteAdminById = (adminId) => {
+
+        if (this.state.permissionDisplayBox) {
+            this.handleClose();
+            if(this.props.userData.user.responseData.token){
+                this.setState({showLoader:true})
+                this.props.deleteAdmin(this.state.adminId, this.props.userData.user.responseData.token);
+            }
+            else{
+                //#TODO: Handle token expire case here
+            }
         }
         else{
-            //#TODO: Handle token expire case here
+            this.setState({ permissionDisplayBox: true, adminId: adminId });
         }
     }
 
-    updateMerchant = (merchantId) => {
-        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
+    updateAdmin = (adminId) => {
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getAdminDetails(adminId, this.props.userData.user.responseData.token)
+            this.props.history.push('/updateAdmin')
+        }
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
+        this.setState({ permissionDisplayBox: false });
     };
 
     addNewAdmin(){
@@ -144,20 +156,29 @@ class ManageAdmins extends Component {
         this.props.reset();
 
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
+            this.props.getAdminListWithFilter("", "", this.props.userData.user.responseData.token)
         }
     
     }
 
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const { adminList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, adminList.length - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
+        ];
+
+        const permissionActions = [
+            <Button key="no" onClick={this.handleClose} color="primary">
+                No
+            </Button>,
+            <Button key="yes" onClick={this.deleteAdminById} color="primary" autoFocus>
+                Yes
+            </Button>,
         ];
 
         return (
@@ -170,6 +191,12 @@ class ManageAdmins extends Component {
                     displayDialogBox={dialogOpen} 
                     message="Admin deleted successfully" 
                     actions={actions} 
+                />
+
+                <DialogBox 
+                    displayDialogBox={permissionDisplayBox} 
+                    message="Are you sure to delete admin?" 
+                    actions={permissionActions} 
                 />
             </div> 
 
@@ -265,40 +292,40 @@ class ManageAdmins extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
-                            (merchantList.length === 0) ? 
+                            (adminList !== "") ? (
+                            (adminList.length === 0) ? 
                                 (<TableRow className="tableRow">
                                     <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
                                 </TableRow>)
                                 : (
-                                merchantList
+                                adminList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
-                                    <TableRow className="tableRow" key={object.id}>
+                                    <TableRow className="tableRow" key={object.userId}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>
                                             <Avatar
-                                                alt="Adelle Charles"
-                                                src="../images/profile.png"
+                                                alt="profile"
+                                                src={object.profilePicUrl !== null ? object.profilePicUrl :  "../images/profile.png"}
                                                 className="bigAvatar"
                                             />
                                         </TableCell>
-                                        <TableCell>{object.first_v + " " + object.last_v}</TableCell>
-                                        <TableCell>{object.email_v}</TableCell>
-                                        <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
+                                        <TableCell>{object.fullName}</TableCell>
+                                        <TableCell>{object.emailId}</TableCell>
+                                        <TableCell><NumberFormat value={object.contactNumber} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
                                         <TableCell>
-                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
+                                            <div className={object.status === 0 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 1 ? "Active" : "Deactive"}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.updateAdmin(object.userId)} className="enabledButton"> 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.deleteAdminById(object.userId)} className="enabledButton"> 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -320,7 +347,7 @@ class ManageAdmins extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={3}
-                                count={merchantList.length}
+                                count={adminList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}
@@ -342,14 +369,14 @@ class ManageAdmins extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({ getAdminListWithFilter, deleteAdmin, getAdminDetails }, dispatch)
   }
   
   ManageAdmins = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
-      merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
-      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
+      adminPayload: state.admin.adminList === undefined ? undefined : state.admin.adminList,
+      adminDelete: state.admin.deleteAdmin === undefined ? undefined : state.admin.deleteAdmin
     }),
     mapDispatchToProps,
   )(ManageAdmins)

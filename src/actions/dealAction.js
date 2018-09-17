@@ -188,10 +188,11 @@ export function updateDeal(values,token) {
                 "id":values.id,
                 "shortDescription": "",
                 "longDescription": "",
-                "startDate": values.fromDate === undefined ? undefined : (values.fromDate).replace(normalizedPhone,''),
-		        "endDate": values.toDate === undefined ? undefined : (values.toDate).replace(normalizedPhone,''),
+                "startDate": values.startDate === undefined ? undefined : (values.startDate).replace(normalizedPhone,''),
+		        "endDate": values.endDate === undefined ? undefined : (values.endDate).replace(normalizedPhone,''),
                 "cashBonus": values.cashBonus,
-                "location": values.location
+                "location": values.location,
+                "status" : values.status,
             }
 	    },
         headers: {

@@ -13,7 +13,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 
 //Validation
-import {required, dropDownRequired, between5to20} from '../../utilities/validation'
+import {required, dropDownRequired, between5to16, between5to9} from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
@@ -196,13 +196,18 @@ class UpdateBankAccount extends Component {
                                 name="routeNumber" 
                                 fullWidth={true} 
                                 component={InputField} 
-                                validate={[required, between5to20]}/>  
+                                validate={[required, between5to9]}/>  
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-3">
                             Bank Account Number*
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-3">    
-                            <Field myType="number" name="accountNumber" fullWidth={true} component={InputField} validate={[required, between5to20]}/>  
+                            <Field 
+                                myType="number" 
+                                name="accountNumber" 
+                                fullWidth={true} 
+                                component={InputField} 
+                                validate={[required, between5to16]}/>  
                         </div>
                     </div>
                 </div>            

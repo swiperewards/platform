@@ -70,6 +70,9 @@ class Login extends Component {
     }
 
     componentWillMount() {
+
+        errorMessage="";
+
         //This will be case for remember me option
         if(this.props.validateAction_Data){
             if(this.props.validateAction_Data.user){

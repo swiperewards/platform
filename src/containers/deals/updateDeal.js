@@ -50,6 +50,10 @@ class UpdateDeal extends Component {
         }
     }
 
+    componentWillMount(){
+        errorMessage = "";
+    }
+
       handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
       };
@@ -64,9 +68,9 @@ class UpdateDeal extends Component {
             }
             else{
                 errorMessage =
-                            <div 
-                                className="errorDiv"
-                            >{nextProps.updateDealResponse.message}</div>
+                    <div 
+                        className="errorDiv"
+                    >{nextProps.updateDealResponse.message}</div>
             }
           }
         }
@@ -176,7 +180,7 @@ class UpdateDeal extends Component {
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
-                                    myType="text" 
+                                    myType="number" 
                                     name="cashBonus" 
                                     fullWidth={true} 
                                     component={InputField} 

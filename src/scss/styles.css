@@ -286,3 +286,6 @@ FormLabel {
   background-Color: #ffdce0;
   border-Color: rgba(27, 31, 35, 0.15);
   text-Align: center; }
+
+.disabled-link {
+  pointer-events: none; }

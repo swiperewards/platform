@@ -133,6 +133,23 @@ class ResponsiveDrawer extends React.Component {
     this.setState({ mobileOpen: !this.state.mobileOpen });
   };
 
+  enabledOption(option) {
+    switch(option) {
+      case '/paymentprocessing':
+        return true;
+      case '/managemerchants':
+        return true;  
+      case '/manageadmins':
+        return true;  
+      case '/managedeals':
+        return true;
+      case '/contactus':
+        return true;
+      default:
+        return false;
+    }
+  }
+
   render() {
     const { classes, theme } = this.props;
     const children = this.props.children;
@@ -158,10 +175,10 @@ class ResponsiveDrawer extends React.Component {
           {
             <div style={{ color: '#FFFFFF', fontSize:'12px', paddingLeft: '0px' }}> 
               {
-                this.props.userData.user.responseData !== undefined ? (this.props.userData.user.responseData.menuList
+                this.props.userData.user !== undefined ? (this.props.userData.user.responseData.menuList
                 .sort(((a,b) => a.displayOrder > b.displayOrder))
                 .map((value, index) => (
-                  <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}}>
+                  <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}} className= {this.enabledOption(value.link) !== true ? 'disabled-link' : null}>
                     <ListItem button disableGutters className={classes.ListItem}>
                       <img src={"../images/" + value.iconName + ".svg"} height="20px" alt="" style={{paddingLeft:'15px'}} />
                       <ListItemText disableTypography primary={value.text} />
@@ -194,14 +211,14 @@ class ResponsiveDrawer extends React.Component {
                 <div style={{float:'right', position:'relative', margin:'0px'}}>
                     <div className={classes.avatarDiv}>
                     <NavLink to={'/editUserProfile'}>
-                      <Avatar src={this.props.userData.user.responseData.profilePicUrl}
+                      <Avatar src={this.props.userData.user !== undefined ? this.props.userData.user.responseData.profilePicUrl : ""}
                         className={classes.avatarIcon} />
                     </NavLink>
                         
                     </div>
                     {auth && (
                     <div style={{float:'right',verticalAlign:'middle'}}>
-                        <span className={classes.avatarSpan} onClick={this.handleMenu}>{this.props.userData.user.responseData.fullName}</span> 
+                        <span className={classes.avatarSpan} onClick={this.handleMenu}>{this.props.userData.user !== undefined ? this.props.userData.user.responseData.fullName : ""}</span> 
                         <IconButton
                         aria-owns={open ? 'menu-appbar' : null}
                         aria-haspopup="true"

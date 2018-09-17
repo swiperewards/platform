@@ -328,8 +328,8 @@ class ManageDeals extends Component {
                                 className="button"
                                 > Filter
                             </button> 
-                        </div>       
-                        <div className="col-xs-12 col-sm-6 col-md-2 end-md">
+                        </div>        
+                        <div className="col-xs-12 col-sm-6 col-md-1 end-md">
                             <Button 
                             variant="fab"
                             type="button"
@@ -386,12 +386,12 @@ class ManageDeals extends Component {
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 1 ? true : false} onClick={() => this.updateDeal(object.id)} className={object.status === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.updateDeal(object.id)} className="enabledButton"> 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 1 ? true : false} onClick={() => this.deleteDealById(object.id)} className={object.status === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.deleteDealById(object.id)} className="enabledButton"> 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
