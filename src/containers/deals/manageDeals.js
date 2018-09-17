@@ -386,12 +386,12 @@ class ManageDeals extends Component {
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 1 ? true : false} onClick={() => this.updateDeal(object.id)} className={object.status === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.updateDeal(object.id)} className="enabledButton"> 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 1 ? true : false} onClick={() => this.deleteDealById(object.id)} className={object.status === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.deleteDealById(object.id)} className="enabledButton"> 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>

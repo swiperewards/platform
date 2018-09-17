@@ -320,12 +320,12 @@ class ManageAdmins extends Component {
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 0 ? true : false} onClick={() => this.updateAdmin(object.userId)} className={object.status === 0 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.updateAdmin(object.userId)} className="enabledButton"> 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 0 ? true : false} onClick={() => this.deleteAdminById(object.userId)} className={object.status === 0 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.deleteAdminById(object.userId)} className="enabledButton"> 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
