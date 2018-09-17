@@ -15,6 +15,7 @@ import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
+import TextAreaControl from '../../components/textAreaControl';
 
 //Actions
 import { getQueryType, generateTicket, clearGenerateTicketResponse } from '../../actions/ticketAction';
@@ -173,13 +174,21 @@ class ContactUs extends Component {
                                     <div className="row">
                                         <div className="col-md-12">
                                             <label className="controlLabel">Name</label>
-                                            <Field name="fullName" fullWidth={true} component={InputField} />
+                                            <Field 
+                                                name="fullName" 
+                                                fullWidth={true} 
+                                                component={InputField} 
+                                            />
                                         </div>
                                     </div>
                                     <div className="row">
                                         <div className="col-md-12">
                                             <label className="controlLabel">Email</label>
-                                            <Field name="email" fullWidth={true} component={InputField} />
+                                            <Field 
+                                                name="email" 
+                                                fullWidth={true} 
+                                                component={InputField} 
+                                            />
                                         </div>
                                     </div>
                                     <div className="row">
@@ -217,7 +226,7 @@ class ContactUs extends Component {
                                             <Field 
                                                 name="message" 
                                                 fullWidth={true} 
-                                                component={InputField} 
+                                                component={TextAreaControl} 
                                                 validate={required}
                                             />
                                         </div>

@@ -98,7 +98,7 @@ class MerchantsList extends Component {
 
     getAllMerchants(){
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
+            this.props.getMerchantListWithFilter(this.state.name, "0", this.state.location, this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
@@ -182,31 +182,6 @@ class MerchantsList extends Component {
                             component={InputField} 
                             onChange={this.handleChange}
                             />
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="status"
-                                    component={renderSelectField}
-                                    fullWidth={true}
-                                    onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Status
-                                    </MenuItem>
-                                    {
-                                    Data.searchStatus.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.id}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
-                                    }
-                                </Field>    
-                            </FormControl>  
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-2">
                             <FormControl style={styles.formControl}>
