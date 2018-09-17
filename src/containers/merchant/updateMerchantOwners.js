@@ -18,7 +18,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 
 //Validation
-import {required, dropDownRequired, email, ssnMask, phoneMask, zipMask, percentage, drivingLicenseMask} from '../../utilities/validation'
+import {required, dropDownRequired, email, ssnMask, phoneMask, zipMask, percentage, drivingLicense} from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
@@ -162,9 +162,7 @@ const styles = {
                                     name={`${member}.ownerDrivingLicense`}
                                     fullWidth={true} 
                                     component={InputField} 
-                                    masked={true}
-                                    myMaskType="text"
-                                    maskReg={drivingLicenseMask}
+                                    validate={drivingLicense}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">

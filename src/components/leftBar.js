@@ -142,7 +142,7 @@ class ResponsiveDrawer extends React.Component {
       case '/manageadmins':
         return true;  
       default:
-        return false;
+        return true;
     }
   }
 

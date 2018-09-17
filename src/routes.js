@@ -39,6 +39,9 @@ import AddNewTicket from './containers/ticket/addNewTicket'
 
 import SuperAdminDashboard from './containers/superAdmin/superAdminDashboard'
 
+//Ticket
+import ContactUs from './containers/ticket/contactUs'
+
 import PaymentProcessing from './containers/paymentProcessing/paymentProcessing'
 
 import App from './App'
@@ -87,6 +90,7 @@ class Routes extends Component {
                             <Route exact path="/customerqueries" component={CustomerQueries}/>
                             <Route exact path="/updateAdmin" component={UpdateAdmin} />
                             <Route exact path="/paymentprocessing" component={PaymentProcessing} />
+                            <Route exact path="/contactus" component={ContactUs} />
                         </App>
                     </Switch>
                 </div>

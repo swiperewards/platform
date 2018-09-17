@@ -68,9 +68,9 @@ class UpdateDeal extends Component {
             }
             else{
                 errorMessage =
-                            <div 
-                                className="errorDiv"
-                            >{nextProps.updateDealResponse.message}</div>
+                    <div 
+                        className="errorDiv"
+                    >{nextProps.updateDealResponse.message}</div>
             }
           }
         }

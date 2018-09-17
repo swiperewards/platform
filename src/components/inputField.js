@@ -112,6 +112,8 @@ class CustomizedInputs extends Component {
             type={this.props.myType}
             fullWidth = {this.props.fullWidth}
             width = {this.props.minWidth}
+            multiline = {this.props.ismultiline === true ? true : false}
+            rowsMax={this.props.maxrow !== undefined ? this.props.maxrow : "1"}
             InputProps={{
               disableUnderline: false,
               classes: {

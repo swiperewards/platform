@@ -26,6 +26,12 @@ const exact9 = value => value && !/^.{9,9}$/.test(value.replace(normalizedPhone,
 const percentage = value => value && !/(^100(\.0{1,2})?$)|(^([1-9]([0-9])?|0)(\.[0-9]{1,2})?$)/i.test(value) ?
 'Invalid percent value' : undefined
 
+const drivingLicense = value => value && !/^[a-zA-Z0-9]{0,15}$/.test(value) ? 'Invalid driving license' : undefined
+
+const between5to9 = value => value && !/^.{5,9}$/.test(value) ? 'This field only accepts characters strings between 5 and 9 characters long' : undefined
+const between5to16 = value => value && !/^.{5,16}$/.test(value) ? 'This field only accepts characters strings between 5 and 16 characters long' : undefined
+
+
 //Expression array for Input control masking
 const phoneMask = "(###) ###-####"; 
 const taxNumberMask = "##-#######"; 
@@ -54,4 +60,7 @@ export {
     ipAddressMatch,
     between1to100,
     between5to20,
+    drivingLicense,
+    between5to16,
+    between5to9,
 }
