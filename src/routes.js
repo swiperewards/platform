@@ -13,11 +13,13 @@ import ResetPassword from './containers/account/resetPasswordMail'
 import ChangePassword from './containers/account/changePassword'
 
 import ManageAdmins from './containers/admin/manageAdmins'
+import AddAdmin from './containers/admin/addNewAdmin'
+import AdminDashboard from './containers/admin/adminDashboard'
+import UpdateAdmin from './containers/admin/updateAdmin'
 
 import MerchantDashboard from './containers/merchant/merchantDashboard'
 import ManageMerchants from './containers/merchant/manageMerchants'
 import ManageUsers from './containers/user/manageUsers'
-import AddAdmin from './containers/admin/addNewAdmin'
 import AddMerchant from './containers/merchant/addNewMerchant'
 import UpdateMerchant from './containers/merchant/updateMerchantDetails'
 import MerchantsList from './containers/merchant/merchantList'
@@ -36,7 +38,6 @@ import ManageTickets from './containers/ticket/manageTickets'
 import AddNewTicket from './containers/ticket/addNewTicket'
 
 import SuperAdminDashboard from './containers/superAdmin/superAdminDashboard'
-import AdminDashboard from './containers/admin/adminDashboard'
 
 import App from './App'
 
@@ -82,6 +83,7 @@ class Routes extends Component {
                             <Route exact path="/addNewTicket" component={AddNewTicket}/>
                             <Route exact path="/manageredemption" component={ManageRedemption}/>
                             <Route exact path="/customerqueries" component={CustomerQueries}/>
+                            <Route exact path="/updateAdmin" component={UpdateAdmin} />
                         </App>
                     </Switch>
                 </div>

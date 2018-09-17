@@ -4,12 +4,14 @@ import account from './accountReducer';
 import common from './commonReducer';
 import merchant from './merchantReducer';
 import deal from './dealReducer';
+import admin from './adminReducer';
 
 const appReducer = combineReducers({
     account,
     common,
     merchant,
     deal,
+    admin,
     form: formReducer,
 });
 
