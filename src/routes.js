@@ -39,6 +39,8 @@ import AddNewTicket from './containers/ticket/addNewTicket'
 
 import SuperAdminDashboard from './containers/superAdmin/superAdminDashboard'
 
+import PaymentProcessing from './containers/paymentProcessing/paymentProcessing'
+
 import App from './App'
 
 class Routes extends Component {
@@ -63,9 +65,9 @@ class Routes extends Component {
                         <Route exact path="/setPassword/:token" component={ChangePassword} />
 
                         <App>
-                            <Route exact path="/admindashboard" component={AdminDashboard} />
-                            <Route exact path="/superAdminDashboard" component={SuperAdminDashboard} />
-                            <Route exact path="/merchantdashboard" component={MerchantDashboard} />
+                            {/* <Route exact path="/admindashboard" component={AdminDashboard} /> */}
+                            {/* <Route exact path="/superAdminDashboard" component={SuperAdminDashboard} /> */}
+                            {/* <Route exact path="/merchantdashboard" component={MerchantDashboard} /> */}
                             <Route exact path="/managemerchants" component={ManageMerchants} />
                             <Route exact path="/managedeals" component={ManageDeals} />
                             <Route exact path="/manageadmins" component={ManageAdmins} />
@@ -84,6 +86,7 @@ class Routes extends Component {
                             <Route exact path="/manageredemption" component={ManageRedemption}/>
                             <Route exact path="/customerqueries" component={CustomerQueries}/>
                             <Route exact path="/updateAdmin" component={UpdateAdmin} />
+                            <Route exact path="/paymentprocessing" component={PaymentProcessing} />
                         </App>
                     </Switch>
                 </div>

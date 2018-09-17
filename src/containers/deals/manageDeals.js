@@ -328,8 +328,8 @@ class ManageDeals extends Component {
                                 className="button"
                                 > Filter
                             </button> 
-                        </div>       
-                        <div className="col-xs-12 col-sm-6 col-md-2 end-md">
+                        </div>        
+                        <div className="col-xs-12 col-sm-6 col-md-1 end-md">
                             <Button 
                             variant="fab"
                             type="button"
