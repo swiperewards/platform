@@ -20,6 +20,10 @@ export default function (state = {}, action) {
             return{
                 updateDeal: action.payload
             }    
+        case 'GET_CITIES':
+            return{
+                ...state, citiesList: action.payload
+            }    
         default:
             return state;
     }

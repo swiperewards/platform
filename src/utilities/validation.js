@@ -8,8 +8,8 @@ const email = value =>
     value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value) ?
         'Invalid email address' : undefined
        
-const ipAddressMatch = value => value && !/(\d+)(?<!10)\.(\d+)(?<!192\.168)(?<!172\.(1[6-9]|2\d|3[0-1]))\.(\d+)\.(\d+)$/i.test(value) ? 
-'Invalid IP Address' : undefined;        
+const ipAddressMatch = value => value && !/^(([0-2]*[0-9]+[0-9]+)\.([0-2]*[0-9]+[0-9]+)\.([0-2]*[0-9]+[0-9]+)\.([0-2]*[0-9]+[0-9]+))$/.test(value) ? 
+'Invalid IP Address' : undefined;
 
 const website = value => 
     value && !/http(s)?:\/\/.?www\.?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)/i.test(value) ?

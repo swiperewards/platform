@@ -145,6 +145,8 @@ class ResponsiveDrawer extends React.Component {
         return true;
       case '/contactus':
         return true;
+      case '/manageusers':
+        return true;  
       default:
         return false;
     }

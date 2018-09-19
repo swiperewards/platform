@@ -182,7 +182,7 @@ class AddAdmin extends Component {
                                             validate={dropDownRequired}
                                         >
                                         {
-                                            Data.searchStatus.map((item) =>{
+                                            Data.userStatus.map((item) =>{
                                                return <MenuItem 
                                                     style={styles.selectControl}
                                                     key={item.id}

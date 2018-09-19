@@ -56,6 +56,7 @@ class ManageMerchants extends Component {
         permissionDisplayBox: false,
         disableReset: true,
         merchantId:'',
+        message:'',
     };
 
     componentWillMount()
@@ -76,6 +77,7 @@ class ManageMerchants extends Component {
             if(nextProps.merchantDelete.status === 200){
                 this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
+                this.setState({message:nextProps.merchantDelete.message});
                 this.getAllMerchants();
             }
           }
@@ -116,19 +118,19 @@ class ManageMerchants extends Component {
     }
 
 
-    deleteMerchant = (merchantId) => {
+    deleteMerchant = (merchantId, inactive) => {
         if (this.state.permissionDisplayBox) {
             this.handleClose();
             if(this.props.userData.user.responseData.token){
                 this.setState({showLoader:true})
-                this.props.deleteMerchant(this.state.merchantId, this.props.userData.user.responseData.token);
+                this.props.deleteMerchant(this.state.merchantId, this.state.inactive, this.props.userData.user.responseData.token);
             }
             else{
                 //#TODO: Handle token expire case here
             }
         }
         else{
-            this.setState({ permissionDisplayBox: true, merchantId: merchantId });
+            this.setState({ permissionDisplayBox: true, merchantId: merchantId, inactive : inactive });
         }
         
     }
@@ -161,7 +163,7 @@ class ManageMerchants extends Component {
 
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
+        const { merchantList, rowsPerPage, page, dialogOpen, permissionDisplayBox, inactive } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
 
         const actions = [
@@ -187,12 +189,12 @@ class ManageMerchants extends Component {
             <div>
                 <DialogBox 
                     displayDialogBox={dialogOpen} 
-                    message="Merchant deleted successfully" 
+                    message={this.state.message} 
                     actions={actions} 
                 />
                 <DialogBox 
                     displayDialogBox={permissionDisplayBox} 
-                    message="Are you sure to delete merchant?" 
+                    message=  {inactive === true ? "Are you sure to deactivate merchant account?" : "Are you sure to activate merchant account?"}
                     actions={permissionActions} 
                 />
             </div> 
@@ -343,8 +345,14 @@ class ManageMerchants extends Component {
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_delete.svg" alt="" />
+                                                    <button type="button" onClick={() => this.deleteMerchant(object.id, !object.inactive_v)} className="enabledButton"> 
+                                                        
+                                                        {
+                                                            object.inactive_v === 1 ?
+                                                                <img src="../images/ic_approve.svg" alt="" />
+                                                            :
+                                                                <img src="../images/ic_delete.svg" alt="" />
+                                                        }
                                                     </button>
                                                 </div>
                                             </div>

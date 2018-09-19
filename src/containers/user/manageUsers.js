@@ -27,7 +27,7 @@ import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { getUsersByFilter, deleteUser, getUserDetails, clearUserDetails, clearUserDeleteResponse } from '../../actions/userAction';
 
 //Data
 import Data from '../../staticData';
@@ -47,34 +47,36 @@ class ManageUsers extends Component {
     state = {
         name:'',
         status: '',
-        location:'',
-        merchantList:'',
+        userType:'',
+        usersList:'',
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
         disableReset: true,
+        permissionDisplayBox: false,
     };
 
     componentWillMount()
     {
-        this.getAllMerchants();
+        this.getAllUsers();
     }
 
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
-          if (nextProps.merchantPayload){
-            if(nextProps.merchantPayload.status === 200){
-                this.setState({merchantList: nextProps.merchantPayload.responseData})
+          if (nextProps.userPayload){
+            if(nextProps.userPayload.status === 200){
+                this.setState({usersList: nextProps.userPayload.responseData})
             }
           }
           
-          if(nextProps.merchantDelete){
-            if(nextProps.merchantDelete.status === 200){
-                this.setState({showLoader:false})
+          if(nextProps.deleteUserResponse){
+            this.setState({showLoader:false})
+            if(nextProps.deleteUserResponse.status === 200){
                 this.setState({ dialogOpen: true });
-                this.getAllMerchants();
+                this.getAllUsers();
             }
+            this.props.clearUserDeleteResponse();
           }
         }
     }
@@ -83,7 +85,7 @@ class ManageUsers extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name!=="" && this.state.status!=="" && this.state.location!==""){
+        if(this.state.name!=="" && this.state.status!=="" && this.state.userType !== ""){
             this.setState({disableReset: true});
         }
         else{
@@ -99,9 +101,9 @@ class ManageUsers extends Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    getAllMerchants(){
+    getAllUsers(){
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
+            this.props.getUsersByFilter(this.state.name, this.state.status, this.state.userType, this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
@@ -109,52 +111,73 @@ class ManageUsers extends Component {
     }
 
     onHandleSearch(){
-        this.getAllMerchants();
+        this.getAllUsers();
     }
 
-    deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
+    deleteUserById = (userId) => {
+
+        if (this.state.permissionDisplayBox) {
+            this.handleClose();
+            if(this.props.userData.user.responseData.token){
+                this.setState({showLoader:true})
+                this.props.deleteUser(this.state.userId, this.props.userData.user.responseData.token);
+            }
+            else{
+                //#TODO: Handle token expire case here
+            }
         }
         else{
-            //#TODO: Handle token expire case here
+            this.setState({ permissionDisplayBox: true, userId: userId });
         }
     }
 
-    updateMerchant = (merchantId) => {
-        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
+    updateUser = (userId) => {
+
+        this.props.clearUserDetails();
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getUserDetails(userId, this.props.userData.user.responseData.token)
+        }
+
+        this.props.history.push('/updateUser')
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
+        this.setState({ permissionDisplayBox: false });
     };
-
-    addNewAdmin(){
-        this.props.history.push('/addNewAdmin')
-    }
 
     onHandleReset(){
         this.setState({name:''});
         this.setState({status:''});
-        this.setState({location:''});
+        this.setState({userType:''});
         this.setState({disableReset:true});
         this.props.reset();
 
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
+            this.props.getUsersByFilter("", "", "" ,this.props.userData.user.responseData.token)
         }
     
     }
 
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const { usersList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, usersList.length - page * rowsPerPage);
+        
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
+        ];
+
+        const permissionActions = [
+            <Button key="no" onClick={this.handleClose} color="primary">
+                No
+            </Button>,
+            <Button key="yes" onClick={this.deleteUserById} color="primary" autoFocus>
+                Yes
+            </Button>,
         ];
 
         return (
@@ -167,6 +190,12 @@ class ManageUsers extends Component {
                     displayDialogBox={dialogOpen} 
                     message="User deleted successfully" 
                     actions={actions} 
+                />
+
+                <DialogBox 
+                    displayDialogBox={permissionDisplayBox} 
+                    message="Are you sure to delete user?" 
+                    actions={permissionActions} 
                 />
             </div> 
 
@@ -201,7 +230,7 @@ class ManageUsers extends Component {
                                         Status
                                     </MenuItem>
                                     {
-                                    Data.searchStatus.map((item) =>{
+                                    Data.userStatus.map((item) =>{
                                         return <MenuItem 
                                             style={styles.selectControl}
                                             key={item.id}
@@ -216,53 +245,28 @@ class ManageUsers extends Component {
                         <div className="col-xs-12 col-sm-6 col-md-2">
                             <FormControl style={styles.formControl}>
                                 <Field
-                                    name="location"
+                                    name="userType"
                                     component={renderSelectField}
                                     fullWidth={true}
                                     onChange={this.handleChange}
                                     displayEmpty
                                     >
                                     <MenuItem value="" disabled>
-                                        Location
+                                        User Type
                                     </MenuItem>
                                     {
-                                    Data.states.map((item) =>{
+                                    Data.userType.map((item) =>{
                                         return <MenuItem 
                                             style={styles.selectControl}
                                             key={item.id}
-                                            value={item.prefix}>
+                                            value={item.name}>
                                             {item.name}
                                         </MenuItem>
                                     })
                                     }
                                 </Field>    
                             </FormControl>  
-                        </div>  
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="type"
-                                    component={renderSelectField}
-                                    fullWidth={true}
-                                    onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Type
-                                    </MenuItem>
-                                    {
-                                    Data.states.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.prefix}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
-                                    }
-                                </Field>    
-                            </FormControl>  
-                        </div>  
+                        </div>
                         <div className="col-xs-12 col-sm-6 col-md-4">
                             <button 
                                 type="button"
@@ -295,47 +299,49 @@ class ManageUsers extends Component {
                                 <TableCell numeric>#</TableCell>
                                 <TableCell>User Name</TableCell>
                                 <TableCell>Email Address</TableCell>
-                                <TableCell>Location</TableCell>
                                 <TableCell>Phone Number</TableCell>
+                                <TableCell>User Type</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
-                            (merchantList.length === 0) ? 
+                            (usersList !== "") ? (
+                            (usersList.length === 0) ? 
                                 (<TableRow>
                                     <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
                                 </TableRow>)
                                 : (
-                                merchantList
+                                usersList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
-                                    <TableRow className="tableRow" key={object.id}>
+                                    <TableRow className="tableRow" key={object.serial_number}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>{object.first_v + " " + object.last_v}</TableCell>
-                                        <TableCell>{object.email_v}</TableCell>
-                                        <TableCell>{object.city_v}</TableCell>
-                                        <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
+                                        <TableCell>{object.fullName}</TableCell>
+                                        <TableCell>{object.emailId}</TableCell>
+                                        <TableCell><NumberFormat value={object.contactNumber} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
+                                        <TableCell>{object.roleId === 3 ? "Merchant" : "Customer"}</TableCell>
                                         <TableCell>
-                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
+                                            <div className={object.status === 0 ? "titleRed" : "titleGreen"}>
+                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Expired" : "Active"}</FormLabel>
+                                            </div>
                                         </TableCell>
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.updateUser(object.userId)} className="enabledButton"> 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.deleteUserById(object.userId)} className="enabledButton"> 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
                                             </div>
-                                        </TableCell>    
+                                        </TableCell>     
                                     </TableRow>
                                     );
                                 })
@@ -352,7 +358,7 @@ class ManageUsers extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={3}
-                                count={merchantList.length}
+                                count={usersList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}
@@ -374,14 +380,14 @@ class ManageUsers extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({ getUsersByFilter, deleteUser, getUserDetails, clearUserDetails, clearUserDeleteResponse }, dispatch)
   }
   
   ManageUsers = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
-      merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
-      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
+      deleteUserResponse: state.userAccount.deleteUser === undefined ? undefined : state.userAccount.deleteUser,
+      userPayload: state.userAccount.userList === undefined ? undefined : state.userAccount.userList,
     }),
     mapDispatchToProps,
   )(ManageUsers)

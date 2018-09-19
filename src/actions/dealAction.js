@@ -1,4 +1,4 @@
-import { hostURL, addNewDealAPI, getDealsFilterAPI, deleteDealAPI, getDealDetailsAPI, updateDealAPI } from '../app.config';
+import { hostURL, addNewDealAPI, getDealsFilterAPI, deleteDealAPI, getDealDetailsAPI, updateDealAPI, getCitiesAPI } from '../app.config';
 import {normalizedPhone} from '../utilities/validation'
 import moment from 'moment'
 
@@ -216,3 +216,37 @@ export function updateDeal(values,token) {
         payload: response
     }
 }
+
+
+//Function to get cities list from nouvo server
+export function getCitiesList(token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + getCitiesAPI,
+        data: {
+            "platform": 'Web',
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_CITIES',
+        payload: response
+    }
+}
+

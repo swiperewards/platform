@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch, HashRouter } from 'react-router-dom'
+import { Route, Switch, BrowserRouter } from 'react-router-dom'
 
 // CONTAINERS
 import Login from './containers/account/login'
@@ -11,6 +11,7 @@ import AccountActivate from './containers/account/accountActivate'
 import ActivationComplete from './containers/account/activationComplete'
 import ResetPassword from './containers/account/resetPasswordMail'
 import ChangePassword from './containers/account/changePassword'
+import UpdateUserDetails from './containers/user/updateUserDetails'
 
 import ManageAdmins from './containers/admin/manageAdmins'
 import AddAdmin from './containers/admin/addNewAdmin'
@@ -52,7 +53,7 @@ class Routes extends Component {
     render() {
         return (
 
-            <HashRouter>
+            <BrowserRouter>
                 <div>
                     <Switch>
                         <Route exact path="/resetPassword" component={ForgetPassword} />
@@ -91,10 +92,11 @@ class Routes extends Component {
                             <Route exact path="/updateAdmin" component={UpdateAdmin} />
                             <Route exact path="/paymentprocessing" component={PaymentProcessing} />
                             <Route exact path="/contactus" component={ContactUs} />
+                            <Route exact path="/updateUser" component={UpdateUserDetails} />
                         </App>
                     </Switch>
                 </div>
-            </HashRouter>
+            </BrowserRouter>
 
         )
     }

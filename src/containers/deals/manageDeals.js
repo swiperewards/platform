@@ -29,7 +29,7 @@ import Loader from '../../components/loader'
 
 //Actions
 import { getUserProfile } from '../../actions/accountAction';
-import { getDealsListWithFilter, deleteDeal, getDealDetails } from '../../actions/dealAction';
+import { getDealsListWithFilter, deleteDeal, getDealDetails, getCitiesList } from '../../actions/dealAction';
 
 //Data
 import Data from '../../staticData';
@@ -53,6 +53,7 @@ class ManageDeals extends Component {
         fromDate:'',
         toDate:'',
         dealsList:'',
+        citiesList:'',
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -63,6 +64,10 @@ class ManageDeals extends Component {
     componentWillMount()
     {
         this.getAllDeals();
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getCitiesList(this.props.userData.user.responseData.token)
+        }
 
         if(this.props.userData.user.responseData.role === 'merchant'){
             const profileMerchantId = this.props.userProfile === undefined ? null : this.props.userProfile.responseData.merchantId
@@ -85,13 +90,19 @@ class ManageDeals extends Component {
           if(nextProps.dealDelete){
             this.setState({showLoader:false})
             if(nextProps.dealDelete.status === 200){
-                this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
                 this.getAllDeals();
             }
           }
 
+          if(nextProps.citiesPayload){
+            if(nextProps.citiesPayload.status === 200){
+                this.setState({citiesList:nextProps.citiesPayload.responseData})
+            }
+          }
+
           if(nextProps.userProfile){
+            this.setState({showLoader:false})
             if(nextProps.userProfile.status === 200){
                 if(nextProps.userProfile.responseData){
                     if(nextProps.userProfile.responseData.merchantId === null){
@@ -182,7 +193,7 @@ class ManageDeals extends Component {
         this.props.reset();
 
         if(this.props.userData.user.responseData.token){
-            this.props.getDealsListWithFilter("", "", "", this.props.userData.user.responseData.token)
+            this.props.getDealsListWithFilter("", "", "", "", "", this.props.userData.user.responseData.token)
         }
     
     }
@@ -257,7 +268,7 @@ class ManageDeals extends Component {
                                         Status
                                     </MenuItem>
                                     {
-                                    Data.searchStatus.map((item) =>{
+                                    Data.dealStatus.map((item) =>{
                                         return <MenuItem 
                                             style={styles.selectControl}
                                             key={item.id}
@@ -282,14 +293,16 @@ class ManageDeals extends Component {
                                         Location
                                     </MenuItem>
                                     {
-                                    Data.states.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.prefix}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
+                                        (this.state.citiesList) ? 
+                                            this.state.citiesList.map((item) =>{
+                                            return <MenuItem 
+                                                    style={styles.selectControl}
+                                                    key={item.id}
+                                                    value={item.name}>
+                                                    {item.name}
+                                                </MenuItem>
+                                            })
+                                        : null    
                                     }
                                 </Field>    
                             </FormControl>  
@@ -379,8 +392,8 @@ class ManageDeals extends Component {
                                         <TableCell>{moment(object.startDate).format('MM/DD/YYYY') + " - " + moment(object.endDate).format('MM/DD/YYYY')}</TableCell>
                                         <TableCell>{object.cashBonus}%</TableCell>
                                         <TableCell>
-                                            <div className={object.status === 1 ? "titleRed" : "titleGreen"}>
-                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 1 ? "Expire" : "Active"}</FormLabel>
+                                            <div className={object.status === 0 ? "titleRed" : "titleGreen"}>
+                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Expired" : "Active"}</FormLabel>
                                             </div>
                                         </TableCell>
                                         <TableCell> 
@@ -435,7 +448,7 @@ class ManageDeals extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getDealsListWithFilter, deleteDeal, getUserProfile, getDealDetails }, dispatch)
+    return bindActionCreators({ getDealsListWithFilter, deleteDeal, getUserProfile, getDealDetails, getCitiesList }, dispatch)
   }
   
   ManageDeals = connect(
@@ -444,6 +457,7 @@ const mapDispatchToProps = (dispatch) => {
       dealsPayload: state.deal.dealList === undefined ? undefined : state.deal.dealList,
       dealDelete: state.deal.deleteDeal === undefined ? undefined : state.deal.deleteDeal,
       userProfile: state.account.userProfile === undefined ? undefined : state.account.userProfile, 
+      citiesPayload: state.deal.citiesList === undefined ? undefined : state.deal.citiesList,
     }),
     mapDispatchToProps,
   )(ManageDeals)

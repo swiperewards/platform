@@ -46,6 +46,7 @@ class AddNewDeal extends Component {
         this.state = {
             dialogOpen: false,
             message:'',
+            citiesList:'',
         }
     }
 
@@ -59,6 +60,7 @@ class AddNewDeal extends Component {
 
       componentWillReceiveProps(nextProps) {
         if (nextProps) {
+
           if (nextProps.newDealResponse){
             this.setState({showLoader:false})
             if(nextProps.newDealResponse.status === 200){
@@ -72,6 +74,13 @@ class AddNewDeal extends Component {
                             >{nextProps.newDealResponse.message}</div>
             }
           }
+
+          if(nextProps.citiesPayload){
+            if(nextProps.citiesPayload.status === 200){
+                this.setState({citiesList:nextProps.citiesPayload.responseData})
+            }
+          }
+
         }
     }
 
@@ -147,14 +156,16 @@ class AddNewDeal extends Component {
                                         validate={dropDownRequired}
                                     >
                                     {
-                                        Data.states.map((item) =>{
+                                        (this.state.citiesList) ? 
+                                            this.state.citiesList.map((item) =>{
                                             return <MenuItem 
-                                                style={styles.selectControl}
-                                                key={item.id}
-                                                value={item.prefix}>
-                                                {item.name}
-                                            </MenuItem>
-                                        })
+                                                    style={styles.selectControl}
+                                                    key={item.id}
+                                                    value={item.name}>
+                                                    {item.name}
+                                                </MenuItem>
+                                            })
+                                        : null  
                                     }
                                     </Field>    
                                 </FormControl>  
@@ -212,7 +223,7 @@ class AddNewDeal extends Component {
                                             validate={dropDownRequired}
                                         >
                                         {
-                                            Data.searchStatus.map((item) =>{
+                                            Data.dealStatus.map((item) =>{
                                                return <MenuItem 
                                                     style={styles.selectControl}
                                                     key={item.id}
@@ -264,7 +275,9 @@ const mapDispatchToProps = (dispatch) => {
 AddNewDeal = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
-       newDealResponse: state.deal === undefined ? undefined : state.deal.addDeal 
+       newDealResponse: state.deal === undefined ? undefined : state.deal.addDeal,
+       citiesPayload: state.deal.citiesList === undefined ? undefined : state.deal.citiesList,
+ 
     }),
     mapDispatchToProps,
   )(AddNewDeal)

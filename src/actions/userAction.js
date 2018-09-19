@@ -1,22 +1,22 @@
-import { hostURL, addNewAdminAPI, getAdminFilterAPI, getAdminDetailsAPI, deleteAdminAPI, updateAdminAPI } from '../app.config';
+import { hostURL, getUserFilterAPI, deleteUserAPI, getUserDetailsAPI, updateUserAPI} from '../app.config';
 import {normalizedPhone} from '../utilities/validation'
 
 var axios = require('axios');
 
-//Function to add new admin to system
-export function addNewAdmin(values, profilePic, token) {
+//Function to get user list by filter options
+export function getUsersByFilter(name, status, userType, token) {
 
     var setting = {
         method: 'post',
-        url: hostURL + addNewAdminAPI,
+        url: hostURL + getUserFilterAPI,
         data: {
             "platform": "web", 
 	        "requestData":{
-                "fullName": values.adminName, 
-		        "contactNumber": values.phone === undefined ? undefined : (values.phone).replace(normalizedPhone,''),
-		        "emailId": values.email,
-		        "status": values.status,
-                "profilePic": profilePic,
+                "name": name, 
+                "status": status,
+                "type" : userType,
+                "pageNumber": "0",
+                "pageSize": "0",
             }
 	    },
         headers: {
@@ -36,24 +36,22 @@ export function addNewAdmin(values, profilePic, token) {
         );
 
     return {
-        type: 'ADD_ADMIN',
+        type: 'GET_USERS',
         payload: response
     }
 }
 
-//Function to fetch list of all admins based on various filter option.
-export function getAdminListWithFilter(name, inactive, token) {
+
+//Function to delete user for selected user Id
+export function deleteUser(userId,token) {
 
     var setting = {
         method: 'post',
-        url: hostURL + getAdminFilterAPI,
+        url: hostURL + deleteUserAPI,
         data: {
             "platform": 'Web',
 	        "requestData":{
-                "name" : name === undefined ? "" : name,
-                "status" : inactive === undefined ? "" : inactive,
-                "pageNumber" : "0",
-		        "pageSize" : "0"
+                "id" : userId,
             }
 	    },
         headers: {
@@ -73,55 +71,28 @@ export function getAdminListWithFilter(name, inactive, token) {
         );
 
     return {
-        type: 'GET_ADMINS',
+        type: 'DELETE_USER',
         payload: response
     }
 }
 
-//Function to delete Admin for selected Id
-export function deleteAdmin(adminId,token) {
-
-    var setting = {
-        method: 'post',
-        url: hostURL + deleteAdminAPI,
-        data: {
-            "platform": 'Web',
-	        "requestData":{
-                "id" : adminId,
-            }
-	    },
-        headers: {
-            'content-type': 'application/json',
-            'auth' : token
-        }
-    }
-
-    var response = axios(setting).then(
-        response => response.data
-    )
-        .catch(response => response = {
-            success: 500,
-            message: "Your submission could not be completed. Please Try Again!",
-            data: ""
-        }
-        );
-
+export function clearUserDeleteResponse() {
     return {
-        type: 'DELETE_ADMIN',
-        payload: response
+        type: 'DELETE_USER',
+        payload: undefined
     }
 }
 
-//Function to get admin details
-export function getAdminDetails(adminId,token) {
+//Function to get user details by user id
+export function getUserDetails(userId, token) {
 
     var setting = {
         method: 'post',
-        url: hostURL + getAdminDetailsAPI,
+        url: hostURL + getUserDetailsAPI,
         data: {
-            "platform": 'Web',
+            "platform": "web", 
 	        "requestData":{
-                "id" : adminId,
+                "id": userId, 
             }
 	    },
         headers: {
@@ -131,12 +102,12 @@ export function getAdminDetails(adminId,token) {
     }
 
     var response = axios(setting).then(
+
         response => {
-            response.data.responseData.status = response.data.responseData.status === undefined ? false : (response.data.responseData.status).toString()
+            response.data.responseData.status = response.data.responseData.status === 1 ? "1" : "0"
             return response.data;
         }
     )
-
         .catch(response => response = {
             success: 500,
             message: "Your submission could not be completed. Please Try Again!",
@@ -145,27 +116,39 @@ export function getAdminDetails(adminId,token) {
         );
 
     return {
-        type: 'GET_ADMIN_DETAILS',
+        type: 'GET_USER_DETAILS',
         payload: response
     }
 }
 
+export function clearUserDetails() {
+    return {
+        type: 'GET_USER_DETAILS',
+        payload: undefined
+    }
+}
 
-//Function to update admin details
-export function updateAdminDetails(values, profilePic, token) {
+//Function to update user details
+export function updateUserDetails(values, isEmailUpdated, token) {
 
     var setting = {
         method: 'post',
-        url: hostURL + updateAdminAPI,
+        url: hostURL + updateUserAPI,
         data: {
             "platform": 'Web',
 	        "requestData":{
                 "userId":values.userId,
                 "fullName": values.fullName,
-                "contactNumber":values.contactNumber === undefined ? undefined : (values.contactNumber).replace(normalizedPhone,''),
+                "contactNumber":(values.contactNumber === undefined || values.contactNumber === null) ? undefined : (values.contactNumber).replace(normalizedPhone,''),
                 "emailId": values.emailId,
-		        "status": values.status,
-                "profilePic": profilePic,
+                "status": values.status,
+                "zipcode" : (values.pincode === undefined || values.pincode === null) ? undefined : (values.pincode).replace(normalizedPhone,''),
+		        "city" :  values.city,
+		        "password" : (values.newPassword !== undefined) ? values.newPassword : values.password,
+		        "isEmailUpdated" : isEmailUpdated === true ? "1" :"0",
+		        "isPasswordUpdated" : values.passwordUpdate === true ? "1" : "0",
+                "roleId" : values.roleId,
+                "profilePic" : "",
             }
 	    },
         headers: {
@@ -185,7 +168,14 @@ export function updateAdminDetails(values, profilePic, token) {
         );
 
     return {
-        type: 'UPDATE_ADMIN',
+        type: 'UPDATE_USER',
         payload: response
+    }
+}
+
+export function clearUserUpdateResponse() {
+    return {
+        type: 'UPDATE_USER',
+        payload: undefined
     }
 }
