@@ -85,7 +85,7 @@ class ManageAdmins extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name!=="" && this.state.status!==""){
+        if(this.state.name==="" && this.state.status===""){
             this.setState({disableReset: true});
         }
         else{
@@ -231,7 +231,7 @@ class ManageAdmins extends Component {
                                         Status
                                     </MenuItem>
                                     {
-                                    Data.searchStatus.map((item) =>{
+                                    Data.userStatus.map((item) =>{
                                         return <MenuItem 
                                             style={styles.selectControl}
                                             key={item.id}
@@ -315,7 +315,7 @@ class ManageAdmins extends Component {
                                         <TableCell>{object.emailId}</TableCell>
                                         <TableCell><NumberFormat value={object.contactNumber} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
                                         <TableCell>
-                                            <div className={object.status === 0 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 1 ? "Active" : "Deactive"}</FormLabel></div>
+                                            <div className={object.status === 0 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Deactive" : "Active"}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
                                             <div className="row start-md middle-md">

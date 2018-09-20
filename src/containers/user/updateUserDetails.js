@@ -5,25 +5,25 @@ import { bindActionCreators } from 'redux';
 import { Field, reduxForm } from 'redux-form';
 
 //material-ui
-import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
+import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
-import Avatar from '@material-ui/core/Avatar';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 
 //Components
-import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
+import RenderSwitch from '../../components/switchControl';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
+import DialogBox from '../../components/alertDialog'
 
 //Actions
-import { updateAdminDetails } from '../../actions/adminAction';
+import {updateUserDetails, clearUserUpdateResponse} from '../../actions/userAction'
 
 //Validation
-import {required, dropDownRequired, phoneMask, email, between1to100} from '../../utilities/validation'
+import { required, minimum8, email, phoneMask, zipMask, between1to100} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -38,12 +38,20 @@ const styles = {
       selectControl:{
         fontSize: '12px',
       },
+      bigAvatar: {
+        width: 60,
+        height: 60,
+      }
 };
 
-class updateAdmin extends Component {
+const passwordsMatch = (value, allValues) => 
+  value !== allValues.newPassword ? 'Passwords don\'t match' : undefined;
+
+class UpdateUserDetails extends Component {
 
     state = {
-        image:'',
+        businessType: '',
+        stateName:'',
         dialogOpen: false,
       };
 
@@ -51,54 +59,52 @@ class updateAdmin extends Component {
         this.setState({ [event.target.name]: event.target.value });
       };
 
+      handleCheckboxChange = name => event => {
+        this.setState({[name]: event.target.checked});
+      };
+
     componentWillMount() {
 
-        errorMessage = "";
+        errorMessage = ""
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
-            if (nextProps.updateAdminResponse){
+            if (nextProps.updateUserResponse){
               this.setState({showLoader:false})
-              if(nextProps.updateAdminResponse.status === 200){
-                  this.setState({message: nextProps.updateAdminResponse.message})
+              if(nextProps.updateUserResponse.status === 200){
+                  this.setState({message: nextProps.updateUserResponse.message})
                   this.setState({ dialogOpen: true });
               }
               else{
                   errorMessage =
                     <div 
                         className="errorDiv"
-                    >{nextProps.updateAdminResponse.message}</div>
+                    >{nextProps.updateUserResponse.message}</div>
               }
+
+              this.props.clearUserUpdateResponse();
             }
           }
-    }  
+    } 
 
-      onSubmit(values) {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.updateAdminDetails(values, this.state.image, this.props.userData.user.responseData.token)
-        }
-      }
-
-      cancelClick(){
+    cancelClick(){
         this.props.history.goBack();
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
-        this.props.history.push('/manageadmins');
+        this.cancelClick()
     };
 
-    onImageChange(event) {
-        if (event.target.files && event.target.files[0]) {
-            let reader = new FileReader();
-            reader.onload = (e) => {
-                this.setState({image: e.target.result});
-            };
-            reader.readAsDataURL(event.target.files[0]);
+      onSubmit(values) {
+
+        var isEmailUpdated = (this.props.initialValues.emailId !== values.emailId) ? true : false;
+        if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
+            this.props.updateUserDetails(values, isEmailUpdated, this.props.userData.user.responseData.token)
         }
-    }
+      }
 
     render() {
 
@@ -110,9 +116,10 @@ class updateAdmin extends Component {
                 OK
             </Button>
         ];
+
         return (
             <div style={{paddingBottom:'20px'}}>
-                <Loader status={this.state.showLoader} />
+            <Loader status={this.state.showLoader} />
                 <DialogBox 
                         displayDialogBox={dialogOpen} 
                         message={this.state.message} 
@@ -124,27 +131,26 @@ class updateAdmin extends Component {
                     <div className="formContent">
                         <div className="appTitleLabel row">
                             <div className="col-xs-12 col-md-12">
-                            <FormLabel component="legend">UPDATE ADMIN</FormLabel>
+                            <FormLabel component="legend">Update User Details</FormLabel>
                             </div>                            
                         </div>
-
                         <Divider style={{marginBottom:'20px'}}/>
-
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Admin Name*
-                            </div>
+                                Name
+                            </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     myType="text" 
                                     name="fullName" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
-                                />  
-                            </div>
+                                /> 
+                            </div>  
+                        </div>   
+                        <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Email*
+                                Email ID
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
@@ -152,13 +158,11 @@ class updateAdmin extends Component {
                                     name="emailId" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={[required, email, between1to100]}
+                                    validate={email}
                                 />  
                             </div>
-                        </div>
-                        <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Phone
+                                Contact Number
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
@@ -171,8 +175,38 @@ class updateAdmin extends Component {
                                     maskReg={phoneMask}
                                 />  
                             </div>
+                        </div>
+                        <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Status*
+                                City
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    myType="text" 
+                                    name="city" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={between1to100}
+                                />  
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                ZipCode
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    myType="text" 
+                                    name="pincode" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    masked={true}
+                                    myMaskType="text"
+                                    maskReg={zipMask}
+                                />  
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Status
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
                                 <FormControl style={styles.formControl}>
@@ -181,7 +215,6 @@ class updateAdmin extends Component {
                                             component={renderSelectField}
                                             fullWidth={true}
                                             onChange={this.handleChange}
-                                            validate={dropDownRequired}
                                         >
                                         {
                                             Data.userStatus.map((item) =>{
@@ -196,23 +229,55 @@ class updateAdmin extends Component {
                                     </Field>    
                                 </FormControl>  
                             </div>
-                        </div> 
-                        <div className="row middle-md">
+                        </div>
+                        <div className="row start-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Avatar
-                                    alt="Adelle Charles"
-                                    src={this.state.image === '' ? (this.props.initialValues !== undefined ? this.props.initialValues.profilePicUrl : "../images/profile.png") : this.state.image} 
-                                    className="bigAvatar"
-                                />
+                                Update Password
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <input 
-                                    type="file" 
-                                    onChange={this.onImageChange.bind(this)} 
-                                    accept=".jpg"
-                                    />
-
-                            </div>            
+                            <div className="col-xs-12 col-sm-6 col-md-3">  
+                                <Field
+                                    name="passwordUpdate" 
+                                    ref="passwordUpdate"
+                                    id="passwordUpdate" 
+                                    component={RenderSwitch}
+                                    onChange={this.handleCheckboxChange('passwordUpdate')}
+                                />                             
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-6">
+                                {this.state.passwordUpdate === true ? (
+                                <React.Fragment>  
+                                <div className="row">
+                                    <div className="col-xs-6">
+                                        New Password
+                                    </div>
+                                    <div className="col-xs-6">
+                                        <Field 
+                                            name="newPassword" 
+                                            myType="password" 
+                                            fullWidth={true} 
+                                            component={InputField} 
+                                            validate={[required, minimum8]} 
+                                        />
+                                    </div>
+                                </div>
+                                <div className="row">                            
+                                    <div className="col-xs-6">
+                                        Confirm Password
+                                    </div>
+                                    <div className="col-xs-6">
+                                        <Field 
+                                            name="confirmPassword" 
+                                            myType="password" 
+                                            fullWidth={true} 
+                                            component={InputField} 
+                                            validate={[required, passwordsMatch]} 
+                                        />
+                                    </div>
+                                </div>
+                                </React.Fragment>
+                                ) : null
+                            }
+                            </div>
                         </div>
                         <div className="row end-xs">
                             <div className="col-xs-12 col-sm-6 col-md-6">
@@ -232,7 +297,7 @@ class updateAdmin extends Component {
                                     > Update
                                 </button> 
                             </div>
-                        </div>                       
+                        </div>                              
                     </div>            
                 </Paper> 
                 </form>
@@ -244,21 +309,23 @@ class updateAdmin extends Component {
     }
 }
 
+
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ updateAdminDetails }, dispatch)
+    return bindActionCreators({ updateUserDetails, clearUserUpdateResponse }, dispatch)
   }
 
-  updateAdmin = reduxForm({
-    form: 'frmUpdateAdmin',
-})(updateAdmin)
+UpdateUserDetails = reduxForm({
+    form: 'frmUpdateUserDetails',
+})(UpdateUserDetails)
 
-updateAdmin = connect(
+UpdateUserDetails = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
-       updateAdminResponse: state.admin.updateAdmin === undefined ? undefined : state.admin.updateAdmin,
-       initialValues: state.admin.adminDetails === undefined ? undefined : state.admin.adminDetails.responseData,
+        userData: state.account === undefined ? undefined : state.account,
+        initialValues: state.userAccount.userDetails === undefined ? undefined : state.userAccount.userDetails.responseData,
+        updateUserResponse : state.userAccount.updateUser === undefined ? undefined : state.userAccount.updateUser,
+
     }),
     mapDispatchToProps,
-  )(updateAdmin)
+  )(UpdateUserDetails)
 
-export default updateAdmin;
+export default UpdateUserDetails;

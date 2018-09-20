@@ -111,7 +111,7 @@ export function clearMerchantUpdateState() {
 
 
 //Function to delete merchant from splash payment system
-export function deleteMerchant(merchantId,token) {
+export function deleteMerchant(merchantId, inactive, token) {
 
     var setting = {
         method: 'post',
@@ -120,6 +120,7 @@ export function deleteMerchant(merchantId,token) {
             "platform": 'Web',
 	        "requestData":{
                 "merchantId" : merchantId,
+                "inactive" : inactive === true ? "1" : "0"
             }
 	    },
         headers: {

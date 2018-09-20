@@ -6,8 +6,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 const styles = {
     selectControl:{
       fontSize: '14px',
-      paddingLeft: '12px',
-    }
+    },
 };
 
 const renderSelectField = ({
@@ -17,7 +16,7 @@ const renderSelectField = ({
   children,
   ...custom
 }) => (
-  <FormControl error>   
+  <FormControl style={styles.formControl} error>   
     <Select
       style={styles.selectControl}
       error= {touched && invalid}

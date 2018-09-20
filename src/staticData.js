@@ -85,9 +85,17 @@ const data={
       {id:'0', name: 'Activate'},
       {id:'1', name: 'Deactivate'}
     ],
-    status: [
-      {id:'1', name: 'Activate'},
-      {id:'0', name: 'Deactivate'}
+    dealStatus: [
+      {id:'1', name: 'Active'},
+      {id:'0', name: 'Expired'}
+    ],
+    userStatus: [
+      {id:'1', name: 'Active'},
+      {id:'0', name: 'Deactive'}
+    ],
+    userType: [
+      {id:'0', name: 'Customer'},
+      {id:'1', name: 'Merchant'}
     ],
     bankAccountType: [
         {id:'8', name: 'Checking'},
