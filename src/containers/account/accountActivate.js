@@ -72,7 +72,7 @@ class AccountActivate extends Component {
     }
 
     cancelClick(){
-        this.props.history.goBack();
+        this.props.history.push('/logout')
     }
 
     handleClose = () => {

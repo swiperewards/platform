@@ -23,15 +23,12 @@ import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { getTicketTypes } from '../../actions/ticketAction';
 
 class ManageTickets extends Component {
 
     state = {
-        name:'',
-        status: '',
-        location:'',
-        merchantList:'',
+        ticketTypeList:'',
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -40,15 +37,15 @@ class ManageTickets extends Component {
 
     componentWillMount()
     {
-        this.getAllMerchants();
+        this.getTicketTypeList();
     }
 
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
-          if (nextProps.merchantPayload){
-            if(nextProps.merchantPayload.status === 200){
-                this.setState({merchantList: nextProps.merchantPayload.responseData})
+          if (nextProps.ticketTypePayload){
+            if(nextProps.ticketTypePayload.status === 200){
+                this.setState({ticketTypeList: nextProps.ticketTypePayload.responseData})
             }
           }
           
@@ -82,9 +79,9 @@ class ManageTickets extends Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    getAllMerchants(){
+    getTicketTypeList(){
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
+            this.props.getTicketTypes(this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
@@ -117,23 +114,10 @@ class ManageTickets extends Component {
         this.props.history.push('/addNewTicket')
     }
 
-    onHandleReset(){
-        this.setState({name:''});
-        this.setState({status:''});
-        this.setState({location:''});
-        this.setState({disableReset:true});
-        this.props.reset();
-
-        if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
-        }
-    
-    }
-
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const { ticketTypeList, rowsPerPage, page, dialogOpen } = this.state;
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, ticketTypeList.length - page * rowsPerPage);
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
@@ -162,7 +146,7 @@ class ManageTickets extends Component {
                     </div>
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-9">
-                            Number of Types : 3
+                            Number of Types : {ticketTypeList !== undefined ? ticketTypeList.length : "0"}
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-3 end-md">
                             <Button 
@@ -193,19 +177,19 @@ class ManageTickets extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
-                            (merchantList.length === 0) ? 
+                            (ticketTypeList !== "") ? (
+                            (ticketTypeList.length === 0) ? 
                                 (<TableRow>
                                     <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
                                 </TableRow>)
                                 : (
-                                merchantList
+                                ticketTypeList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
                                     <TableRow className="tableRow" key={object.id}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>{object.first_v + " " + object.last_v}</TableCell>
+                                        <TableCell>{object.ticketTypeName}</TableCell>
                                         <TableCell>
                                             <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                         </TableCell>
@@ -239,7 +223,7 @@ class ManageTickets extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={3}
-                                count={merchantList.length}
+                                count={ticketTypeList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}
@@ -261,14 +245,13 @@ class ManageTickets extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({ getTicketTypes }, dispatch)
   }
   
   ManageTickets = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
-      merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
-      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
+      ticketTypePayload: state.ticket.ticketTypeList === undefined ? undefined : state.ticket.ticketTypeList,
     }),
     mapDispatchToProps,
   )(ManageTickets)

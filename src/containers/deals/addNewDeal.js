@@ -17,14 +17,16 @@ import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
+import DatePickerControl from '../../components/datePickerControl';
 
 //Actions
-import { addNewDeal } from '../../actions/dealAction';
+import { addNewDeal, getCitiesList } from '../../actions/dealAction';
 
 //Validation
-import {required, dropDownRequired} from '../../utilities/validation'
+import {required, dropDownRequired, dateRequired} from '../../utilities/validation'
 
 //Data
+import moment from 'moment'
 import Data from '../../staticData';
 
 let errorMessage
@@ -47,11 +49,19 @@ class AddNewDeal extends Component {
             dialogOpen: false,
             message:'',
             citiesList:'',
+            fromDate: new Date(),
+            toDate:'',
         }
     }
 
     componentWillMount(){
         errorMessage = "";
+        this.props.change('fromDate', new Date());
+        this.props.change('toDate', moment().add(2, 'weeks').calendar());
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getCitiesList(this.props.userData.user.responseData.token)
+        }
     }
 
       handleChange = event => {
@@ -84,6 +94,12 @@ class AddNewDeal extends Component {
         }
     }
 
+    handleDateChange = (date) => {
+        if(date){
+            this.props.change('toDate',moment(date).add(2, 'weeks').calendar())
+        }
+    }
+
       onSubmit(values) {
 
         if(this.props.userData.user.responseData.token){
@@ -99,7 +115,6 @@ class AddNewDeal extends Component {
         this.setState({ dialogOpen: false });
         this.props.history.push('/managedeals');
     };
-
 
     cancelClick(){
         this.props.history.goBack();
@@ -173,14 +188,16 @@ class AddNewDeal extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 From Date*
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
+                            <div className="col-xs-12 col-sm-6 col-md-3 picker">
                                 <Field 
-                                    myType="date" 
                                     name="fromDate" 
                                     fullWidth={true} 
-                                    component={InputField} 
-                                    validate={required}
-                                    />  
+                                    keyboard={true}
+                                    disabled={false}
+                                    component={DatePickerControl} 
+                                    onChange={this.handleDateChange}
+                                    validate={dateRequired}
+                                />  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -201,12 +218,13 @@ class AddNewDeal extends Component {
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
-                                    myType="date" 
                                     name="toDate" 
                                     fullWidth={true} 
-                                    component={InputField} 
-                                    validate={required}
-                                    />  
+                                    keyboard={false}
+                                    disabled={true}
+                                    component={DatePickerControl} 
+                                    onChange={this.handleDateChange}
+                                />   
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -265,7 +283,7 @@ class AddNewDeal extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ addNewDeal }, dispatch)
+    return bindActionCreators({ addNewDeal, getCitiesList }, dispatch)
   }
 
   AddNewDeal = reduxForm({

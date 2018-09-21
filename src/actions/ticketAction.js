@@ -1,4 +1,4 @@
-import { hostURL, getQueryTypeAPI, generateTicketAPI } from '../app.config';
+import { hostURL, getQueryTypeAPI, generateTicketAPI, getTicketTypesAPI, deleteTicetTypeAPI } from '../app.config';
 
 var axios = require('axios');
 
@@ -75,3 +75,65 @@ export function clearGenerateTicketResponse() {
         payload: undefined
     }
 }
+
+//Function to get Ticket type list
+export function getTicketTypes(token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + getTicketTypesAPI,
+        data: {
+            "platform": "web",
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_TICKET_TYPE_LIST',
+        payload: response
+    }
+}
+
+// //Function to delete Ticket type
+// export function getTicketTypes(token) {
+
+//     var setting = {
+//         method: 'post',
+//         url: hostURL + getTicketTypesAPI,
+//         data: {
+//             "platform": "web",
+// 	    },
+//         headers: {
+//             'content-type': 'application/json',
+//             'auth' : token
+//         }
+//     }
+
+//     var response = axios(setting).then(
+//         response => response.data
+//     )
+//         .catch(response => response = {
+//             success: 500,
+//             message: "Your submission could not be completed. Please Try Again!",
+//             data: ""
+//         }
+//         );
+
+//     return {
+//         type: 'GET_TICKET_TYPE_LIST',
+//         payload: response
+//     }
+// }

@@ -70,7 +70,6 @@ class Register extends Component {
                 if (nextProps.registerUserResponse.status === 200) {
                     errorMessage = undefined
                     this.props.history.push({pathname:'/accountActivate',state: { detail: nextProps.registerUserResponse.responseData.emailId }})
-                    this.props.clearRegisterUserState()
                 }
                 else{
                     errorMessage =
@@ -80,6 +79,8 @@ class Register extends Component {
                         this.setState({message: nextProps.registerUserResponse.message})
                         this.setState({ dialogOpen: true });
                 }
+
+                this.props.clearRegisterUserState()
             }
         }
     }

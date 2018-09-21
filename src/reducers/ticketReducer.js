@@ -8,6 +8,10 @@ export default function (state = {}, action) {
             return{
                 generateTicket: action.payload
             }    
+        case 'GET_TICKET_TYPE_LIST':
+            return{
+                ...state, ticketTypeList: action.payload
+            }    
         default:
             return state;
     }

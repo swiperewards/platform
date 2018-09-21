@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch, BrowserRouter } from 'react-router-dom'
+import { Route, Switch, HashRouter } from 'react-router-dom'
 
 // CONTAINERS
 import Login from './containers/account/login'
@@ -53,7 +53,7 @@ class Routes extends Component {
     render() {
         return (
 
-            <BrowserRouter>
+            <HashRouter>
                 <div>
                     <Switch>
                         <Route exact path="/resetPassword" component={ForgetPassword} />
@@ -96,7 +96,7 @@ class Routes extends Component {
                         </App>
                     </Switch>
                 </div>
-            </BrowserRouter>
+            </HashRouter>
 
         )
     }

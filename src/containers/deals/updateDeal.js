@@ -18,15 +18,17 @@ import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
+import DatePickerControl from '../../components/datePickerControl';
 
 //Actions
-import { updateDeal } from '../../actions/dealAction';
+import { updateDeal, getCitiesList } from '../../actions/dealAction';
 
 //Validation
-import {required, dropDownRequired} from '../../utilities/validation'
+import {required, dropDownRequired, dateRequired} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
+import moment from 'moment'
 
 let errorMessage
 
@@ -53,6 +55,13 @@ class UpdateDeal extends Component {
 
     componentWillMount(){
         errorMessage = "";
+
+        this.props.change('startDate', new Date());
+        this.props.change('endDate', moment().add(2, 'weeks').calendar());
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getCitiesList(this.props.userData.user.responseData.token)
+        }
     }
 
       handleChange = event => {
@@ -100,6 +109,11 @@ class UpdateDeal extends Component {
         this.props.history.push('/managedeals');
     };
 
+    handleDateChange = (date) => {
+        if(date){
+            this.props.change('endDate',moment(date).add(2, 'weeks').calendar())
+        }
+    }
 
     cancelClick(){
         this.props.history.goBack();
@@ -176,12 +190,14 @@ class UpdateDeal extends Component {
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
-                                    myType="date" 
                                     name="startDate" 
                                     fullWidth={true} 
-                                    component={InputField} 
-                                    validate={required}
-                                    />  
+                                    keyboard={true}
+                                    disabled={false}
+                                    component={DatePickerControl} 
+                                    onChange={this.handleDateChange}
+                                    validate={dateRequired}
+                                />   
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -202,12 +218,13 @@ class UpdateDeal extends Component {
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
-                                    myType="date" 
                                     name="endDate" 
                                     fullWidth={true} 
-                                    component={InputField} 
-                                    validate={required}
-                                    />  
+                                    keyboard={false}
+                                    disabled={true}
+                                    component={DatePickerControl} 
+                                    onChange={this.handleDateChange}
+                                />  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -267,7 +284,7 @@ class UpdateDeal extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ updateDeal }, dispatch)
+    return bindActionCreators({ updateDeal, getCitiesList }, dispatch)
   }
 
   UpdateDeal = reduxForm({
