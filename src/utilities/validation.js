@@ -3,6 +3,7 @@
 const required = value => value && value.trim() !== "" ? undefined : `Required`
 const requiredCheckbox = value => value ? undefined : `Required`
 const dropDownRequired = value => (value === undefined ? 'Please Select Value' : undefined)
+const dateRequired = value => (value === undefined || value ==='' ? 'Please Select Date' : undefined)
 
 const email = value =>
     value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value) ?
@@ -63,4 +64,5 @@ export {
     drivingLicense,
     between5to16,
     between5to9,
+    dateRequired,
 }

@@ -118,7 +118,7 @@ class ResetPassword extends Component {
                                     <div className="col-md-9 start-md">
                                         <div>
                                             <span>Didn't receive the email yet?</span>
-                                            <span>Please check your spam folder, or
+                                            <span> Please check your spam folder, or
                                             <button 
                                             type="button"
                                             onClick={this.resendMailClick.bind(this)}

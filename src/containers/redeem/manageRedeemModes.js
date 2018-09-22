@@ -23,41 +23,40 @@ import DialogBox from '../../components/alertDialog';
 import Loader from '../../components/loader';
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { getRedeemModeList, deleteRedeemMode, clearDeleteRedeemModeResponse, getRedeemModeDetails, clearGetRedeemModeDetailResponse } from '../../actions/redeemAction';
 
 class ManageRedeemModes extends Component {
 
     state = {
-        name:'',
-        status: '',
-        location:'',
-        merchantList:'',
+        redeemModeList:'',
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
         disableReset: true,
+        permissionDisplayBox: false,
     };
 
     componentWillMount()
     {
-        this.getAllMerchants();
+        this.getAllRedeemModes();
     }
 
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
-          if (nextProps.merchantPayload){
-            if(nextProps.merchantPayload.status === 200){
-                this.setState({merchantList: nextProps.merchantPayload.responseData})
+          if (nextProps.redeemModePayload){
+            if(nextProps.redeemModePayload.status === 200){
+                this.setState({redeemModeList: nextProps.redeemModePayload.responseData})
             }
           }
         
-          if(nextProps.merchantDelete){
-            if(nextProps.merchantDelete.status === 200){
+          if(nextProps.deleteRedeemModeResponse){
+            if(nextProps.deleteRedeemModeResponse.status === 200){
                 this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
-                this.getAllMerchants();
+                this.getAllRedeemModes();
             }
+            this.props.clearDeleteRedeemModeResponse();
           }
         }
     }
@@ -70,9 +69,9 @@ class ManageRedeemModes extends Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    getAllMerchants(){
+    getAllRedeemModes(){
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
+            this.props.getRedeemModeList(this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
@@ -80,52 +79,62 @@ class ManageRedeemModes extends Component {
     }
 
     onHandleSearch(){
-        this.getAllMerchants();
+        this.getAllRedeemModes();
     }
 
-    deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
+    deleteRedeemOption = (modeId) => {
+
+        if (this.state.permissionDisplayBox) {
+            this.handleClose();
+            if(this.props.userData.user.responseData.token){
+                this.setState({showLoader:true})
+                this.props.deleteRedeemMode(this.state.modeId, this.props.userData.user.responseData.token);
+            }
+            else{
+                //#TODO: Handle token expire case here
+            }
         }
         else{
-            //#TODO: Handle token expire case here
+            this.setState({ permissionDisplayBox: true, modeId: modeId });
         }
     }
 
-    updateMerchant = (merchantId) => {
-        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
+    updateRedeemMode = (modeId) => {
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getRedeemModeDetails(modeId, this.props.userData.user.responseData.token)
+            this.props.clearGetRedeemModeDetailResponse()
+            this.props.history.push('/updateRedeemMode')
+        }
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
+        this.setState({ permissionDisplayBox: false });
     };
+
 
     addNewMode(){
         this.props.history.push('/addNewRedeemMode')
     }
 
-    onHandleReset(){
-        this.setState({name:''});
-        this.setState({status:''});
-        this.setState({location:''});
-        this.setState({disableReset:true});
-        this.props.reset();
-
-        if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
-        }
-    
-    }
-
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const { redeemModeList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, redeemModeList.length - page * rowsPerPage);
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
+        ];
+
+        const permissionActions = [
+            <Button key="no" onClick={this.handleClose} color="primary">
+                No
+            </Button>,
+            <Button key="yes" onClick={this.deleteRedeemOption} color="primary" autoFocus>
+                Yes
+            </Button>,
         ];
 
         return (
@@ -136,8 +145,13 @@ class ManageRedeemModes extends Component {
             <div>
                 <DialogBox 
                     displayDialogBox={dialogOpen} 
-                    message="Mode deleted successfully" 
+                    message="Redeem mode deleted successfully" 
                     actions={actions} 
+                />
+                <DialogBox 
+                    displayDialogBox={permissionDisplayBox} 
+                    message="Are you sure to delete redeem mode?" 
+                    actions={permissionActions} 
                 />
             </div> 
 
@@ -150,7 +164,7 @@ class ManageRedeemModes extends Component {
                     </div>
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-9">
-                            Number of Modes : 3
+                            Number of Modes : <b>{redeemModeList !== undefined ? redeemModeList.length : "0"}</b>
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-3 end-md">
                             <Button 
@@ -181,36 +195,38 @@ class ManageRedeemModes extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
-                            (merchantList.length === 0) ? 
+                            (redeemModeList !== "") ? (
+                            (redeemModeList.length === 0) ? 
                                 (<TableRow>
                                     <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
                                 </TableRow>)
                                 : (
-                                merchantList
+                                redeemModeList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
-                                    <TableRow className="tableRow" key={object.id}>
+                                    <TableRow className="tableRow" key={object.modeId}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>{object.first_v + " " + object.last_v}</TableCell>
+                                        <TableCell>{object.mode}</TableCell>
                                         <TableCell>
-                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
+                                            <div className={object.status === 0 ? "titleRed" : "titleGreen"}>
+                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Deactive" : "Active"}</FormLabel>
+                                            </div>
                                         </TableCell>
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.updateRedeemMode(object.modeId)} className="enabledButton"> 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" onClick={() => this.deleteRedeemOption(object.modeId)} className="enabledButton"> 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
                                             </div>
-                                        </TableCell>    
+                                        </TableCell>       
                                     </TableRow>
                                     );
                                 })
@@ -227,7 +243,7 @@ class ManageRedeemModes extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={3}
-                                count={merchantList.length}
+                                count={redeemModeList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}
@@ -249,14 +265,14 @@ class ManageRedeemModes extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({ getRedeemModeList, deleteRedeemMode, clearDeleteRedeemModeResponse, getRedeemModeDetails, clearGetRedeemModeDetailResponse }, dispatch)
   }
   
   ManageRedeemModes = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
-      merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
-      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
+      redeemModePayload: state.redeem.redeemModeList === undefined ? undefined : state.redeem.redeemModeList,
+      deleteRedeemModeResponse: state.redeem.deleteRedeemMode === undefined ? undefined : state.redeem.deleteRedeemMode,
     }),
     mapDispatchToProps,
   )(ManageRedeemModes)

@@ -7,6 +7,7 @@ import deal from './dealReducer';
 import admin from './adminReducer';
 import ticket from './ticketReducer';
 import userAccount from './userReducer';
+import redeem from './redeemReducer';
 
 const appReducer = combineReducers({
     account,
@@ -16,6 +17,7 @@ const appReducer = combineReducers({
     admin,
     ticket,
     userAccount,
+    redeem,
     form: formReducer,
 });
 

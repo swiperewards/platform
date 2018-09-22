@@ -349,9 +349,9 @@ class ManageMerchants extends Component {
                                                         
                                                         {
                                                             object.inactive_v === 1 ?
-                                                                <img src="../images/ic_approve.svg" alt="" />
+                                                                <img src="../images/switch_on.svg" alt="" />
                                                             :
-                                                                <img src="../images/ic_delete.svg" alt="" />
+                                                                <img src="../images/switch_off.svg" alt="" />
                                                         }
                                                     </button>
                                                 </div>

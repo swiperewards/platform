@@ -85,7 +85,7 @@ class ManageUsers extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name!=="" && this.state.status!=="" && this.state.userType !== ""){
+        if(this.state.name === "" && this.state.status === "" && this.state.userType === ""){
             this.setState({disableReset: true});
         }
         else{
@@ -325,7 +325,7 @@ class ManageUsers extends Component {
                                         <TableCell>{object.roleId === 3 ? "Merchant" : "Customer"}</TableCell>
                                         <TableCell>
                                             <div className={object.status === 0 ? "titleRed" : "titleGreen"}>
-                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Expired" : "Active"}</FormLabel>
+                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Deactive" : "Active"}</FormLabel>
                                             </div>
                                         </TableCell>
                                         <TableCell> 

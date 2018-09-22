@@ -13,7 +13,7 @@ export function addNewAdmin(values, profilePic, token) {
             "platform": "web", 
 	        "requestData":{
                 "fullName": values.adminName, 
-		        "contactNumber": values.phone === undefined ? undefined : (values.phone).replace(normalizedPhone,''),
+		        "contactNumber": (values.phone === undefined || values.phone === '' || values.phone === null) ? undefined : (values.phone).replace(normalizedPhone,''),
 		        "emailId": values.email,
 		        "status": values.status,
                 "profilePic": profilePic,
@@ -162,7 +162,7 @@ export function updateAdminDetails(values, profilePic, token) {
 	        "requestData":{
                 "userId":values.userId,
                 "fullName": values.fullName,
-                "contactNumber":values.contactNumber === undefined ? undefined : (values.contactNumber).replace(normalizedPhone,''),
+                "contactNumber":(values.contactNumber === undefined || values.contactNumber === '' || values.contactNumber === null) ? undefined : (values.contactNumber).replace(normalizedPhone,''),
                 "emailId": values.emailId,
 		        "status": values.status,
                 "profilePic": profilePic,

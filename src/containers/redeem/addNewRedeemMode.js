@@ -2,63 +2,104 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Field, reduxForm } from 'redux-form';
+import { Field, reduxForm, FieldArray } from 'redux-form';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Button from '@material-ui/core/Button';
 
 //Components
+import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
-
+import Loader from '../../components/loader'
 //Actions
-import { getMerchantDetailsAPI, updateMerchantDetails } from '../../actions/merchantAction';
+import { createNewRedeemMode, clearCreateRedeemModeResponse } from '../../actions/redeemAction';
 
 //Validation
 import {required} from '../../utilities/validation'
 
 let errorMessage
 
-function validate(formProps) {  
-    const errors = {};
-  
-    if (!formProps.businessType) {
-      errors.firstName = 'Select business Type';
-    }
-  
-    if (!formProps.businessName) {
-      errors.lastName = 'Please enter a Business name';
-    }
-  
-    return errors;
-  }
+const styles = {
+    root: {
+      width: '100%',
+    },
+    heading: {
+        fontSize: '14px',
+        fontWeight: 'bold',
+        flexBasis: '33.33%',
+        flexShrink: 0,
+    },
+    formControl: {
+        minWidth: '100%',
+        marginLeft:'0px',
+    },
+    selectControl:{
+        fontSize: '12px',
+    },
+    column: {
+        flexBasis: '100.0%',
+      },
+      buttonColumn: {
+        flexBasis: '10.0%',
+        float:'right',
+        padding:'0px',
+      },
+  };
+
+  let renderOptions = ({ fields, meta: { touched, error, submitFailed } }) => {
+
+    return(  
+    <React.Fragment>
+        {   
+         fields.map((member, idx) =>
+            <div style={styles.root} key={'fragment' + idx}>
+                <Paper style={{width:'60%', padding:'15px'}}>
+
+                    <div style={styles.buttonColumn}>
+                        <button
+                        type="button"
+                        title="Remove Member"
+                        onClick={() => fields.remove(idx)}
+                        > 
+                            <DeleteIcon />
+                        </button>
+                    </div>
+                    <div className="row middle-md">
+                        <div className="col-xs-12 col-sm-6 col-md-3">
+                            Option { idx+1 }*
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-6">
+                            <Field myType="text" name={`${member}.optionName`} fullWidth={true} component={InputField} validate={required}/>  
+                        </div>
+                    </div>
+                 </Paper>
+            </div>
+        )}
+        <div style={{marginTop:'10px'}}>
+            <button 
+                type="button" 
+                onClick={() => fields.push({})} 
+                className="button"
+                style={{backgroundColor:'#27A24F'}}>
+                + Add additional option
+            </button>           
+        </div>
+    </React.Fragment>
+    )
+}
 
 class AddNewRedeemMode extends Component {
 
     state = {
-        businessType: '',
-        stateName:'',
-        creditCheckedNo: true,
-        creditCheckedYes: false,
-      };
+        dialogOpen: false,
+    };
 
-      handleChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
-      };
-
-      handleCheckboxChange = name => event => {
-        this.setState({[name]: event.target.checked});
-
-        if (name === "creditCheckedYes"){
-            this.setState({creditCheckedNo: !event.target.checked});
-        }
-        else if (name === "creditCheckedNo"){
-            this.setState({creditCheckedYes: !event.target.checked});
-        }
-      };
-      
     componentWillMount() {
+        errorMessage = "";
 
         if(this.props.userData.user.responseData.token && this.props.merchant){
             this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
@@ -66,27 +107,59 @@ class AddNewRedeemMode extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-    
+        if (nextProps) {
+            if (nextProps.redeemModeResponse){
+              this.setState({showLoader:false})
+              if(nextProps.redeemModeResponse.status === 200){
+                  this.setState({message: nextProps.redeemModeResponse.message})
+                  this.setState({ dialogOpen: true });
+              }
+              else{
+                errorMessage =
+                <div 
+                    className="errorDiv"
+                >{nextProps.redeemModeResponse.message}</div>
+              }
+
+              this.props.clearCreateRedeemModeResponse();
+            }
+        }
     }  
 
-    handleInitialize(entityDetails) {
-        if(entityDetails !== undefined){
-            this.props.initialize(entityDetails);
-        }
-      }
-
-      onSubmit(values) {
-
-        console.log(values);
-      }
-
-      cancelClick(){
+    cancelClick(){
         this.props.history.goBack();
     }
 
+    handleClose = () => {
+        this.setState({ dialogOpen: false });
+        this.props.history.push('/manageredeemmode');
+    };
+
+    onSubmit(values) {
+        errorMessage = "";
+        if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
+            this.props.createNewRedeemMode(values, this.props.userData.user.responseData.token)
+        }
+    }
+
     render() {
+        const {  dialogOpen } = this.state;
+
+        const actions = [
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
+
         return (
             <div style={{paddingBottom:'20px'}}>
+                <Loader status={this.state.showLoader} />
+                <DialogBox 
+                    displayDialogBox={dialogOpen} 
+                    message={this.state.message} 
+                    actions={actions} 
+                />  
                 <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
 
                 <Paper className="pagePaper">
@@ -100,7 +173,7 @@ class AddNewRedeemMode extends Component {
                         <Divider style={{marginBottom:'20px'}}/>
 
                         <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-3 col-md-3">
+                            <div className="col-xs-12 col-sm-3 col-md-2">
                                     Mode Name*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
@@ -113,13 +186,18 @@ class AddNewRedeemMode extends Component {
                                 />  
                             </div>
                         </div>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <Divider style={{marginBottom:'20px'}} />
+                                <FieldArray name="options" component={renderOptions}/>
+                            </div>
+                        </div>
                         <div className="row end-xs">
                             <div className="col-xs-12 col-sm-6 col-md-6">
                                 <button 
                                     type="button"
                                     style={{backgroundColor:'#BCBCBC'}}
-                                    disabled={this.state.disableReset}
-                                    className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
+                                    className="enabledButton button"
                                     onClick={this.cancelClick.bind(this)}
                                    > Cancel
                                 </button>
@@ -143,18 +221,17 @@ class AddNewRedeemMode extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantDetailsAPI, updateMerchantDetails }, dispatch)
+    return bindActionCreators({ createNewRedeemMode, clearCreateRedeemModeResponse }, dispatch)
   }
 
   AddNewRedeemMode = reduxForm({
     form: 'frmAddNewRedeemMode',
-    enableReinitialize: true,
-    validate
 })(AddNewRedeemMode)
 
 AddNewRedeemMode = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
+       redeemModeResponse : state.redeem.createRedeemMode === undefined ? undefined : state.redeem.createRedeemMode,
     }),
     mapDispatchToProps,
   )(AddNewRedeemMode)
