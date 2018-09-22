@@ -2,28 +2,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Field, reduxForm } from 'redux-form';
+import { Field, reduxForm, FieldArray } from 'redux-form';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
-import Avatar from '@material-ui/core/Avatar';
+import DeleteIcon from '@material-ui/icons/Delete';
 import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
 
 //Components
 import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
-import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
+import {renderSelectField} from '../../components/selectControl';
 
 //Actions
-import { addNewAdmin } from '../../actions/adminAction';
+import { updateRedeemMode, clearUpdateRedeemDetailsResponse } from '../../actions/redeemAction';
 
 //Validation
-import {required, dropDownRequired, phoneMask, email, between1to100} from '../../utilities/validation'
+import {required, dropDownRequired} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -31,25 +31,85 @@ import Data from '../../staticData';
 let errorMessage
 
 const styles = {
+    root: {
+      width: '100%',
+    },
+    heading: {
+        fontSize: '14px',
+        fontWeight: 'bold',
+        flexBasis: '33.33%',
+        flexShrink: 0,
+    },
     formControl: {
         minWidth: '100%',
         marginLeft:'0px',
-      },
-      selectControl:{
+    },
+    selectControl:{
         fontSize: '12px',
+    },
+    column: {
+        flexBasis: '100.0%',
       },
-};
+      buttonColumn: {
+        flexBasis: '10.0%',
+        float:'right',
+        padding:'0px',
+      },
+  };
 
-class AddAdmin extends Component {
+  let renderOptions = ({ fields, meta: { touched, error, submitFailed } }) => {
+
+    return(  
+    <React.Fragment>
+        {   
+         fields.map((member, idx) =>
+            <div style={styles.root} key={'fragment' + idx}>
+                <Paper style={{width:'60%', padding:'15px'}}>
+
+                    <div style={styles.buttonColumn}>
+                        <button
+                        type="button"
+                        title="Remove Member"
+                        onClick={() => fields.remove(idx)}
+                        > 
+                            <DeleteIcon />
+                        </button>
+                    </div>
+                    <div className="row middle-md">
+                        <div className="col-xs-12 col-sm-6 col-md-3">
+                            Option { idx+1 }*
+                        </div>
+                        <div className="col-xs-12 col-sm-6 col-md-6">
+                            <Field 
+                                myType="text" 
+                                name={`${member}.optionName`} 
+                                fullWidth={true} 
+                                component={InputField} 
+                                validate={required}
+                            />  
+                        </div>
+                    </div>
+                 </Paper>
+            </div>
+        )}
+        <div style={{marginTop:'10px'}}>
+            <button 
+                type="button" 
+                onClick={() => fields.push({})} 
+                className="button"
+                style={{backgroundColor:'#27A24F'}}>
+                + Add additional option
+            </button>           
+        </div>
+    </React.Fragment>
+    )
+}
+
+class UpdateRedeemMode extends Component {
 
     state = {
-        image:'',
         dialogOpen: false,
-      };
-
-      handleChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
-      };
+    };
 
     componentWillMount() {
         errorMessage = "";
@@ -57,64 +117,58 @@ class AddAdmin extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
-            if (nextProps.newAdminResponse){
+            if (nextProps.updateRedeemResponse){
               this.setState({showLoader:false})
-              if(nextProps.newAdminResponse.status === 200){
-                  this.setState({message: nextProps.newAdminResponse.message})
+              if(nextProps.updateRedeemResponse.status === 200){
+                  this.setState({message: nextProps.updateRedeemResponse.message})
                   this.setState({ dialogOpen: true });
               }
               else{
-                  errorMessage =
-                              <div 
-                                  className="errorDiv"
-                              >{nextProps.newAdminResponse.message}</div>
+                errorMessage =
+                <div 
+                    className="errorDiv"
+                >{nextProps.updateRedeemResponse.message}</div>
               }
+
+              this.props.clearUpdateRedeemDetailsResponse();
             }
         }
     }  
 
-      onSubmit(values) {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.addNewAdmin(values, this.state.image, this.props.userData.user.responseData.token)
-        }
-      }
-
-      cancelClick(){
+    cancelClick(){
         this.props.history.goBack();
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
-        this.props.history.push('/manageadmins');
+        this.props.history.push('/manageredeemmode');
     };
 
-    onImageChange(event) {
-        if (event.target.files && event.target.files[0]) {
-            let reader = new FileReader();
-            reader.onload = (e) => {
-                this.setState({image: e.target.result});
-            };
-            reader.readAsDataURL(event.target.files[0]);
+    onSubmit(values) {
+        errorMessage = "";
+        if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
+            this.props.updateRedeemMode(values, this.props.userData.user.responseData.token)
         }
     }
 
     render() {
-
         const {  dialogOpen } = this.state;
+        const { pristine, submitting } = this.props
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
         ];
+
         return (
             <div style={{paddingBottom:'20px'}}>
                 <Loader status={this.state.showLoader} />
                 <DialogBox 
-                        displayDialogBox={dialogOpen} 
-                        message={this.state.message} 
-                        actions={actions} 
+                    displayDialogBox={dialogOpen} 
+                    message={this.state.message} 
+                    actions={actions} 
                 />  
                 <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
 
@@ -122,51 +176,23 @@ class AddAdmin extends Component {
                     <div className="formContent">
                         <div className="appTitleLabel row">
                             <div className="col-xs-12 col-md-12">
-                            <FormLabel component="legend">ADD ADMIN</FormLabel>
+                            <FormLabel component="legend">UPDATE REDEEM MODE</FormLabel>
                             </div>                            
                         </div>
 
                         <Divider style={{marginBottom:'20px'}}/>
 
                         <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                Admin Name*
+                            <div className="col-xs-12 col-sm-3 col-md-2">
+                                    Mode Name*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     myType="text" 
-                                    name="adminName" 
+                                    name="modeName" 
                                     fullWidth={true} 
                                     component={InputField} 
                                     validate={required}
-                                />  
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                Email*
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    myType="text" 
-                                    name="email" 
-                                    fullWidth={true} 
-                                    component={InputField} 
-                                    validate={[required, email, between1to100]}
-                                />  
-                            </div>
-                        </div>
-                        <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                Phone
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    myType="text" 
-                                    name="phone" 
-                                    fullWidth={true} 
-                                    component={InputField} 
-                                    masked={true}
-                                    myMaskType="text"
-                                    maskReg={phoneMask}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
@@ -194,41 +220,32 @@ class AddAdmin extends Component {
                                     </Field>    
                                 </FormControl>  
                             </div>
-                        </div> 
-                        <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Avatar
-                                    alt="profile"
-                                    src={this.state.image === '' ? "../images/profile.png" : this.state.image} 
-                                    className="bigAvatar"
-                                />
+                        </div>
+                        <div className="row">
+                            <div className="col-md-12">
+                                <Divider style={{marginBottom:'20px'}} />
+                                <FieldArray name="options" component={renderOptions}/>
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <input 
-                                    type="file" 
-                                    onChange={this.onImageChange.bind(this)} 
-                                    accept=".jpg"
-                                    />
-
-                            </div>            
                         </div>
                         <div className="row end-xs">
                             <div className="col-xs-12 col-sm-6 col-md-6">
                                 <button 
                                     type="button"
                                     style={{backgroundColor:'#BCBCBC'}}
-                                    className="enabledButton button"
+                                    disabled={this.state.disableReset}
+                                    className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
                                     onClick={this.cancelClick.bind(this)}
                                     > Cancel
                                 </button>
 
                                 <button 
                                     type="submit"
-                                    className="button"
-                                    > Add
+                                    disabled={pristine || submitting}
+                                    className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
+                                    > Update
                                 </button> 
                             </div>
-                        </div>                       
+                        </div>                         
                     </div>            
                 </Paper> 
                 </form>
@@ -241,19 +258,20 @@ class AddAdmin extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ addNewAdmin }, dispatch)
+    return bindActionCreators({ updateRedeemMode, clearUpdateRedeemDetailsResponse }, dispatch)
   }
 
-  AddAdmin = reduxForm({
-    form: 'frmAddAdmin',
-})(AddAdmin)
+  UpdateRedeemMode = reduxForm({
+    form: 'frmUpdateRedeemMode',
+})(UpdateRedeemMode)
 
-AddAdmin = connect(
+UpdateRedeemMode = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
-       newAdminResponse: state.admin.addAdmin === undefined ? undefined : state.admin.addAdmin,
+       initialValues: state.redeem.redeemModeDetails === undefined ? undefined : state.redeem.redeemModeDetails.responseData,
+       updateRedeemResponse : state.redeem.updateRedeemMode === undefined ? undefined : state.redeem.updateRedeemMode,
     }),
     mapDispatchToProps,
-  )(AddAdmin)
+  )(UpdateRedeemMode)
 
-export default AddAdmin;
+export default UpdateRedeemMode;

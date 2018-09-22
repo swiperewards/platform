@@ -11,7 +11,7 @@ import moment from 'moment'
     }
   
     render () {
-      const { input, keyboard, disabled, className, input: { onChange, value }, meta: { invalid, error, touched }, required, ...other } = this.props
+      const { input, keyboard, disabled, className, input: { value }, meta: { invalid, error, touched }, required, ...other } = this.props
   
       return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>

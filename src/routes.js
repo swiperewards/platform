@@ -31,12 +31,14 @@ import UpdateDeal from './containers/deals/updateDeal'
 
 import ManageRedeemModes from './containers/redeem/manageRedeemModes'
 import AddNewRedeemMode from './containers/redeem/addNewRedeemMode'
+import UpdateRedeemMode from './containers/redeem/updateRedeemMode'
 
 import ManageRedemption from './containers/redemption/manageRedemption'
 import CustomerQueries from './containers/customerQueries/customerQueries'
 
 import ManageTickets from './containers/ticket/manageTickets'
 import AddNewTicket from './containers/ticket/addNewTicket'
+import UpdateTicket from './containers/ticket/updateTicket'
 
 import SuperAdminDashboard from './containers/superAdmin/superAdminDashboard'
 
@@ -93,6 +95,8 @@ class Routes extends Component {
                             <Route exact path="/paymentprocessing" component={PaymentProcessing} />
                             <Route exact path="/contactus" component={ContactUs} />
                             <Route exact path="/updateUser" component={UpdateUserDetails} />
+                            <Route exact path="/updateTicket" component={UpdateTicket} />
+                            <Route exact path="/updateRedeemMode" component={UpdateRedeemMode} />
                         </App>
                     </Switch>
                 </div>

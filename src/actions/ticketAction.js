@@ -1,4 +1,4 @@
-import { hostURL, getQueryTypeAPI, generateTicketAPI, getTicketTypesAPI, deleteTicetTypeAPI } from '../app.config';
+import { hostURL, getQueryTypeAPI, generateTicketAPI, getTicketTypesAPI, deleteTicketTypeAPI, addTicketTypeAPI, updateTicketTypeAPI, getTicketTypeDetailsAPI } from '../app.config';
 
 var axios = require('axios');
 
@@ -107,33 +107,164 @@ export function getTicketTypes(token) {
     }
 }
 
-// //Function to delete Ticket type
-// export function getTicketTypes(token) {
+//Function to get Ticket type Details
+export function getTicketTypeDetails(ticketId, token) {
 
-//     var setting = {
-//         method: 'post',
-//         url: hostURL + getTicketTypesAPI,
-//         data: {
-//             "platform": "web",
-// 	    },
-//         headers: {
-//             'content-type': 'application/json',
-//             'auth' : token
-//         }
-//     }
+    var setting = {
+        method: 'post',
+        url: hostURL + getTicketTypeDetailsAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "id" : ticketId,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
 
-//     var response = axios(setting).then(
-//         response => response.data
-//     )
-//         .catch(response => response = {
-//             success: 500,
-//             message: "Your submission could not be completed. Please Try Again!",
-//             data: ""
-//         }
-//         );
+    var response = axios(setting).then(
+        response => {
+            response.data.responseData.status = response.data.responseData.status === undefined ? false : (response.data.responseData.status).toString()
+            return response.data;
+        }
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
 
-//     return {
-//         type: 'GET_TICKET_TYPE_LIST',
-//         payload: response
-//     }
-// }
+    return {
+        type: 'GET_TICKET_TYPE_DETAILS',
+        payload: response
+    }
+}
+
+export function clearGetTicketTypeResponse() {
+    return {
+        type: 'GET_TICKET_TYPE_DETAILS',
+        payload: undefined
+    }
+}
+
+//Function to delete Ticket type
+export function deleteTicketType(ticketId, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + deleteTicketTypeAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "id": ticketId
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'DELETE_TICKETTYPE',
+        payload: response
+    }
+}
+
+export function clearDeleteTicketTypeResponse() {
+    return {
+        type: 'DELETE_TICKETTYPE',
+        payload: undefined
+    }
+}
+
+//Function to create new ticket type
+export function createTicketType(values, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + addTicketTypeAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "ticketTypeName":values.ticketName,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'ADD_TICKETTYPE',
+        payload: response
+    }
+}
+
+export function clearNewTicketTypeResponse() {
+    return {
+        type: 'ADD_TICKETTYPE',
+        payload: undefined
+    }
+}
+
+//Function to update ticket type
+export function updateTicketType(values, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + updateTicketTypeAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "id":values.id,
+                "ticketTypeName":values.ticketTypeName,
+                "status":values.status,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'UPDATE_TICKETTYPE',
+        payload: response
+    }
+}

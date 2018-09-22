@@ -1,5 +1,4 @@
 import { hostURL, addNewDealAPI, getDealsFilterAPI, deleteDealAPI, getDealDetailsAPI, updateDealAPI, getCitiesAPI } from '../app.config';
-import {normalizedPhone} from '../utilities/validation'
 import moment from 'moment'
 
 var axios = require('axios');

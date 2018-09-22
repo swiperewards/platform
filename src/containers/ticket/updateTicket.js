@@ -5,25 +5,41 @@ import { bindActionCreators } from 'redux';
 import { Field, reduxForm } from 'redux-form';
 
 //material-ui
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 
 //Components
+import {renderSelectField} from '../../components/selectControl';
 import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
 import Loader from '../../components/loader'
 
 //Actions
-import { createTicketType, clearNewTicketTypeResponse } from '../../actions/ticketAction';
+import { updateTicketType, clearNewTicketTypeResponse } from '../../actions/ticketAction';
 
 //Validation
-import {required} from '../../utilities/validation'
+import {required, dropDownRequired} from '../../utilities/validation'
+
+//Data
+import Data from '../../staticData';
 
 let errorMessage
 
-class AddNewTicket extends Component {
+const styles = {
+    formControl: {
+        minWidth: '100%',
+        marginLeft:'0px',
+      },
+      selectControl:{
+        fontSize: '12px',
+      },
+};
+
+class UpdateTicket extends Component {
 
     state = {
         dialogOpen: false,
@@ -35,17 +51,17 @@ class AddNewTicket extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
-            if (nextProps.newTicketResponse){
+            if (nextProps.updateTicketResponse){
               this.setState({showLoader:false})
-              if(nextProps.newTicketResponse.status === 200){
-                  this.setState({message: nextProps.newTicketResponse.message})
+              if(nextProps.updateTicketResponse.status === 200){
+                  this.setState({message: nextProps.updateTicketResponse.message})
                   this.setState({ dialogOpen: true });
               }
               else{
                 errorMessage =
                 <div 
                     className="errorDiv"
-                >{nextProps.newTicketResponse.message}</div>
+                >{nextProps.updateTicketResponse.message}</div>
               }
 
               this.props.clearNewTicketTypeResponse();
@@ -56,7 +72,7 @@ class AddNewTicket extends Component {
     onSubmit(values) {
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
-            this.props.createTicketType(values, this.props.userData.user.responseData.token)
+            this.props.updateTicketType(values, this.props.userData.user.responseData.token)
         }
     }
 
@@ -66,11 +82,12 @@ class AddNewTicket extends Component {
     };
 
     cancelClick(){
-        this.props.history.goBack();
+        this.props.history.push('/managetickets');
     }
 
     render() {
         const {  dialogOpen } = this.state;
+        const { pristine, submitting } = this.props
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -92,7 +109,7 @@ class AddNewTicket extends Component {
                     <div className="formContent">
                         <div className="appTitleLabel row">
                             <div className="col-xs-12 col-md-12">
-                            <FormLabel component="legend">ADD TICKET TYPE</FormLabel>
+                            <FormLabel component="legend">UPDATE TICKET TYPE</FormLabel>
                             </div>                            
                         </div>
 
@@ -105,11 +122,36 @@ class AddNewTicket extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     myType="text" 
-                                    name="ticketName" 
+                                    name="ticketTypeName" 
                                     fullWidth={true} 
                                     component={InputField} 
                                     validate={required}
                                 />  
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Status*
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">    
+                                <FormControl style={styles.formControl}>
+                                        <Field
+                                            name="status"
+                                            component={renderSelectField}
+                                            fullWidth={true}
+                                            onChange={this.handleChange}
+                                            validate={dropDownRequired}
+                                        >
+                                        {
+                                            Data.userStatus.map((item) =>{
+                                               return <MenuItem 
+                                                    style={styles.selectControl}
+                                                    key={item.id}
+                                                    value={item.id}>
+                                                    {item.name}
+                                               </MenuItem>
+                                            })
+                                        }
+                                    </Field>    
+                                </FormControl>  
                             </div>
                         </div>
                         <div className="row end-xs">
@@ -117,15 +159,17 @@ class AddNewTicket extends Component {
                                 <button 
                                     type="button"
                                     style={{backgroundColor:'#BCBCBC'}}
-                                    className="enabledButton button"
+                                    disabled={this.state.disableReset}
+                                    className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
                                     onClick={this.cancelClick.bind(this)}
-                                   > Cancel
+                                    > Cancel
                                 </button>
 
                                 <button 
                                     type="submit"
-                                    className="button"
-                                    > Add
+                                    disabled={pristine || submitting}
+                                    className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
+                                    > Update
                                 </button> 
                             </div>
                         </div>                       
@@ -141,19 +185,20 @@ class AddNewTicket extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ createTicketType, clearNewTicketTypeResponse }, dispatch)
+    return bindActionCreators({ updateTicketType, clearNewTicketTypeResponse }, dispatch)
   }
 
-  AddNewTicket = reduxForm({
-    form: 'frmAddNewTicket',
-})(AddNewTicket)
+  UpdateTicket = reduxForm({
+    form: 'frmUpdateTicket',
+})(UpdateTicket)
 
-AddNewTicket = connect(
+UpdateTicket = connect(
     state => ({
        userData: state.account === undefined ? undefined : state.account,
-       newTicketResponse: state.ticket.createTicketType === undefined ? undefined : state.ticket.createTicketType,
+       initialValues: state.ticket.ticketTypeDetails === undefined ? undefined : state.ticket.ticketTypeDetails.responseData,
+       updateTicketResponse: state.ticket.updateTicketType === undefined ? undefined : state.ticket.updateTicketType,
     }),
     mapDispatchToProps,
-  )(AddNewTicket)
+  )(UpdateTicket)
 
-export default AddNewTicket;
+export default UpdateTicket;

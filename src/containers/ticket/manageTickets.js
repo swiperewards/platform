@@ -23,7 +23,7 @@ import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getTicketTypes } from '../../actions/ticketAction';
+import { getTicketTypes, getTicketTypeDetails, clearGetTicketTypeResponse, deleteTicketType, clearDeleteTicketTypeResponse } from '../../actions/ticketAction';
 
 class ManageTickets extends Component {
 
@@ -33,6 +33,7 @@ class ManageTickets extends Component {
         rowsPerPage: 5,
         dialogOpen: false,
         disableReset: true,
+        permissionDisplayBox: false,
     };
 
     componentWillMount()
@@ -49,27 +50,17 @@ class ManageTickets extends Component {
             }
           }
           
-          if(nextProps.merchantDelete){
-            if(nextProps.merchantDelete.status === 200){
-                this.setState({showLoader:false})
+          if(nextProps.deleteTicketResponse){
+            this.setState({showLoader:false})
+            if(nextProps.deleteTicketResponse.status === 200){
                 this.setState({ dialogOpen: true });
-                this.getAllMerchants();
+                this.getTicketTypeList();
             }
+
+            this.props.clearDeleteTicketTypeResponse()
           }
         }
     }
-
-    //Method to handle change event for dropdown
-    handleChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
-
-        if(this.state.name!=="" && this.state.status!=="" && this.state.location!==""){
-            this.setState({disableReset: true});
-        }
-        else{
-            this.setState({disableReset:false});
-        }
-    };
 
     handleChangePage = (event, page) => {
         this.setState({ page });
@@ -88,26 +79,35 @@ class ManageTickets extends Component {
         }
     }
 
-    onHandleSearch(){
-        this.getAllMerchants();
-    }
+    deleteTicketType = (ticketId) => {
 
-    deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
+        if (this.state.permissionDisplayBox) {
+            this.handleClose();
+            if(this.props.userData.user.responseData.token){
+                this.setState({showLoader:true})
+                this.props.deleteTicketType(this.state.ticketId, this.props.userData.user.responseData.token);
+            }
+            else{
+                //#TODO: Handle token expire case here
+            }
         }
         else{
-            //#TODO: Handle token expire case here
+            this.setState({ permissionDisplayBox: true, ticketId: ticketId });
         }
     }
 
-    updateMerchant = (merchantId) => {
-        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
+    updateTicket = (ticketId) => {
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getTicketTypeDetails(ticketId, this.props.userData.user.responseData.token)
+            this.props.clearGetTicketTypeResponse()
+            this.props.history.push('/updateTicket')
+        }
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
+        this.setState({ permissionDisplayBox: false });
     };
 
     addNewTicket(){
@@ -116,12 +116,22 @@ class ManageTickets extends Component {
 
     render() {
 
-        const { ticketTypeList, rowsPerPage, page, dialogOpen } = this.state;
+        const { ticketTypeList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, ticketTypeList.length - page * rowsPerPage);
+
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
+        ];
+
+        const permissionActions = [
+            <Button key="no" onClick={this.handleClose} color="primary">
+                No
+            </Button>,
+            <Button key="yes" onClick={this.deleteTicketType} color="primary" autoFocus>
+                Yes
+            </Button>,
         ];
 
         return (
@@ -135,6 +145,11 @@ class ManageTickets extends Component {
                     message="Ticket deleted successfully" 
                     actions={actions} 
                 />
+                <DialogBox 
+                    displayDialogBox={permissionDisplayBox} 
+                    message="Are you sure to delete ticket type?" 
+                    actions={permissionActions} 
+                />
             </div> 
 
             <div className="row">
@@ -146,7 +161,7 @@ class ManageTickets extends Component {
                     </div>
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-9">
-                            Number of Types : {ticketTypeList !== undefined ? ticketTypeList.length : "0"}
+                            Number of Types : <b>{ticketTypeList !== undefined ? ticketTypeList.length : "0"}</b>
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-3 end-md">
                             <Button 
@@ -191,17 +206,19 @@ class ManageTickets extends Component {
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.ticketTypeName}</TableCell>
                                         <TableCell>
-                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
+                                            <div className={object.status === 0 ? "titleRed" : "titleGreen"}>
+                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Deactive" : "Active"}</FormLabel>
+                                            </div>
                                         </TableCell>
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateTicket(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteTicketType(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -245,13 +262,14 @@ class ManageTickets extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getTicketTypes }, dispatch)
+    return bindActionCreators({ getTicketTypes, getTicketTypeDetails, clearGetTicketTypeResponse, deleteTicketType, clearDeleteTicketTypeResponse }, dispatch)
   }
   
   ManageTickets = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
       ticketTypePayload: state.ticket.ticketTypeList === undefined ? undefined : state.ticket.ticketTypeList,
+      deleteTicketResponse: state.ticket.deleteTicketType === undefined ? undefined : state.ticket.deleteTicketType
     }),
     mapDispatchToProps,
   )(ManageTickets)
