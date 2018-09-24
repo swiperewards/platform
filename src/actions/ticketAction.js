@@ -400,6 +400,13 @@ export function manageCustomerQueryDetails(ticketId, values, token) {
     }
 }
 
+export function clearManageCustomerQueryResponse() {
+    return {
+        type: 'MANAGE_CUSTOMER_QUERY_DETAILS',
+        payload: undefined
+    }
+}
+
 //Function to resolve customer query details
 export function resolveCustomerQueryDetails(ticketId, values, token) {
 
@@ -435,5 +442,12 @@ export function resolveCustomerQueryDetails(ticketId, values, token) {
     return {
         type: 'RESOLVE_CUSTOMER_QUERY',
         payload: response
+    }
+}
+
+export function clearResolveCustomerQueryResponse() {
+    return {
+        type: 'RESOLVE_CUSTOMER_QUERY',
+        payload: undefined
     }
 }

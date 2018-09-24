@@ -94,6 +94,11 @@ const data={
       {id:'3', name: 'Rejected'},
       {id:'2', name: 'Resolved'}
     ],
+    redeemStatus: [
+      {id:'1', name: 'Pending'},
+      {id:'2', name: 'Approved'},
+      {id:'3', name: 'Rejected'}
+    ],
     userStatus: [
       {id:'1', name: 'Active'},
       {id:'0', name: 'Deactive'}

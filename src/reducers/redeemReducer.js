@@ -20,6 +20,22 @@ export default function (state = {}, action) {
             return{
                 redeemModeDetails: action.payload
             }      
+        case 'GET_REDEEM_REQUESTS':
+            return{
+                ...state, redeemRequestList: action.payload
+            }    
+        case 'GET_REDEEM_REQUEST_DETAILS':
+            return{
+                redeemRequestDetails: action.payload
+            }   
+        case 'UPDATE_REDEEM_REQUEST':
+            return{
+                updateRedeemRequest: action.payload
+            }     
+        case 'REJECT_REDEEM_REQUEST':
+            return{
+                rejectRedeemRequest: action.payload
+            }    
         default:
             return state;
     }

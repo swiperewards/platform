@@ -38,6 +38,8 @@ import
     clearCustomerQueryDetailsResponse,
     manageCustomerQueryDetails, 
     resolveCustomerQueryDetails,
+    clearResolveCustomerQueryResponse,
+    clearManageCustomerQueryResponse,
 } from '../../actions/ticketAction';
 
 //Data
@@ -126,12 +128,14 @@ class CustomerQueries extends Component {
                 this.setState({showLoader:false})
                 this.setState({dialogOpen: true});
                 this.setState({responseMessage: nextProps.manageQueryResponse.message});
+                this.props.clearManageCustomerQueryResponse();
             }
 
             if (nextProps.resolveQueryResponse){
                 this.setState({showLoader:false})
                 this.setState({dialogOpen: true});
                 this.setState({responseMessage: nextProps.resolveQueryResponse.message});
+                this.props.clearResolveCustomerQueryResponse();
                 this.getAllCustomerQueries();
             }
 
@@ -582,7 +586,7 @@ class CustomerQueries extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={8} />
                                 </TableRow>
                             )}
                         </TableBody>
@@ -612,7 +616,16 @@ class CustomerQueries extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getQueryType, getCustomerQueryList, getCustomerQueryDetails, clearCustomerQueryDetailsResponse, manageCustomerQueryDetails, resolveCustomerQueryDetails }, dispatch)
+    return bindActionCreators({ 
+        getQueryType, 
+        getCustomerQueryList, 
+        getCustomerQueryDetails, 
+        clearCustomerQueryDetailsResponse, 
+        manageCustomerQueryDetails, 
+        resolveCustomerQueryDetails,
+        clearResolveCustomerQueryResponse,
+        clearManageCustomerQueryResponse, 
+    }, dispatch)
   }
   
   CustomerQueries = connect(

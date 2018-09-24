@@ -152,7 +152,7 @@ class ResponsiveDrawer extends React.Component {
       case '/manageredeemmode':
         return true;  
       default:
-        return false;
+        return true;
     }
   }
 
