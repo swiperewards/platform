@@ -1,4 +1,15 @@
-import { hostURL, validateUserAPI, registerUserAPI, resendMailAPI, activateAccountAPI, userProfileAPI, forgotPasswordAPI, setPasswordAPI } from '../app.config';
+import 
+{ 
+    hostURL, 
+    validateUserAPI, 
+    registerUserAPI, 
+    resendMailAPI, 
+    activateAccountAPI, 
+    userProfileAPI, 
+    forgotPasswordAPI, 
+    setPasswordAPI,
+    updateUserProfileAPI, 
+} from '../app.config';
 var axios = require('axios');
 
 //To Validate and authenticate user for login
@@ -280,6 +291,48 @@ export function logout() {
     localStorage.clear();
     return {
         type: 'LOGOUT',
+        payload: undefined
+    }
+}
+
+//Function to update user profile
+export function updateUserProfile(values, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + updateUserProfileAPI,
+        data: {
+            "platform": 'Web',
+            "requestData": {
+                "fullName": values.fullName,
+                "password": values.newPassword
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'UPDATE_USER_PROFILE',
+        payload: response
+    }
+}
+
+export function clearUpdateProfileResponse() {
+    return {
+        type: 'UPDATE_USER_PROFILE',
         payload: undefined
     }
 }

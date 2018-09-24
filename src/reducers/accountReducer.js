@@ -13,7 +13,9 @@ export default function (state = {}, action) {
         case 'FORGOT_PASSWORD':
             return { forgotPassword: action.payload};  
         case 'SET_PASSWORD':
-            return { setPassword: action.payload};            
+            return { setPassword: action.payload};   
+        case 'UPDATE_USER_PROFILE':
+            return { updateProfile: action.payload }             
         default:
             return state;
     }

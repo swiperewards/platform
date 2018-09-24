@@ -26,7 +26,14 @@ import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { 
+    getRedeemRequestList, 
+    getRedeemRequestDetails, 
+    updateRedeemRequest, 
+    rejectRedeemRequest,
+    getRedeemModeList,
+    clearRejectRedeemResponse,
+} from '../../actions/redeemAction';
 
 //Data
 import Data from '../../staticData';
@@ -46,35 +53,82 @@ class ManageRedemption extends Component {
     state = {
         name:'',
         status: '',
-        location:'',
-        merchantList:'',
+        mode:'',
+        fromDate:'',
+        toDate:'',
+        redeemList:'',
+        redeemSummary:'',
+        redeemModeList:'',
+        errorMessage:'',
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
         disableReset: true,
+        permissionDisplayBox: false,
     };
+
+    //Get status text based on status value 
+    statusText(status) {
+        switch(status) {
+          case 2:
+            return "Approved";
+          case 1:
+            return "Pending";  
+          case 3:
+            return "Rejected";
+          default:
+            return "Pending";
+        }
+      }
+
+    //Get status color based on status value 
+    statusColor(status) {
+        switch(status) {
+          case 2:
+            return "titleGreen";
+          case 1:
+            return "titleOrange";  
+          case 3:
+            return "titleRed";
+          default:
+            return "titleOrange";
+        }
+      }
 
     componentWillMount()
     {
-        this.getAllMerchants();
+        if(this.props.userData.user.responseData.token){
+            this.props.getRedeemModeList(this.props.userData.user.responseData.token)
+        }
+
+        this.getAllRedeemRequests();
     }
 
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
-          if (nextProps.merchantPayload){
-            if(nextProps.merchantPayload.status === 200){
-                this.setState({merchantList: nextProps.merchantPayload.responseData})
+
+          if (nextProps.redeemRequestPayload){
+            if(nextProps.redeemRequestPayload.status === 200){
+                this.setState({redeemList: nextProps.redeemRequestPayload.responseData.redeemRequests})
+                this.setState({redeemSummary: nextProps.redeemRequestPayload.responseData.summary})
             }
           }
-          
-          if(nextProps.merchantDelete){
-            if(nextProps.merchantDelete.status === 200){
-                this.setState({showLoader:false})
-                this.setState({ dialogOpen: true });
-                this.getAllMerchants();
+
+          if (nextProps.redeemModePayload){
+            if(nextProps.redeemModePayload.status === 200){
+                this.setState({redeemModeList: nextProps.redeemModePayload.responseData})
             }
           }
+
+          if (nextProps.rejectRedeemPayload){
+            this.setState({showLoader:false})
+            this.setState({ dialogOpen: true });
+            this.setState({errorMessage: nextProps.rejectRedeemPayload.message})
+            this.props.clearRejectRedeemResponse();
+            this.getAllRedeemRequests();
+          }
+
         }
     }
 
@@ -82,7 +136,7 @@ class ManageRedemption extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name!=="" && this.state.status!=="" && this.state.location!==""){
+        if(this.state.name === "" && this.state.status === "" && this.state.mode === ""){
             this.setState({disableReset: true});
         }
         else{
@@ -98,9 +152,9 @@ class ManageRedemption extends Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    getAllMerchants(){
+    getAllRedeemRequests(){
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
+            this.props.getRedeemRequestList(this.state.name, this.state.status, this.state.mode, this.state.fromDate, this.state.toDate, this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
@@ -108,53 +162,63 @@ class ManageRedemption extends Component {
     }
 
     onHandleSearch(){
-        this.getAllMerchants();
-    }
-
-    deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
-        }
-        else{
-            //#TODO: Handle token expire case here
-        }
-    }
-
-    updateMerchant = (merchantId) => {
-        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
+        this.getAllRedeemRequests();
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
+        this.setState({ permissionDisplayBox: false });
     };
 
-    addNewDeal(){
-        this.props.history.push('/merchantList')
+    rejectRedeemRequestById = (redeemId) => {
+
+        if (this.state.permissionDisplayBox) {
+            this.handleClose();
+            if(this.props.userData.user.responseData.token){
+                this.setState({showLoader:true})
+                this.props.rejectRedeemRequest(this.state.redeemId, this.props.userData.user.responseData.token);
+            }
+            else{
+                //#TODO: Handle token expire case here
+            }
+        }
+        else{
+            this.setState({ permissionDisplayBox: true, redeemId: redeemId });
+        }
     }
 
     onHandleReset(){
         this.setState({name:''});
         this.setState({status:''});
-        this.setState({location:''});
+        this.setState({mode:''});
+        this.setState({fromDate:''});
+        this.setState({toDate:''});
         this.setState({disableReset:true});
         this.props.reset();
 
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
+            this.props.getRedeemRequestList("", "", "", "", "", this.props.userData.user.responseData.token)
         }
     
     }
 
     render() {
-
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const { redeemList, rowsPerPage, page, dialogOpen, permissionDisplayBox, errorMessage } = this.state;
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, redeemList.length - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
             </Button>
+        ];
+
+        const permissionActions = [
+            <Button key="no" onClick={this.handleClose} color="primary">
+                No
+            </Button>,
+            <Button key="yes" onClick={this.rejectRedeemRequestById} color="primary" autoFocus>
+                Yes
+            </Button>,
         ];
 
         return (
@@ -165,27 +229,33 @@ class ManageRedemption extends Component {
             <div>
                 <DialogBox 
                     displayDialogBox={dialogOpen} 
-                    message="Redemption request deleted successfully" 
+                    message={errorMessage} 
                     actions={actions} 
                 />
             </div> 
+
+            <DialogBox 
+                    displayDialogBox={permissionDisplayBox} 
+                    message="Are you sure to reject redeem request?" 
+                    actions={permissionActions} 
+                />
 
             <div className="row">
             <div className="col-xs-12">
             <Paper className="pagePaper">
                 <form size='large' className="form-horizontal">
                     <div className="row appTitleLabel">
-                        MANAGE REDEEM REQUESTS
+                        REDEEM REQUESTS
                     </div>
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-2">
-                            Pending : 110
+                            Pending : &nbsp; <span style={{color:"#E77F25"}}><b>{this.state.redeemSummary.pending}</b></span>
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-2">
-                            Approved : 500
+                            Approved : &nbsp; <span style={{color:"#2EC55D"}}><b>{this.state.redeemSummary.approved}</b></span>
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-2">
-                            Rejected : 130
+                            Rejected : &nbsp; <span style={{color:"#DE3630"}}><b>{this.state.redeemSummary.rejected}</b></span>
                         </div>
                     </div>    
                     <div className="row middle-md">
@@ -212,7 +282,7 @@ class ManageRedemption extends Component {
                                         Status
                                     </MenuItem>
                                     {
-                                    Data.searchStatus.map((item) =>{
+                                    Data.redeemStatus.map((item) =>{
                                         return <MenuItem 
                                             style={styles.selectControl}
                                             key={item.id}
@@ -227,24 +297,26 @@ class ManageRedemption extends Component {
                         <div className="col-xs-12 col-sm-6 col-md-2">
                             <FormControl style={styles.formControl}>
                                 <Field
-                                    name="location"
+                                    name="mode"
                                     component={renderSelectField}
                                     fullWidth={true}
                                     onChange={this.handleChange}
                                     displayEmpty
                                     >
                                     <MenuItem value="" disabled>
-                                        Location
+                                        Mode
                                     </MenuItem>
                                     {
-                                    Data.states.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.prefix}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
+                                        this.state.redeemModeList ?
+                                            this.state.redeemModeList.map((item) =>{
+                                                return <MenuItem 
+                                                    style={styles.selectControl}
+                                                    key={item.modeId}
+                                                    value={item.mode}>
+                                                    {item.mode}
+                                                </MenuItem>
+                                            })
+                                        : null    
                                     }
                                 </Field>    
                             </FormControl>  
@@ -255,6 +327,7 @@ class ManageRedemption extends Component {
                             name="fromDate" 
                             fullWidth={true} 
                             component={InputField} 
+                            onChange={this.handleChange}
                             />
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-2">
@@ -264,6 +337,7 @@ class ManageRedemption extends Component {
                             myPlaceHolder="To Date" 
                             fullWidth={true} 
                             component={InputField} 
+                            onChange={this.handleChange}
                             />
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-2">
@@ -307,35 +381,35 @@ class ManageRedemption extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
-                            (merchantList.length === 0) ? 
+                            (redeemList !== "") ? (
+                            (redeemList.length === 0) ? 
                                 (<TableRow>
                                     <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
                                 </TableRow>)
                                 : (
-                                merchantList
+                                redeemList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
-                                    <TableRow className="tableRow" key={object.id}>
+                                    <TableRow className="tableRow" key={object.serial_number}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>{object.first_v + " " + object.last_v}</TableCell>
-                                        <TableCell>{object.email_v}</TableCell>
-                                        <TableCell>$ {object.serial_number}</TableCell>
-                                        <TableCell>Cheque</TableCell>
-                                        <TableCell>TROA{object.serial_number}</TableCell>
+                                        <TableCell>{object.fullName}</TableCell>
+                                        <TableCell>{object.emailId}</TableCell>
+                                        <TableCell>$ {object.amount}</TableCell>
+                                        <TableCell>{object.mode}</TableCell>
+                                        <TableCell>{object.transactionNumber}</TableCell>
                                         <TableCell>
-                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
+                                            <div className={this.statusColor(object.status)}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{this.statusText(object.status)}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" disabled={true} onClick={() => this.manageTicket(object.id)} className="disabledButton"> 
                                                         <img src="../images/ic_approve.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                    <button type="button" disabled={true} onClick={() => this.rejectRedeemRequestById(object.id)} className="disabledButton"> 
                                                         <img src="../images/ic_reject.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -349,7 +423,7 @@ class ManageRedemption extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={8} />
                                 </TableRow>
                             )}
                         </TableBody>
@@ -357,7 +431,7 @@ class ManageRedemption extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={3}
-                                count={merchantList.length}
+                                count={redeemList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}
@@ -379,14 +453,22 @@ class ManageRedemption extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({  
+        getRedeemRequestList, 
+        getRedeemRequestDetails, 
+        updateRedeemRequest, 
+        rejectRedeemRequest, 
+        getRedeemModeList,
+        clearRejectRedeemResponse,
+    }, dispatch)
   }
   
   ManageRedemption = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
-      merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
-      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
+      redeemRequestPayload: state.redeem.redeemRequestList === undefined ? undefined : state.redeem.redeemRequestList,
+      redeemModePayload: state.redeem.redeemModeList === undefined ? undefined : state.redeem.redeemModeList,
+      rejectRedeemPayload: state.redeem.rejectRedeemRequest === undefined ? undefined : state.redeem.rejectRedeemRequest,
     }),
     mapDispatchToProps,
   )(ManageRedemption)

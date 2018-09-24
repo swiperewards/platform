@@ -1,6 +1,7 @@
 //react redux
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Field, reduxForm } from 'redux-form';
 
 //material-ui
@@ -8,13 +9,16 @@ import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
 import Avatar from '@material-ui/core/Avatar';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Button from '@material-ui/core/Button';
 
 //Components
 import InputField from '../../components/inputField';
-import RenderCheckbox from '../../components/renderCheckbox';
+import RenderSwitch from '../../components/switchControl';
+import Loader from '../../components/loader';
+import DialogBox from '../../components/alertDialog';
 
 //Action
+import { updateUserProfile, clearUpdateProfileResponse } from '../../actions/accountAction';
 
 //Validation
 import {required, minimum8} from '../../utilities/validation'
@@ -22,13 +26,6 @@ import {required, minimum8} from '../../utilities/validation'
 let errorMessage
 
 const styles = {
-    formControl: {
-        minWidth: '100%',
-        marginLeft:'0px',
-      },
-      selectControl:{
-        fontSize: '12px',
-      },
       bigAvatar: {
         width: 60,
         height: 60,
@@ -36,60 +33,74 @@ const styles = {
 };
 
 const passwordsMatch = (value, allValues) => 
-  value !== allValues.password ? 'Passwords don\'t match' : undefined;
+  value !== allValues.newPassword ? 'Passwords don\'t match' : undefined;
 
 class UserProfile extends Component {
-
+    
     state = {
-        businessType: '',
-        stateName:'',
-        creditCheckedNo: true,
-        creditCheckedYes: false,
-      };
-
-      handleChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
-      };
-
-      handleCheckboxChange = name => event => {
-        this.setState({[name]: event.target.checked});
-
-        if (name === "creditCheckedYes"){
-            this.setState({creditCheckedNo: !event.target.checked});
-        } 
-        else if (name === "creditCheckedNo"){
-            this.setState({creditCheckedYes: !event.target.checked});
-        }
-      };
-
-      //Enables "Public Company" option if not following cases
-      renderSwitch(param) {
-        switch(param) {
-          case '0':
-            return true;
-          case '5':
-            return true;  
-          case '6':
-            return true;
-          default:
-            return false;
-        }
-      }
+        passwordUpdate: '',
+        dialogOpen: false,
+    };
 
     componentWillMount() {
-
+        errorMessage = ""
     }
 
-      onSubmit(values) {
+    componentWillReceiveProps(nextProps) {
+        if (nextProps) {
+            if (nextProps.updateProfileResponse){
+              this.setState({showLoader:false})
+              if(nextProps.updateProfileResponse.status === 200){
+                  this.setState({message: nextProps.updateProfileResponse.message})
+                  this.setState({ dialogOpen: true });
+              }
+              else{
+                  errorMessage =
+                    <div 
+                        className="errorDiv"
+                    >{nextProps.updateProfileResponse.message}</div>
+              }
 
-        console.log(values);
-      }
+              this.props.clearUpdateProfileResponse();
+            }
+          }
+    } 
+
+    handleChange = event => {
+        this.setState({ [event.target.name]: event.target.value });
+    };
+
+    handleCheckboxChange = name => event => {
+        this.setState({[name]: event.target.checked});
+    };
+
+    onSubmit(values) {
+
+        if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
+            this.props.updateUserProfile(values, this.props.userData.user.responseData.token)
+        }
+    }
 
     render() {
+        const {  dialogOpen } = this.state;
+        const { pristine, submitting } = this.props
+
+        const actions = [
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
+
         return (
             <div style={{paddingBottom:'20px'}}>
+                <Loader status={this.state.showLoader} />
+                <DialogBox 
+                        displayDialogBox={dialogOpen} 
+                        message={this.state.message} 
+                        actions={actions} 
+                />
                 <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
-
                 <Paper className="pagePaper">
                     <div className="formContent">
                         <div className="appTitleLabel row">
@@ -109,10 +120,10 @@ class UserProfile extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Name
                             </div>    
-                            <div className="col-xs-12 col-sm-6 col-md-3">
+                            <div className="col-xs-12 col-sm-6 col-md-4">
                                 <Field 
                                     myType="text" 
-                                    name="userName" 
+                                    name="fullName" 
                                     fullWidth={true} 
                                     component={InputField} 
                                 /> 
@@ -122,65 +133,75 @@ class UserProfile extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Email ID
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
+                            <div className="col-xs-12 col-sm-6 col-md-4">
                                 <Field 
                                     myType="text" 
-                                    name="userEmail" 
+                                    name="emailId" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                />  
+                                    disabled={true}
+                                /> 
                             </div>
                         </div>
-                        <div className="row end-xs start-md">
+                        <div className="row start-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <FormControlLabel
-                                    control={
+                                Update Password
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">  
+                                <Field
+                                    name="passwordUpdate" 
+                                    ref="passwordUpdate"
+                                    id="passwordUpdate" 
+                                    component={RenderSwitch}
+                                    onChange={this.handleCheckboxChange('passwordUpdate')}
+                                />                             
+                            </div>
+                        </div>    
+                        <div className="row start-md">
+                            <div className="col-xs-12 col-sm-6 col-md-6">
+                                {this.state.passwordUpdate === true ? (
+                                <React.Fragment>  
+                                <div className="row">
+                                    <div className="col-xs-6">
+                                        New Password
+                                    </div>
+                                    <div className="col-xs-6">
                                         <Field 
-                                            name="updatePassword" 
-                                            id="updatePassword" 
-                                            myStyle={styles} 
-                                            component={RenderCheckbox} 
+                                            name="newPassword" 
+                                            myType="password" 
+                                            fullWidth={true} 
+                                            component={InputField} 
+                                            validate={[required, minimum8]} 
                                         />
-                                    }
-                                    label="Updated Password"
-                                />
-                            </div>
-                        </div>
-                        <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                New Password
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    name="password" 
-                                    myType="password" 
-                                    fullWidth={true} 
-                                    component={InputField} 
-                                    validate={[required, minimum8]} 
-                                />
-                            </div>
-                        </div>
-                        <div className="row middle-md">                            
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                Confirm Password
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    name="confirmPassword" 
-                                    myType="password" 
-                                    fullWidth={true} 
-                                    component={InputField} 
-                                    validate={[required, passwordsMatch]} 
-                                />
+                                    </div>
+                                </div>
+                                <div className="row">                            
+                                    <div className="col-xs-6">
+                                        Confirm Password
+                                    </div>
+                                    <div className="col-xs-6">
+                                        <Field 
+                                            name="confirmPassword" 
+                                            myType="password" 
+                                            fullWidth={true} 
+                                            component={InputField} 
+                                            validate={[required, passwordsMatch]} 
+                                        />
+                                    </div>
+                                </div>
+                                </React.Fragment>
+                                ) : null
+                            }
                             </div>
                         </div>
                         <div className="row start-xs">
                             <div className="col-xs-12 col-sm-6 col-md-6">
                                 <button 
                                     type="submit"
-                                    className="button"
+                                    disabled={pristine || submitting}
+                                    className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
                                     > Update
-                                </button> 
+                                </button>  
                             </div>
                         </div>                       
                     </div>            
@@ -195,15 +216,21 @@ class UserProfile extends Component {
 }
 
 
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({ updateUserProfile, clearUpdateProfileResponse }, dispatch)
+  }
+
 UserProfile = reduxForm({
     form: 'frmUserProfile',
-    enableReinitialize: true,
 })(UserProfile)
 
 UserProfile = connect(
     state => ({
         userData: state.account === undefined ? undefined : state.account,
+        initialValues: state.account === undefined ? undefined : state.account.user.responseData,
+        updateProfileResponse: state.account.updateProfile === undefined ? undefined : state.account.updateProfile
     }),
+    mapDispatchToProps,
   )(UserProfile)
 
 export default UserProfile;

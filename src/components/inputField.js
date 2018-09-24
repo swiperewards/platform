@@ -73,6 +73,7 @@ class CustomizedInputs extends Component {
               fullWidth = {this.props.fullWidth}
               width = {this.props.minWidth} 
               customInput={TextField} 
+              disabled={this.props.disabled ? true : false}
               InputProps={{
                 disableUnderline: false,
                 classes: {
@@ -94,6 +95,7 @@ class CustomizedInputs extends Component {
               fullWidth = {this.props.fullWidth}
               width = {this.props.minWidth} 
               customInput={TextField} 
+              disabled={this.props.disabled ? true : false}
               InputProps={{
                 disableUnderline: false,
                 classes: {
@@ -112,6 +114,7 @@ class CustomizedInputs extends Component {
             type={this.props.myType}
             fullWidth = {this.props.fullWidth}
             width = {this.props.minWidth}
+            disabled={this.props.disabled ? true : false}
             InputProps={{
               disableUnderline: false,
               classes: {

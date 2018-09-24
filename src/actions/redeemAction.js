@@ -1,4 +1,17 @@
-import { hostURL, getRedeemModeListAPI, createRedeemModeAPI, deleteRedeemModeAPI, updateRedeemModeAPI, getRedeemModeDetailsAPI } from '../app.config';
+import 
+{ 
+    hostURL, 
+    getRedeemModeListAPI, 
+    createRedeemModeAPI, 
+    deleteRedeemModeAPI, 
+    updateRedeemModeAPI, 
+    getRedeemModeDetailsAPI,
+    getRedeemRequestAPI, 
+    getRedeemReqDetailsAPI,
+    updateRedeemRequestAPI,
+    rejectRedeemRequestAPI,
+} from '../app.config';
+import moment from 'moment'
 
 var axios = require('axios');
 
@@ -37,9 +50,13 @@ export function getRedeemModeList(token) {
 export function createNewRedeemMode(values, token) {
 
     var ArrOptions=[];
-    values.options.forEach(element => {
-        ArrOptions.push(element.optionName)
-    })
+
+    if(values.options !== undefined){
+        values.options.forEach(element => {
+            ArrOptions.push(element.optionName)
+        })
+    }
+    
 
     var setting = {
         method: 'post',
@@ -125,9 +142,11 @@ export function clearDeleteRedeemModeResponse() {
 export function updateRedeemMode(values, token) {
 
     var ArrOptions=[];
-    values.options.forEach(element => {
-        ArrOptions.push(element.optionName)
-    })
+    if(values.options !== undefined){
+        values.options.forEach(element => {
+            ArrOptions.push(element.optionName)
+        })
+    }
 
     var setting = {
         method: 'post',
@@ -226,6 +245,157 @@ export function getRedeemModeDetails(modeId, token) {
 export function clearGetRedeemModeDetailResponse() {
     return {
         type: 'GET_REDEEM_MODE_DETAILS',
+        payload: undefined
+    }
+}
+
+/******************************************************************************************/
+
+//Function to get redemption requests
+export function getRedeemRequestList(name, status, mode, fromDate, toDate ,token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + getRedeemRequestAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "name": name,
+                "status": status,
+                "amount": "",
+                "mode": mode,
+                "fromDate": (fromDate !== "") ? moment(fromDate).format('DD-MM-YYYY') : undefined,
+                "toDate": (toDate !== "") ? moment(toDate).format('DD-MM-YYYY') : undefined,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_REDEEM_REQUESTS',
+        payload: response
+    }
+}
+
+//Function to get redemption request details
+export function getRedeemRequestDetails(redeemId ,token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + getRedeemReqDetailsAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "id": redeemId,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_REDEEM_REQUEST_DETAILS',
+        payload: response
+    }
+}
+
+//Function to Update redemption request
+export function updateRedeemRequest(redeemId, amount ,token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + updateRedeemRequestAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "id": redeemId,
+                "amount": amount
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'UPDATE_REDEEM_REQUEST',
+        payload: response
+    }
+}
+
+//Function to Reject redemption request
+export function rejectRedeemRequest(redeemId, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + rejectRedeemRequestAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "id": redeemId,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'REJECT_REDEEM_REQUEST',
+        payload: response
+    }
+}
+
+export function clearRejectRedeemResponse() {
+    return {
+        type: 'REJECT_REDEEM_REQUEST',
         payload: undefined
     }
 }
