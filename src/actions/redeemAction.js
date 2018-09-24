@@ -37,9 +37,13 @@ export function getRedeemModeList(token) {
 export function createNewRedeemMode(values, token) {
 
     var ArrOptions=[];
-    values.options.forEach(element => {
-        ArrOptions.push(element.optionName)
-    })
+
+    if(values.options !== undefined){
+        values.options.forEach(element => {
+            ArrOptions.push(element.optionName)
+        })
+    }
+    
 
     var setting = {
         method: 'post',
@@ -125,9 +129,11 @@ export function clearDeleteRedeemModeResponse() {
 export function updateRedeemMode(values, token) {
 
     var ArrOptions=[];
-    values.options.forEach(element => {
-        ArrOptions.push(element.optionName)
-    })
+    if(values.options !== undefined){
+        values.options.forEach(element => {
+            ArrOptions.push(element.optionName)
+        })
+    }
 
     var setting = {
         method: 'post',

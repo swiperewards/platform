@@ -89,6 +89,11 @@ const data={
       {id:'1', name: 'Active'},
       {id:'0', name: 'Expired'}
     ],
+    queryStatus: [
+      {id:'1', name: 'Pending'},
+      {id:'3', name: 'Rejected'},
+      {id:'2', name: 'Resolved'}
+    ],
     userStatus: [
       {id:'1', name: 'Active'},
       {id:'0', name: 'Deactive'}

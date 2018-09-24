@@ -1,4 +1,17 @@
-import { hostURL, getQueryTypeAPI, generateTicketAPI, getTicketTypesAPI, deleteTicketTypeAPI, addTicketTypeAPI, updateTicketTypeAPI, getTicketTypeDetailsAPI } from '../app.config';
+import { 
+    hostURL, 
+    getQueryTypeAPI, 
+    generateTicketAPI, 
+    getTicketTypesAPI, 
+    deleteTicketTypeAPI, 
+    addTicketTypeAPI, 
+    updateTicketTypeAPI, 
+    getTicketTypeDetailsAPI, 
+    getCustomerQueriesListAPI,
+    getCustomerQueryDetailsAPI,
+    updateCustomerQueryAPI,
+    resolveCustomerQueryAPI,
+} from '../app.config';
 
 var axios = require('axios');
 
@@ -265,6 +278,162 @@ export function updateTicketType(values, token) {
 
     return {
         type: 'UPDATE_TICKETTYPE',
+        payload: response
+    }
+}
+
+/*********************************************************************************************/
+
+//Function to get all the customer queries
+export function getCustomerQueryList(name, status, userType, ticketType, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + getCustomerQueriesListAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "name": name,
+                "status": status,
+                "userType": userType,
+                "ticketType": ticketType,
+                "pageNumber": 0,
+                "pageSize": 0
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_CUSTOMER_QUERY_LIST',
+        payload: response
+    }
+}
+
+//Function to get customer query details
+export function getCustomerQueryDetails(ticketId, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + getCustomerQueryDetailsAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "id": ticketId,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_CUSTOMER_QUERY_DETAILS',
+        payload: response
+    }
+}
+
+export function clearCustomerQueryDetailsResponse() {
+    return {
+        type: 'GET_CUSTOMER_QUERY_DETAILS',
+        payload: undefined
+    }
+}
+
+//Function to mange customer query details
+export function manageCustomerQueryDetails(ticketId, values, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + updateCustomerQueryAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "id": ticketId.toString(),
+                "ticketTypeId" : (values.ticketTypeId).toString(),
+                "replyDescription" : values.feedback,
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'MANAGE_CUSTOMER_QUERY_DETAILS',
+        payload: response
+    }
+}
+
+//Function to resolve customer query details
+export function resolveCustomerQueryDetails(ticketId, values, token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + resolveCustomerQueryAPI,
+        data: {
+            "platform": "web",
+            "requestData":{
+                "id": ticketId,
+                "ticketTypeId" : values.ticketTypeId,
+                "resolveDescription" : values.feedback,
+                "replyMessage" : values.reply,
+                "status" : values.ticketStatus
+            }
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => response.data
+    )
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'RESOLVE_CUSTOMER_QUERY',
         payload: response
     }
 }

@@ -149,8 +149,10 @@ class ResponsiveDrawer extends React.Component {
         return true;  
       case '/managetickets':
         return true;  
+      case '/manageredeemmode':
+        return true;  
       default:
-        return true;
+        return false;
     }
   }
 
