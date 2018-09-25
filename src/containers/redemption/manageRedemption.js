@@ -17,6 +17,10 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import TextAreaControl from '../../components/textAreaControl';
 
 //Components
 import InputField from '../../components/inputField';
@@ -29,10 +33,11 @@ import Loader from '../../components/loader'
 import { 
     getRedeemRequestList, 
     getRedeemRequestDetails, 
-    updateRedeemRequest, 
+    approveRedeemRequest, 
     rejectRedeemRequest,
     getRedeemModeList,
     clearRejectRedeemResponse,
+    clearApproveRedeemResponse,
 } from '../../actions/redeemAction';
 
 //Data
@@ -65,6 +70,8 @@ class ManageRedemption extends Component {
         dialogOpen: false,
         disableReset: true,
         permissionDisplayBox: false,
+        openApproveRequestPopUp: false,
+        openRejectRequestPopUp: false,
     };
 
     //Get status text based on status value 
@@ -121,6 +128,14 @@ class ManageRedemption extends Component {
             }
           }
 
+          if (nextProps.approveRedeemPayload){
+            this.setState({showLoader:false})
+            this.setState({ dialogOpen: true });
+            this.setState({errorMessage: nextProps.approveRedeemPayload.message})
+            this.props.clearApproveRedeemResponse();
+            this.getAllRedeemRequests();
+          }
+
           if (nextProps.rejectRedeemPayload){
             this.setState({showLoader:false})
             this.setState({ dialogOpen: true });
@@ -129,6 +144,23 @@ class ManageRedemption extends Component {
             this.getAllRedeemRequests();
           }
 
+          if( nextProps.initialValues && nextProps.initialValues !== this.props.initialValues){
+            this.props.change('fullName',nextProps.initialValues.fullName)
+            this.props.change('amount', (nextProps.initialValues.amount).toString())
+            this.props.change('modeName', nextProps.initialValues.redeemModeId)
+            }
+        }
+    }
+
+    resetRedeemFields = (redeemId) => {
+        this.props.change('fullName', '')
+        this.props.change('amount', '')
+        this.props.change('modeName', '')
+        this.props.change('note','')
+        this.setState({redeemId: redeemId})
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getRedeemRequestDetails(redeemId, this.props.userData.user.responseData.token)
         }
     }
 
@@ -168,22 +200,21 @@ class ManageRedemption extends Component {
     handleClose = () => {
         this.setState({ dialogOpen: false });
         this.setState({ permissionDisplayBox: false });
+        this.setState({ openApproveRequestPopUp: false });
+        this.setState({ openRejectRequestPopUp: false});
     };
 
-    rejectRedeemRequestById = (redeemId) => {
-
-        if (this.state.permissionDisplayBox) {
-            this.handleClose();
-            if(this.props.userData.user.responseData.token){
-                this.setState({showLoader:true})
-                this.props.rejectRedeemRequest(this.state.redeemId, this.props.userData.user.responseData.token);
-            }
-            else{
-                //#TODO: Handle token expire case here
-            }
+    rejectRedeemRequest = (redeemId) => {
+        if(this.props.userData.user.responseData.token){
+            this.resetRedeemFields(redeemId);
+            this.setState({ openRejectRequestPopUp: true });
         }
-        else{
-            this.setState({ permissionDisplayBox: true, redeemId: redeemId });
+    }
+
+    approveRedeemRequest = (redeemId) => {
+        if(this.props.userData.user.responseData.token){
+            this.resetRedeemFields(redeemId);
+            this.setState({ openApproveRequestPopUp: true });
         }
     }
 
@@ -199,11 +230,23 @@ class ManageRedemption extends Component {
         if(this.props.userData.user.responseData.token){
             this.props.getRedeemRequestList("", "", "", "", "", this.props.userData.user.responseData.token)
         }
-    
+    }
+
+    onSubmit(values) {
+        if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
+            this.handleClose()
+            if(this.state.openApproveRequestPopUp){
+                this.props.approveRedeemRequest(this.state.redeemId, values, this.props.userData.user.responseData.token)
+            }
+            else{
+                this.props.rejectRedeemRequest(this.state.redeemId, values, this.props.userData.user.responseData.token)
+            }
+        }
     }
 
     render() {
-        const { redeemList, rowsPerPage, page, dialogOpen, permissionDisplayBox, errorMessage } = this.state;
+        const { redeemList, rowsPerPage, page, dialogOpen, permissionDisplayBox, errorMessage, openApproveRequestPopUp, openRejectRequestPopUp } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, redeemList.length - page * rowsPerPage);
 
         const actions = [
@@ -240,124 +283,231 @@ class ManageRedemption extends Component {
                     actions={permissionActions} 
                 />
 
-            <div className="row">
-            <div className="col-xs-12">
-            <Paper className="pagePaper">
-                <form size='large' className="form-horizontal">
-                    <div className="row appTitleLabel">
-                        REDEEM REQUESTS
-                    </div>
-                    <div className="row middle-md">
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            Pending : &nbsp; <span style={{color:"#E77F25"}}><b>{this.state.redeemSummary.pending}</b></span>
+            <div>
+                <Dialog
+                    open={openApproveRequestPopUp || openRejectRequestPopUp}
+                    onClose={this.handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    fullWidth={true}
+                    maxWidth = {'xs'}
+                >
+                <div>
+                    <form onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
+
+                    <DialogContent>
+                        <div className="row center-xs">
+                            <div className="appTitleLabel">
+                                {openApproveRequestPopUp ? "APPROVAL" : "REJECTION"}
+                            </div>
                         </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            Approved : &nbsp; <span style={{color:"#2EC55D"}}><b>{this.state.redeemSummary.approved}</b></span>
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            Rejected : &nbsp; <span style={{color:"#DE3630"}}><b>{this.state.redeemSummary.rejected}</b></span>
-                        </div>
-                    </div>    
-                    <div className="row middle-md">
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <Field 
-                            type="text"
-                            name="name" 
-                            myPlaceHolder="Name" 
-                            fullWidth={true} 
-                            component={InputField} 
-                            onChange={this.handleChange}
-                            />
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="status"
-                                    component={renderSelectField}
-                                    fullWidth={true}
+                        <div className="row center-xs">
+                            <div className="col-xs-4 start-xs"> 
+                                User Name   
+                            </div>
+                            <div className="col-xs-6 start-xs"> 
+                                <Field 
+                                type="text"
+                                name="fullName" 
+                                fullWidth={true} 
+                                component={InputField} 
+                                onChange={this.handleChange}
+                                disabled={true}
+                                />
+                            </div>
+                        </div>   
+                        <div className="row center-xs">
+                            <div className="col-xs-4 start-xs"> 
+                                Amount 
+                            </div>
+                            <div className="col-xs-6 start-xs"> 
+                                <Field 
+                                    type="text"
+                                    name="amount" 
+                                    fullWidth={true} 
+                                    component={InputField} 
                                     onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Status
-                                    </MenuItem>
-                                    {
-                                    Data.redeemStatus.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.id}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
-                                    }
-                                </Field>    
-                            </FormControl>  
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="mode"
-                                    component={renderSelectField}
-                                    fullWidth={true}
-                                    onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Mode
-                                    </MenuItem>
-                                    {
-                                        this.state.redeemModeList ?
-                                            this.state.redeemModeList.map((item) =>{
+                                    disabled={true}
+                                    />
+                            </div>
+                        </div>   
+                        <div className="row center-xs">
+                            <div className="col-xs-4 start-xs"> 
+                                Mode 
+                            </div>
+                            <div className="col-xs-6 start-xs">
+                                <FormControl style={styles.formControl}>
+                                    <Field
+                                        name="modeName"
+                                        component={renderSelectField}
+                                        fullWidth={true}
+                                        onChange={this.handleChange}
+                                        disabled={openApproveRequestPopUp ? false : true}
+                                        >                                            
+                                        {
+                                            this.state.redeemModeList ?
+                                                this.state.redeemModeList.map((item) =>{
                                                 return <MenuItem 
                                                     style={styles.selectControl}
                                                     key={item.modeId}
-                                                    value={item.mode}>
+                                                    value={item.modeId}>
                                                     {item.mode}
                                                 </MenuItem>
-                                            })
-                                        : null    
-                                    }
-                                </Field>    
-                            </FormControl>  
-                        </div>    
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <Field 
-                            myType="date"
-                            name="fromDate" 
-                            fullWidth={true} 
-                            component={InputField} 
-                            onChange={this.handleChange}
-                            />
+                                                })
+                                            : null    
+                                        }
+                                    </Field>    
+                                </FormControl> 
+                            </div>    
                         </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <Field 
-                            myType="date"
-                            name="toDate" 
-                            myPlaceHolder="To Date" 
-                            fullWidth={true} 
-                            component={InputField} 
-                            onChange={this.handleChange}
-                            />
+                        <div className="row center-xs">
+                        <div className="col-xs-4 start-xs"> 
+                                Note 
+                            </div>
+                            <div className="col-xs-6 start-xs">
+                                <Field 
+                                    name="note" 
+                                    fullWidth={true} 
+                                    component={TextAreaControl} 
+                                />
+                            </div>
                         </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <button 
-                                type="button"
-                                onClick={this.onHandleReset.bind(this)}
-                                style={{backgroundColor:'#BCBCBC'}}
-                                disabled={this.state.disableReset}
-                                className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
-                                > Reset
-                            </button>
-                            <button 
-                                type="button"
-                                onClick={this.onHandleSearch.bind(this)}
-                                className="button"
-                                > Search
-                            </button> 
-                        </div>       
+                    </DialogContent>
+                    <DialogActions>
+                        <button 
+                            type="button"
+                            style={{backgroundColor:'#BCBCBC'}}
+                            className="enabledButton button"
+                            onClick={this.handleClose}
+                            > Cancel
+                        </button>
+                        <button 
+                            type="submit"
+                            className="enabledButton button"
+                            > {openApproveRequestPopUp ? "Approve" : "Reject"}
+                        </button> 
+                    </DialogActions>
+                    </form>
+                </div> 
+                </Dialog>
+            </div>
+
+            <div className="row">
+            <div className="col-xs-12">
+            <Paper className="pagePaper">
+                <div className="row appTitleLabel">
+                    REDEEM REQUESTS
+                </div>
+                <div className="row middle-md">
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        Pending : &nbsp; <span style={{color:"#E77F25"}}><b>{this.state.redeemSummary.pending}</b></span>
                     </div>
-                </form>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        Approved : &nbsp; <span style={{color:"#2EC55D"}}><b>{this.state.redeemSummary.approved}</b></span>
+                    </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        Rejected : &nbsp; <span style={{color:"#DE3630"}}><b>{this.state.redeemSummary.rejected}</b></span>
+                    </div>
+                </div>    
+                <div className="row middle-md">
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <Field 
+                        type="text"
+                        name="name" 
+                        myPlaceHolder="Name" 
+                        fullWidth={true} 
+                        component={InputField} 
+                        onChange={this.handleChange}
+                        />
+                    </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <FormControl style={styles.formControl}>
+                            <Field
+                                name="status"
+                                component={renderSelectField}
+                                fullWidth={true}
+                                onChange={this.handleChange}
+                                displayEmpty
+                                >
+                                <MenuItem value="" disabled>
+                                    Status
+                                </MenuItem>
+                                {
+                                Data.redeemStatus.map((item) =>{
+                                    return <MenuItem 
+                                        style={styles.selectControl}
+                                        key={item.id}
+                                        value={item.id}>
+                                        {item.name}
+                                    </MenuItem>
+                                })
+                                }
+                            </Field>    
+                        </FormControl>  
+                    </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <FormControl style={styles.formControl}>
+                            <Field
+                                name="mode"
+                                component={renderSelectField}
+                                fullWidth={true}
+                                onChange={this.handleChange}
+                                displayEmpty
+                                >
+                                <MenuItem value="" disabled>
+                                    Mode
+                                </MenuItem>
+                                {
+                                    this.state.redeemModeList ?
+                                        this.state.redeemModeList.map((item) =>{
+                                            return <MenuItem 
+                                                style={styles.selectControl}
+                                                key={item.modeId}
+                                                value={item.mode}>
+                                                {item.mode}
+                                            </MenuItem>
+                                        })
+                                    : null    
+                                }
+                            </Field>    
+                        </FormControl>  
+                    </div>    
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <Field 
+                        myType="date"
+                        name="fromDate" 
+                        fullWidth={true} 
+                        component={InputField} 
+                        onChange={this.handleChange}
+                        />
+                    </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <Field 
+                        myType="date"
+                        name="toDate" 
+                        myPlaceHolder="To Date" 
+                        fullWidth={true} 
+                        component={InputField} 
+                        onChange={this.handleChange}
+                        />
+                    </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <button 
+                            type="button"
+                            onClick={this.onHandleReset.bind(this)}
+                            style={{backgroundColor:'#BCBCBC'}}
+                            disabled={this.state.disableReset}
+                            className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
+                            > Reset
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={this.onHandleSearch.bind(this)}
+                            className="button"
+                            > Search
+                        </button> 
+                    </div>       
+                </div>
             </Paper> 
             </div>
             </div>
@@ -404,12 +554,12 @@ class ManageRedemption extends Component {
                                         <TableCell> 
                                             <div className="row start-md middle-md">
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={true} onClick={() => this.manageTicket(object.id)} className="disabledButton"> 
+                                                    <button type="button" disabled={object.status === 2 ? true : false} onClick={() => this.approveRedeemRequest(object.id)} className={object.status === 2 ? "disabledButton" : "enabledButton"}> 
                                                         <img src="../images/ic_approve.svg" alt="" /> 
                                                     </button>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <button type="button" disabled={true} onClick={() => this.rejectRedeemRequestById(object.id)} className="disabledButton"> 
+                                                    <button type="button" disabled={object.status === 3 ? true : false} onClick={() => this.rejectRedeemRequest(object.id)} className={object.status === 3 ? "disabledButton" : "enabledButton"}> 
                                                         <img src="../images/ic_reject.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -456,10 +606,11 @@ const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({  
         getRedeemRequestList, 
         getRedeemRequestDetails, 
-        updateRedeemRequest, 
+        approveRedeemRequest, 
         rejectRedeemRequest, 
         getRedeemModeList,
         clearRejectRedeemResponse,
+        clearApproveRedeemResponse,
     }, dispatch)
   }
   
@@ -468,6 +619,8 @@ const mapDispatchToProps = (dispatch) => {
       userData: state.account === undefined ? undefined : state.account,
       redeemRequestPayload: state.redeem.redeemRequestList === undefined ? undefined : state.redeem.redeemRequestList,
       redeemModePayload: state.redeem.redeemModeList === undefined ? undefined : state.redeem.redeemModeList,
+      initialValues: state.redeem.redeemRequestDetails === undefined ? undefined : state.redeem.redeemRequestDetails.responseData,
+      approveRedeemPayload: state.redeem.approveRedeemRequest === undefined ? undefined : state.redeem.approveRedeemRequest,
       rejectRedeemPayload: state.redeem.rejectRedeemRequest === undefined ? undefined : state.redeem.rejectRedeemRequest,
     }),
     mapDispatchToProps,

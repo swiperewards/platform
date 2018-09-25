@@ -373,7 +373,7 @@ class CustomerQueries extends Component {
                             {
                                 openResolveTicketPopUp ?
                                 <div className="col-xs-6">
-                                    <label className="controlLabel">Reply Message</label>
+                                    <label className="controlLabel">Note</label>
                                     <Field 
                                         name="reply" 
                                         fullWidth={true} 
@@ -381,7 +381,7 @@ class CustomerQueries extends Component {
                                     />
                                 </div> : 
                                     <div className="col-xs-6">
-                                    <label className="controlLabel">Feedback</label>
+                                    <label className="controlLabel">Note</label>
                                     <Field 
                                         name="feedback" 
                                         fullWidth={true} 

@@ -338,20 +338,30 @@ class ManageMerchants extends Component {
                                             <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                            <div className="row start-md">
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.inactive_v === 1 ? true : false} 
+                                                        onClick={() => this.updateMerchant(object.id)} 
+                                                        className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
+                                                        style={ object.serial_number%2 === 0 ? null : {backgroundColor:'#f2f6f2'}}
+                                                        > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.deleteMerchant(object.id, !object.inactive_v)} className="enabledButton"> 
-                                                        
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => this.deleteMerchant(object.id, !object.inactive_v)} 
+                                                        className="enabledButton"
+                                                        style={ object.serial_number%2 === 0 ? null : {backgroundColor:'#f2f6f2'}}
+                                                        > 
                                                         {
                                                             object.inactive_v === 1 ?
-                                                                <img src="../images/switch_on.svg" alt="" />
-                                                            :
                                                                 <img src="../images/switch_off.svg" alt="" />
+                                                            :
+                                                                <img src="../images/switch_on.svg" alt="" />
                                                         }
                                                     </button>
                                                 </div>

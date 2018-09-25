@@ -202,7 +202,7 @@ class AddNewDeal extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Cash Bonus (%)*
+                                Pool Amount*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 

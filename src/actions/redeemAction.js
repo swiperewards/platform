@@ -8,7 +8,7 @@ import
     getRedeemModeDetailsAPI,
     getRedeemRequestAPI, 
     getRedeemReqDetailsAPI,
-    updateRedeemRequestAPI,
+    approveRedeemRequestAPI,
     rejectRedeemRequestAPI,
 } from '../app.config';
 import moment from 'moment'
@@ -325,16 +325,18 @@ export function getRedeemRequestDetails(redeemId ,token) {
 }
 
 //Function to Update redemption request
-export function updateRedeemRequest(redeemId, amount ,token) {
+export function approveRedeemRequest(redeemId, values ,token) {
 
     var setting = {
         method: 'post',
-        url: hostURL + updateRedeemRequestAPI,
+        url: hostURL + approveRedeemRequestAPI,
         data: {
             "platform": "web",
             "requestData":{
-                "id": redeemId,
-                "amount": amount
+                "id": redeemId.toString(),
+                "amount": values.amount,
+                "redeemModeId": values.modeName,
+                "note": values.note
             }
 	    },
         headers: {
@@ -354,13 +356,20 @@ export function updateRedeemRequest(redeemId, amount ,token) {
         );
 
     return {
-        type: 'UPDATE_REDEEM_REQUEST',
+        type: 'APPROVE_REDEEM_REQUEST',
         payload: response
     }
 }
 
+export function clearApproveRedeemResponse() {
+    return {
+        type: 'APPROVE_REDEEM_REQUEST',
+        payload: undefined
+    }
+}
+
 //Function to Reject redemption request
-export function rejectRedeemRequest(redeemId, token) {
+export function rejectRedeemRequest(redeemId, values, token) {
 
     var setting = {
         method: 'post',
@@ -368,7 +377,8 @@ export function rejectRedeemRequest(redeemId, token) {
         data: {
             "platform": "web",
             "requestData":{
-                "id": redeemId,
+                "id": redeemId.toString(),
+                "note": values.note,
             }
 	    },
         headers: {
