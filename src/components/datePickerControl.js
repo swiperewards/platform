@@ -23,7 +23,7 @@ import moment from 'moment'
                 value={value}
                 keyboard = {keyboard}
                 label=""
-                format="dd/MM/yyyy"
+                format="MM/dd/yyyy"
                 mask={value => (value ? [/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/] : [])}
                 disablePast = {true}
                 animateYearScrolling={false}

@@ -3,287 +3,121 @@ import React, { Component } from 'react';
 import { reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import {Pie} from 'react-chartjs-2';
+import TicketList from '../../containers/customerQueries/ticketList';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import Button from '@material-ui/core/Button';
-import FormLabel from '@material-ui/core/FormLabel';
-
-//Components
-import TablePaginationActions from '../../components/tableGrid';
-import DialogBox from '../../components/alertDialog'
-import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
+import { getDashboardDetails } from '../../actions/dashboardAction';
 
 class AdminDashboard extends Component {
 
     state = {
-        name:'',
-        status: '',
-        location:'',
-        merchantList:'',
-        page: 0,
-        rowsPerPage: 5,
-        dialogOpen: false,
-        disableReset: true,
     };
 
     componentWillMount()
     {
-        this.getAllMerchants();
+        this.getDashboardDetails();
     }
 
-    componentWillReceiveProps(nextProps) {
-
-        if (nextProps) {
-          if (nextProps.merchantPayload){
-            if(nextProps.merchantPayload.status === 200){
-                this.setState({merchantList: nextProps.merchantPayload.responseData})
-            }
-          }
-          
-          if(nextProps.merchantDelete){
-            if(nextProps.merchantDelete.status === 200){
-                this.setState({showLoader:false})
-                this.setState({ dialogOpen: true });
-                this.getAllMerchants();
-            }
-          }
-        }
-    }
-
-    //Method to handle change event for dropdown
-    handleChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
-
-        if(this.state.name!=="" && this.state.status!=="" && this.state.location!==""){
-            this.setState({disableReset: true});
-        }
-        else{
-            this.setState({disableReset:false});
-        }
-    };
-
-    handleChangePage = (event, page) => {
-        this.setState({ page });
-    };
-    
-    handleChangeRowsPerPage = event => {
-        this.setState({ rowsPerPage: event.target.value });
-    };
-
-    getAllMerchants(){
+    getDashboardDetails(){
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
+            this.props.getDashboardDetails(this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
         }
     }
 
-    onHandleSearch(){
-        this.getAllMerchants();
-    }
-
-    deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
-        }
-        else{
-            //#TODO: Handle token expire case here
-        }
-    }
-
-    updateMerchant = (merchantId) => {
-        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
-    }
-
-    handleClose = () => {
-        this.setState({ dialogOpen: false });
-    };
-
-    addNewDeal(){
-        this.props.history.push('/merchantList')
-    }
-
-    onHandleReset(){
-        this.setState({name:''});
-        this.setState({status:''});
-        this.setState({location:''});
-        this.setState({disableReset:true});
-        this.props.reset();
-
-        if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
-        }
-    
-    }
-
     render() {
 
-        const { merchantList, rowsPerPage, page, dialogOpen } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
-
-        const actions = [
-            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
-                OK
-            </Button>
-        ];
-
         return (
-          <div className="row">
-            <div className="col-xs-12">
-            <Loader status={this.state.showLoader} />
-
             <div>
-                <DialogBox 
-                    displayDialogBox={dialogOpen} 
-                    message="Ticket deleted successfully" 
-                    actions={actions} 
-                />
-            </div> 
-
-            <div className="row">
-            <div className="col-xs-12">
-            <Paper className="pagePaper">
-                <form size='large' className="form-horizontal">
-                    <div className="row middle-md">
-                        <div className="col-xs-12 col-sm-12 col-md-3">
-                            <div className="dashboardBox">
-                                Open Tickets
-                            </div>
-                        </div>
-                        <div className="col-xs-12 col-sm-12 col-md-3">
-                            <div className="dashboardBox">
-                                Total Users
-                            </div>
-                        </div>
-                        <div className="col-xs-12 col-sm-12 col-md-3">
-                            <div className="dashboardBox">
-                                Total Merchants
-                            </div>
-                        </div>
-                        <div className="col-xs-12 col-sm-12 col-md-3">
-                            <div className="dashboardBox">
-                                Active Deals
-                            </div>
-                        </div>
+                <div className="row">
+                    <div className="col-xs-12">
+                        <Paper className="pagePaper">
+                            <form size='large' className="form-horizontal">
+                                <div className="row">
+                                    <div className="col-xs-12 col-sm-12 col-md-3">
+                                        <div className="dashboardBox">
+                                            <span className="dashboardText"> Open </span>
+                                            <div className="dashboardText"> <b>TICKETS</b> </div>
+                                            <div className="dashboardCountText">{this.props.initialValues !== undefined ? (this.props.initialValues.responseData ? this.props.initialValues.responseData.openTicketsCount : "0")  : "0"}</div>
+                                            <div><hr className="dashboardLine"/></div>
+                                        </div>
+                                    </div>
+                                    <div className="col-xs-12 col-sm-12 col-md-3">
+                                        <div className="dashboardBox">
+                                            <span className="dashboardText"> Total </span>
+                                            <div className="dashboardText"> <b>USERS</b></div>
+                                            <div className="dashboardCountText">{this.props.initialValues !== undefined ? (this.props.initialValues.responseData ? this.props.initialValues.responseData.totalRegisteredUsersCount : "0") : "0"}</div>
+                                            <div><hr className="dashboardLine"/></div>
+                                        </div>
+                                    </div>
+                                    <div className="col-xs-12 col-sm-12 col-md-3">
+                                        <div className="dashboardBox">
+                                            <span className="dashboardText"> Total </span>
+                                            <div className="dashboardText"> <b>MERCHANTS</b></div>
+                                            <div className="dashboardCountText">{this.props.initialValues !== undefined ? (this.props.initialValues.responseData ? this.props.initialValues.responseData.totalMerchantsCount : "0") : "0"}</div>
+                                            <div><hr className="dashboardLine"/></div>
+                                        </div>
+                                    </div>
+                                    <div className="col-xs-12 col-sm-12 col-md-3">
+                                        <div className="dashboardBox">
+                                            <span className="dashboardText"> Active </span>
+                                            <div className="dashboardText"> <b>DEALS</b></div>
+                                            <div className="dashboardCountText">{this.props.initialValues !== undefined ? (this.props.initialValues.responseData ? this.props.initialValues.responseData.activeDealsCount : "0") : "0"}</div>
+                                            <div><hr className="dashboardLine"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </Paper> 
                     </div>
-                </form>
-            </Paper> 
-            </div>
-            </div>
+                </div>
 
-            <div className="row">
-            <div className="col-xs-12">
-                    <Paper className="pagePaper">
-                        Open Tickets
-                    <div className="tableWrapperMaterial">
-                    <Table className="tableMaterial">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell numeric>#</TableCell>
-                                <TableCell>Ticket No</TableCell>
-                                <TableCell>User Name</TableCell>
-                                <TableCell>Email Address</TableCell>
-                                <TableCell>User Type</TableCell>
-                                <TableCell>Ticket Type</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                        { 
-                            (merchantList !== "") ? (
-                            (merchantList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
-                                : (
-                                merchantList
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((object, index) => {
-                                    return (
-                                    <TableRow className="tableRow" key={object.id}>
-                                        <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>TCNA{object.serial_number}</TableCell>
-                                        <TableCell>{object.first_v + " " + object.last_v}</TableCell>
-                                        <TableCell>{object.email_v}</TableCell>
-                                        <TableCell>Customer</TableCell>
-                                        <TableCell>High</TableCell>
-                                        <TableCell>
-                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
-                                        </TableCell>
-                                        <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_edit.svg" alt="" /> 
-                                                    </button>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_respond.svg" alt="" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </TableCell>    
-                                    </TableRow>
-                                    );
-                                })
+                <div className="row center-xs">
+                    <div className="col-xs-12 col-sm-6 col-md-6">
+                        <span>Tickets</span>
+                        {
+                            this.props.initialValues ?
+                                (
+                                    this.props.initialValues.responseData ?
+                                        <Pie data={this.props.initialValues.responseData.tickets} />
+                                    :   null
                                 )
-                                ):(null)
-                            }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                colSpan={3}
-                                count={merchantList.length}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onChangePage={this.handleChangePage}
-                                onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                                ActionsComponent={TablePaginationActions}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
+                            :   null
+                        }
                     </div>
-                </Paper>
-              </div>
-            </div>   
-        </div> 
-        </div>
-        );
+                </div>
+                <div className="row">
+                    <div className="col-xs-12">
+                            <div className="appTitleLabel">Open Tickets</div>
+                            <TicketList 
+                                username=""
+                                status="1"
+                                userType="" 
+                                ticketType=""
+                                onRef={ref => (this.child = ref)} 
+                            />
+                    </div>
+                </div>
+            </div>
+        ) 
     }
 }
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
+    return bindActionCreators({ getDashboardDetails }, dispatch)
   }
   
   AdminDashboard = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
-      merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
-      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
+      initialValues: state.dashboard.dashboardDetails === undefined ? undefined : state.dashboard.dashboardDetails,
     }),
     mapDispatchToProps,
   )(AdminDashboard)

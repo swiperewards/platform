@@ -32,7 +32,11 @@ export function getDashboardDetails(token) {
                     "totalMerchantsCount": responseDetails.totalMerchantsCount,
                     "activeDealsCount": responseDetails.activeDealsCount, 
                     "tickets": getFormattedData(responseDetails.tickets), 
-                    "redeemRequests": getFormattedData(responseDetails.redeemRequests) 
+                    "redeemRequests": getFormattedData(responseDetails.redeemRequests), 
+                    "totalRegisteredUsersCount": responseDetails.totalRegisteredUsersCount,
+                    "totalDealsCount": responseDetails.totalDealsCount,
+                    "transactionsInActivePool": responseDetails.transactionsInActivePool,
+                    "totalPoolAmount": responseDetails.totalPoolAmount,
                 }
             }
 

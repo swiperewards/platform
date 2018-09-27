@@ -3,29 +3,19 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import moment from 'moment'
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
 import Button from '@material-ui/core/Button';
-import FormLabel from '@material-ui/core/FormLabel';
 import AddIcon from '@material-ui/icons/Add';
 
 //Components
 import InputField from '../../components/inputField';
-import TablePaginationActions from '../../components/tableGrid';
 import {renderSelectField} from '../../components/selectControl';
-import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
+import DealList from '../../containers/deals/dealList';
 
 //Actions
 import { getUserProfile } from '../../actions/accountAction';
@@ -52,19 +42,12 @@ class ManageDeals extends Component {
         location:'',
         fromDate:'',
         toDate:'',
-        dealsList:'',
         citiesList:'',
-        page: 0,
-        rowsPerPage: 5,
-        dialogOpen: false,
         disableReset: true,
-        permissionDisplayBox: false,
     };
 
     componentWillMount()
     {
-        this.getAllDeals();
-
         if(this.props.userData.user.responseData.token){
             this.props.getCitiesList(this.props.userData.user.responseData.token)
         }
@@ -81,20 +64,7 @@ class ManageDeals extends Component {
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
-          if (nextProps.dealsPayload){
-            if(nextProps.dealsPayload.status === 200){
-                this.setState({dealsList: nextProps.dealsPayload.responseData})
-            }
-          }
-          
-          if(nextProps.dealDelete){
-            this.setState({showLoader:false})
-            if(nextProps.dealDelete.status === 200){
-                this.setState({ dialogOpen: true });
-                this.getAllDeals();
-            }
-          }
-
+    
           if(nextProps.citiesPayload){
             if(nextProps.citiesPayload.status === 200){
                 this.setState({citiesList:nextProps.citiesPayload.responseData})
@@ -118,7 +88,7 @@ class ManageDeals extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name!=="" && this.state.status!=="" && this.state.location!==""){
+        if(this.state.name !=="" && this.state.status !=="" && this.state.location !=="" && this.state.fromDate !== "" && this.state.toDate !== ""){
             this.setState({disableReset: true});
         }
         else{
@@ -134,48 +104,9 @@ class ManageDeals extends Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    getAllDeals(){
-        if(this.props.userData.user.responseData.token){
-            this.props.getDealsListWithFilter(this.state.name, this.state.status, this.state.location, this.state.fromDate, this.state.toDate, this.props.userData.user.responseData.token)
-        }
-        else{
-            //#TODO : Handle token expire case
-        }
-    }
-
     onHandleSearch(){
-        this.getAllDeals();
+        this.child.searchHandler();
     }
-
-    deleteDealById = (dealId) => {
-
-        if (this.state.permissionDisplayBox) {
-            this.handleClose();
-            if(this.props.userData.user.responseData.token){
-                this.setState({showLoader:true})
-                this.props.deleteDeal(this.state.dealId, this.props.userData.user.responseData.token);
-            }
-            else{
-                //#TODO: Handle token expire case here
-            }
-        }
-        else{
-            this.setState({ permissionDisplayBox: true, dealId: dealId });
-        }
-    }
-
-    updateDeal = (dealId) =>{
-
-        if(this.props.userData.user.responseData.token){
-            this.props.getDealDetails(dealId, this.props.userData.user.responseData.token)
-            this.props.history.push('/updateDeal')
-        }
-    }
-
-    handleClose = () => {
-        this.setState({ dialogOpen: false });
-        this.setState({ permissionDisplayBox: false });
-    };
 
     addNewDeal(){
         if(this.props.userData.user.responseData.merchantId !== null){
@@ -191,51 +122,15 @@ class ManageDeals extends Component {
         this.setState({location:''});
         this.setState({disableReset:true});
         this.props.reset();
-
-        if(this.props.userData.user.responseData.token){
-            this.props.getDealsListWithFilter("", "", "", "", "", this.props.userData.user.responseData.token)
-        }
-    
+        this.child.resetHandler();
     }
 
     render() {
-
-        const { dealsList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, dealsList.length - page * rowsPerPage);
-
-        const actions = [
-            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
-                OK
-            </Button>
-        ];
-
-        const permissionActions = [
-            <Button key="no" onClick={this.handleClose} color="primary">
-                No
-            </Button>,
-            <Button key="yes" onClick={this.deleteDealById} color="primary" autoFocus>
-                Yes
-            </Button>,
-        ];
 
         return (
           <div className="row">
             <div className="col-xs-12">
             <Loader status={this.state.showLoader} />
-
-            <div>
-                <DialogBox 
-                    displayDialogBox={dialogOpen} 
-                    message="Deal deleted successfully" 
-                    actions={actions} 
-                />
-
-                <DialogBox 
-                    displayDialogBox={permissionDisplayBox} 
-                    message="Are you sure to delete deal?" 
-                    actions={permissionActions} 
-                />
-            </div> 
 
             <div className="row">
             <div className="col-xs-12">
@@ -357,89 +252,15 @@ class ManageDeals extends Component {
             </div>
             </div>
 
-            <div className="row">
-            <div className="col-xs-12">
-                    <Paper className="pagePaper">
-                    <div className="tableWrapperMaterial">
-                    <Table className="tableMaterial">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell numeric>#</TableCell>
-                                <TableCell>Merchant Name</TableCell>
-                                <TableCell>Location</TableCell>
-                                <TableCell>Period</TableCell>
-                                <TableCell>Cashback</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                        { 
-                            (dealsList !== "") ? (
-                            (dealsList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
-                                : (
-                                dealsList
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((object, index) => {
-                                    return (
-                                    <TableRow className="tableRow" key={object.id}>
-                                        <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>{object.entityName}</TableCell>
-                                        <TableCell>{object.location}</TableCell>
-                                        <TableCell>{moment(object.startDate).format('MM/DD/YYYY') + " - " + moment(object.endDate).format('MM/DD/YYYY')}</TableCell>
-                                        <TableCell>{object.cashBonus}%</TableCell>
-                                        <TableCell>
-                                            <div className={object.status === 0 ? "titleRed" : "titleGreen"}>
-                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Expired" : "Active"}</FormLabel>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.updateDeal(object.id)} className="enabledButton"> 
-                                                        <img src="../images/ic_edit.svg" alt="" /> 
-                                                    </button>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.deleteDealById(object.id)} className="enabledButton"> 
-                                                        <img src="../images/ic_delete.svg" alt="" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </TableCell>    
-                                    </TableRow>
-                                    );
-                                })
-                                )
-                                ):(null)
-                            }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                colSpan={3}
-                                count={dealsList.length}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onChangePage={this.handleChangePage}
-                                onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                                ActionsComponent={TablePaginationActions}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                    </div>
-                </Paper>
-              </div>
-            </div>   
+             <DealList 
+                name={this.state.name}
+                status={this.state.status}
+                location={this.state.location} 
+                fromDate={this.state.fromDate}
+                toDate={this.state.toDate}
+                history={this.props.history}
+                onRef={ref => (this.child = ref)} 
+            />
         </div> 
         </div>
         );
