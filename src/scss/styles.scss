@@ -338,8 +338,8 @@ $primary-Text-Color:#231f20;
 }
 
 .dashboardBox{
-  height:80%;
-  width:80%;
+  height:60%;
+  width:90%;
   text-align:center;
   padding: 40px 5px;
   border: solid rgb(226, 226, 226);
@@ -363,4 +363,22 @@ $primary-Text-Color:#231f20;
 
 .disabled-link {
   pointer-events: none;
+}
+
+.dashboardText{
+  color: rgb(118, 120, 137)
+}
+
+.dashboardCountText{
+  color: black;
+  font-size: 18pt;
+}
+
+.dashboardLine{
+  height: 1px;
+  width: 20%;
+  color: rgb(58, 163, 236);
+  background-color: rgb(58, 163, 236);
+  border-width: 0px;
+  margin-top: 5%;
 }

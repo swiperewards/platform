@@ -71,9 +71,9 @@ class Routes extends Component {
                         <Route exact path="/setPassword/:token" component={ChangePassword} />
 
                         <App>
-                            {/* <Route exact path="/admindashboard" component={AdminDashboard} /> */}
-                            {/* <Route exact path="/superAdminDashboard" component={SuperAdminDashboard} /> */}
-                            {/* <Route exact path="/merchantdashboard" component={MerchantDashboard} /> */}
+                            <Route exact path="/admindashboard" component={AdminDashboard} />
+                            <Route exact path="/superAdminDashboard" component={SuperAdminDashboard} />
+                            <Route exact path="/merchantdashboard" component={MerchantDashboard} />
                             <Route exact path="/managemerchants" component={ManageMerchants} />
                             <Route exact path="/managedeals" component={ManageDeals} />
                             <Route exact path="/manageadmins" component={ManageAdmins} />

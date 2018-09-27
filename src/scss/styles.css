@@ -275,8 +275,8 @@ FormLabel {
   background-color: #f2f6f2; }
 
 .dashboardBox {
-  height: 80%;
-  width: 80%;
+  height: 60%;
+  width: 90%;
   text-align: center;
   padding: 40px 5px;
   border: solid #e2e2e2;
@@ -298,3 +298,18 @@ FormLabel {
 
 .disabled-link {
   pointer-events: none; }
+
+.dashboardText {
+  color: #767889; }
+
+.dashboardCountText {
+  color: black;
+  font-size: 18pt; }
+
+.dashboardLine {
+  height: 1px;
+  width: 20%;
+  color: #3aa3ec;
+  background-color: #3aa3ec;
+  border-width: 0px;
+  margin-top: 5%; }
