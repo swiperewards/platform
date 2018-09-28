@@ -16,16 +16,18 @@ import { getDashboardDetails } from '../../actions/dashboardAction';
 class superAdminDashboard extends Component {
 
     state = {
+        status:'1',
     };
 
     componentWillMount()
     {
-        this.getDashboardDetails();
+        this.getAllDashboardDetails();
     }
 
-    getDashboardDetails(){
+    getAllDashboardDetails(){
         if(this.props.userData.user.responseData.token){
             this.props.getDashboardDetails(this.props.userData.user.responseData.token)
+            this.setState({status:"1"});
         }
         else{
             //#TODO : Handle token expire case
@@ -110,10 +112,11 @@ class superAdminDashboard extends Component {
                             <div className="appTitleLabel">Open Tickets</div>
                             <TicketList 
                                 username=""
-                                status="1"
+                                status={this.state.status}
                                 userType="" 
                                 ticketType=""
                                 onRef={ref => (this.child = ref)} 
+                                action={this.getAllDashboardDetails.bind(this)}
                             />
                     </div>
                 </div>
@@ -122,11 +125,12 @@ class superAdminDashboard extends Component {
                             <div className="appTitleLabel">Redeem Requests</div>
                             <RedeemRequestList 
                                 name=""
-                                status="1"
+                                status={this.state.status}
                                 mode=""
                                 fromDate=""
                                 toDate=""
                                 onRef={ref => (this.child = ref)} 
+                                action={this.getAllDashboardDetails.bind(this)}
                             />
                     </div>
                 </div>

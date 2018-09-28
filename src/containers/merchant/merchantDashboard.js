@@ -18,10 +18,10 @@ class MerchantDashboard extends Component {
 
     componentWillMount()
     {
-        this.getDashboardDetails();
+        this.getAllDashboardDetails();
     }
 
-    getDashboardDetails(){
+    getAllDashboardDetails(){
         if(this.props.userData.user.responseData.token){
             this.props.getDashboardDetails(this.props.userData.user.responseData.token)
         }
@@ -87,6 +87,7 @@ class MerchantDashboard extends Component {
                                 toDate=""
                                 history={this.props.history}
                                 onRef={ref => (this.child = ref)} 
+                                action={this.getAllDashboardDetails.bind(this)}
                             />
                     </div>
                 </div>

@@ -193,6 +193,10 @@ class RedeemRequestList extends Component {
         this.setState({ permissionDisplayBox: false });
         this.setState({ openApproveRequestPopUp: false });
         this.setState({ openRejectRequestPopUp: false});
+        if(this.props.action !== undefined){
+            this.props.action()
+            this.getAllRedeemRequests();
+        }
     };
 
     rejectRedeemRequest = (redeemId) => {
@@ -227,13 +231,13 @@ class RedeemRequestList extends Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, redeemList.length - page * rowsPerPage);
 
         const actions = [
-            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+            <Button key="ok" onClick={this.handleClose.bind(this)} color="primary" autoFocus>
                 OK
             </Button>
         ];
 
         const permissionActions = [
-            <Button key="no" onClick={this.handleClose} color="primary">
+            <Button key="no" onClick={this.handleClose.bind(this)} color="primary">
                 No
             </Button>,
             <Button key="yes" onClick={this.rejectRedeemRequestById} color="primary" autoFocus>
@@ -263,7 +267,7 @@ class RedeemRequestList extends Component {
             <div>
                 <Dialog
                     open={openApproveRequestPopUp || openRejectRequestPopUp}
-                    onClose={this.handleClose}
+                    onClose={this.handleClose.bind(this)}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                     fullWidth={true}
@@ -355,7 +359,7 @@ class RedeemRequestList extends Component {
                             type="button"
                             style={{backgroundColor:'#BCBCBC'}}
                             className="enabledButton button"
-                            onClick={this.handleClose}
+                            onClick={this.handleClose.bind(this)}
                             > Cancel
                         </button>
                         <button 

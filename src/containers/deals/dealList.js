@@ -146,6 +146,11 @@ class DealList extends Component {
     handleClose = () => {
         this.setState({ dialogOpen: false });
         this.setState({ permissionDisplayBox: false });
+
+        if(this.props.action !== undefined){
+            this.props.action()
+            this.getAllDeals();
+        }
     };
 
     addNewDeal(){
@@ -170,13 +175,13 @@ class DealList extends Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, dealsList.length - page * rowsPerPage);
 
         const actions = [
-            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+            <Button key="ok" onClick={this.handleClose.bind(this)} color="primary" autoFocus>
                 OK
             </Button>
         ];
 
         const permissionActions = [
-            <Button key="no" onClick={this.handleClose} color="primary">
+            <Button key="no" onClick={this.handleClose.bind(this)} color="primary">
                 No
             </Button>,
             <Button key="yes" onClick={this.deleteDealById} color="primary" autoFocus>

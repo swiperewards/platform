@@ -210,6 +210,11 @@ class TicketList extends Component {
         this.setState({ dialogOpen: false });
         this.setState({ openManageTicketPopUp: false });
         this.setState({ openResolveTicketPopUp: false});
+
+        if(this.props.action !== undefined){
+            this.props.action()
+            this.getAllCustomerQueries();
+        }
     };
 
     onSubmit(values) {
@@ -230,7 +235,7 @@ class TicketList extends Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, ticketList.length - page * rowsPerPage);
 
         const actions = [
-            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+            <Button key="ok" onClick={this.handleClose.bind(this)} color="primary" autoFocus>
                 OK
             </Button>
         ];
@@ -251,7 +256,7 @@ class TicketList extends Component {
             <div>
                 <Dialog
                     open={openManageTicketPopUp || openResolveTicketPopUp}
-                    onClose={this.handleClose}
+                    onClose={this.handleClose.bind(this)}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                     fullWidth={true}
@@ -377,7 +382,7 @@ class TicketList extends Component {
                             type="button"
                             style={{backgroundColor:'#BCBCBC'}}
                             className="enabledButton button"
-                            onClick={this.handleClose}
+                            onClick={this.handleClose.bind(this)}
                             > Cancel
                         </button>
                         <button 
