@@ -23,7 +23,6 @@ import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getUserProfile } from '../../actions/accountAction';
 import { getDealsListWithFilter, deleteDeal, getDealDetails, getCitiesList } from '../../actions/dealAction';
 
 class DealList extends Component {
@@ -45,14 +44,6 @@ class DealList extends Component {
 
         if(this.props.userData.user.responseData.token){
             this.props.getCitiesList(this.props.userData.user.responseData.token)
-        }
-
-        if(this.props.userData.user.responseData.role === 'merchant'){
-            const profileMerchantId = this.props.userProfile === undefined ? null : this.props.userProfile.responseData.merchantId
-            if(this.props.userData.user.responseData.token && profileMerchantId === null){
-                this.setState({showLoader:true})
-                this.props.getUserProfile(this.props.userData.user.responseData.token);
-            }
         }
     }
 
@@ -81,17 +72,6 @@ class DealList extends Component {
           if(nextProps.citiesPayload){
             if(nextProps.citiesPayload.status === 200){
                 this.setState({citiesList:nextProps.citiesPayload.responseData})
-            }
-          }
-
-          if(nextProps.userProfile){
-            this.setState({showLoader:false})
-            if(nextProps.userProfile.status === 200){
-                if(nextProps.userProfile.responseData){
-                    if(nextProps.userProfile.responseData.merchantId === null){
-                        this.props.history.push('/addNewMerchant');
-                    }
-                }
             }
           }
         }
@@ -299,7 +279,7 @@ class DealList extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getDealsListWithFilter, deleteDeal, getUserProfile, getDealDetails, getCitiesList }, dispatch)
+    return bindActionCreators({ getDealsListWithFilter, deleteDeal, getDealDetails, getCitiesList }, dispatch)
   }
   
   DealList = connect(
@@ -307,7 +287,6 @@ const mapDispatchToProps = (dispatch) => {
       userData: state.account === undefined ? undefined : state.account,
       dealsPayload: state.deal.dealList === undefined ? undefined : state.deal.dealList,
       dealDelete: state.deal.deleteDeal === undefined ? undefined : state.deal.deleteDeal,
-      userProfile: state.account.userProfile === undefined ? undefined : state.account.userProfile, 
       citiesPayload: state.deal.citiesList === undefined ? undefined : state.deal.citiesList,
     }),
     mapDispatchToProps,

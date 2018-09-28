@@ -15,6 +15,7 @@ import AddIcon from '@material-ui/icons/Add';
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
+import OverLayMessage from '../../components/overlayMessage';
 import DealList from '../../containers/deals/dealList';
 
 //Actions
@@ -76,7 +77,7 @@ class ManageDeals extends Component {
             if(nextProps.userProfile.status === 200){
                 if(nextProps.userProfile.responseData){
                     if(nextProps.userProfile.responseData.merchantId === null){
-                        this.props.history.push('/addNewMerchant');
+                        this.setState({showOverlay:true});
                     }
                 }
             }
@@ -131,6 +132,10 @@ class ManageDeals extends Component {
           <div className="row">
             <div className="col-xs-12">
             <Loader status={this.state.showLoader} />
+            <OverLayMessage 
+                status={this.state.showOverlay} 
+                history={this.props.history}
+            />
 
             <div className="row">
             <div className="col-xs-12">
