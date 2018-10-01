@@ -435,14 +435,26 @@ class TicketList extends Component {
                                             <div className={this.statusColor(object.status)}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{this.statusText(object.status)}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 2 ? true : false}  onClick={() => this.manageTicket(object.id)} className={object.status === 2 ? "disabledButton" : "enabledButton"}> 
+                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.status === 2 ? true : false}  
+                                                        onClick={() => this.manageTicket(object.id)} 
+                                                        className={object.status === 2 ? "disabledButton" : "enabledButton"}
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 2 ? true : false} onClick={() => this.resolveTicket(object.id)} className={object.status === 2 ? "disabledButton" : "enabledButton"}> 
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.status === 2 ? true : false}
+                                                        onClick={() => this.resolveTicket(object.id)} 
+                                                        className={object.status === 2 ? "disabledButton" : "enabledButton"}
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        > 
                                                         <img src="../images/ic_respond.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -463,7 +475,7 @@ class TicketList extends Component {
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
+                                colSpan={8}
                                 count={ticketList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}

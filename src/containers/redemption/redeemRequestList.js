@@ -413,18 +413,30 @@ class RedeemRequestList extends Component {
                                             <div className={this.statusColor(object.status)}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{this.statusText(object.status)}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 2 ? true : false} onClick={() => this.approveRedeemRequest(object.id)} className={object.status === 2 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_approve.svg" alt="" /> 
-                                                    </button>
+                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                        <button 
+                                                            type="button" 
+                                                            disabled={object.status === 2 ? true : false} 
+                                                            onClick={() => this.approveRedeemRequest(object.id)} 
+                                                            className={object.status === 2 ? "disabledButton" : "enabledButton"}
+                                                            style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                            > 
+                                                            <img src="../images/ic_approve.svg" alt="" /> 
+                                                        </button>
+                                                    </div>
+                                                    <div className="col-xs-6">
+                                                        <button 
+                                                            type="button" 
+                                                            disabled={object.status === 3 ? true : false}
+                                                            onClick={() => this.rejectRedeemRequest(object.id)} 
+                                                            className={object.status === 3 ? "disabledButton" : "enabledButton"}
+                                                            style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                            > 
+                                                            <img src="../images/ic_reject.svg" alt="" />
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.status === 3 ? true : false} onClick={() => this.rejectRedeemRequest(object.id)} className={object.status === 3 ? "disabledButton" : "enabledButton"}> 
-                                                        <img src="../images/ic_reject.svg" alt="" />
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </TableCell>    
                                     </TableRow>
                                     );
@@ -441,7 +453,7 @@ class RedeemRequestList extends Component {
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
+                                colSpan={8}
                                 count={redeemList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}

@@ -228,14 +228,25 @@ class DealList extends Component {
                                             </div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.updateDeal(object.id)} className="enabledButton"> 
+                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.inactive_v === 1 ? true : false} 
+                                                        onClick={() => this.updateDeal(object.id)} 
+                                                        className="enabledButton"
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.deleteDealById(object.id)} className="enabledButton"> 
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => this.deleteDealById(object.id)} 
+                                                        className="enabledButton"
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        > 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -256,7 +267,7 @@ class DealList extends Component {
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
+                                colSpan={7}
                                 count={dealsList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}

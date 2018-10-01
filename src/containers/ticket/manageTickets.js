@@ -211,14 +211,27 @@ class ManageTickets extends Component {
                                             </div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateTicket(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+
+                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.inactive_v === 1 ? true : false} 
+                                                        onClick={() => this.updateTicket(object.id)} 
+                                                        className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.deleteTicketType(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.inactive_v === 1 ? true : false}
+                                                        onClick={() => this.deleteTicketType(object.id)} 
+                                                        className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        > 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -232,14 +245,14 @@ class ManageTickets extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={5} />
                                 </TableRow>
                             )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
+                                colSpan={5}
                                 count={ticketTypeList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}

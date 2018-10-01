@@ -318,14 +318,25 @@ class ManageAdmins extends Component {
                                             <div className={object.status === 0 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Deactive" : "Active"}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.updateAdmin(object.userId)} className="enabledButton"> 
+                                        <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.inactive_v === 1 ? true : false} 
+                                                        onClick={() => this.updateAdmin(object.userId)}
+                                                        className="enabledButton"
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.deleteAdminById(object.userId)} className="enabledButton"> 
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => this.deleteAdminById(object.userId)} 
+                                                        className="enabledButton"
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        > 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -339,14 +350,14 @@ class ManageAdmins extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={7} />
                                 </TableRow>
                             )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
+                                colSpan={7}
                                 count={adminList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}

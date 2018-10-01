@@ -329,18 +329,28 @@ class ManageUsers extends Component {
                                             </div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.updateUser(object.userId)} className="enabledButton"> 
-                                                        <img src="../images/ic_edit.svg" alt="" /> 
-                                                    </button>
+                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => this.updateUser(object.userId)} 
+                                                            className="enabledButton"
+                                                            style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                            > 
+                                                            <img src="../images/ic_edit.svg" alt="" /> 
+                                                        </button>
+                                                    </div>
+                                                    <div className="col-xs-6">
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => this.deleteUserById(object.userId)} 
+                                                            className="enabledButton"
+                                                            style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                            > 
+                                                            <img src="../images/ic_delete.svg" alt="" />
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.deleteUserById(object.userId)} className="enabledButton"> 
-                                                        <img src="../images/ic_delete.svg" alt="" />
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </TableCell>     
                                     </TableRow>
                                     );
@@ -350,14 +360,14 @@ class ManageUsers extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={7} />
                                 </TableRow>
                             )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
+                                colSpan={7}
                                 count={usersList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}

@@ -281,7 +281,7 @@ class MerchantsList extends Component {
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
+                                colSpan={6}
                                 count={merchantList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
