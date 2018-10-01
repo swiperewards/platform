@@ -159,7 +159,7 @@ class AddNewDeal extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Location
+                                City
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControl style={styles.formControl}>
@@ -186,17 +186,15 @@ class AddNewDeal extends Component {
                                 </FormControl>  
                             </div>  
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                From Date*
+                                Store Location
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3 picker">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
-                                    name="fromDate" 
+                                    myType="number" 
+                                    name="storeLocation" 
                                     fullWidth={true} 
-                                    keyboard={true}
-                                    disabled={false}
-                                    component={DatePickerControl} 
-                                    onChange={this.handleDateChange}
-                                    validate={dateRequired}
+                                    component={InputField} 
+                                    validate={required}
                                 />  
                             </div>
                         </div>
@@ -214,17 +212,18 @@ class AddNewDeal extends Component {
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                To Date*
+                                From Date*
                             </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
+                            <div className="col-xs-12 col-sm-6 col-md-3 picker">
                                 <Field 
-                                    name="toDate" 
+                                    name="fromDate" 
                                     fullWidth={true} 
-                                    keyboard={false}
-                                    disabled={true}
+                                    keyboard={true}
+                                    disabled={false}
                                     component={DatePickerControl} 
                                     onChange={this.handleDateChange}
-                                />   
+                                    validate={dateRequired}
+                                />  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -252,6 +251,19 @@ class AddNewDeal extends Component {
                                         }
                                     </Field>    
                                 </FormControl>  
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                To Date*
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    name="toDate" 
+                                    fullWidth={true} 
+                                    keyboard={false}
+                                    disabled={true}
+                                    component={DatePickerControl} 
+                                    onChange={this.handleDateChange}
+                                />   
                             </div>
                         </div> 
                         <div className="row end-xs">

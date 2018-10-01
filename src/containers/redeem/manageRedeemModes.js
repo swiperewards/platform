@@ -197,9 +197,9 @@ class ManageRedeemModes extends Component {
                         { 
                             (redeemModeList !== "") ? (
                             (redeemModeList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                )
                                 : (
                                 redeemModeList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

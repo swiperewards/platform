@@ -247,9 +247,9 @@ class PaymentProcessing extends Component {
                         { 
                             (merchantList !== "") ? (
                             (merchantList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                )
                                 : (
                                 merchantList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

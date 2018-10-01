@@ -320,9 +320,9 @@ class ManageMerchants extends Component {
                         { 
                             (merchantList !== "") ? (
                             (merchantList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                )
                                 : (
                                 merchantList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -338,14 +338,14 @@ class ManageMerchants extends Component {
                                             <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md">
+                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
                                                 <div className="col-xs-6">
                                                     <button 
                                                         type="button" 
                                                         disabled={object.inactive_v === 1 ? true : false} 
                                                         onClick={() => this.updateMerchant(object.id)} 
                                                         className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
-                                                        style={ object.serial_number%2 === 0 ? null : {backgroundColor:'#f2f6f2'}}
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
                                                         > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
@@ -355,7 +355,7 @@ class ManageMerchants extends Component {
                                                         type="button" 
                                                         onClick={() => this.deleteMerchant(object.id, !object.inactive_v)} 
                                                         className="enabledButton"
-                                                        style={ object.serial_number%2 === 0 ? null : {backgroundColor:'#f2f6f2'}}
+                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
                                                         > 
                                                         {
                                                             object.inactive_v === 1 ?
@@ -375,14 +375,14 @@ class ManageMerchants extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={7} />
                                 </TableRow>
                             )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
+                                colSpan={7}
                                 count={merchantList.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}

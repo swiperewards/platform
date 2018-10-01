@@ -1,4 +1,5 @@
 import { hostURL, dashboardAPI } from '../app.config';
+import { decryptData} from '../utilities/encryptDecryptData'
 
 var axios = require('axios');
 var randomColor = require('randomcolor');
@@ -21,6 +22,7 @@ export function getDashboardDetails(token) {
     var response = axios(setting).then(
         response => 
         {
+            response.data.responseData = decryptData(response.data.responseData)
             var responseDetails = response.data.responseData
 
             var output ={

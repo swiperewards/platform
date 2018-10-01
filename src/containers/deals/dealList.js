@@ -208,9 +208,9 @@ class DealList extends Component {
                         { 
                             (dealsList !== "") ? (
                             (dealsList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                )
                                 : (
                                 dealsList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

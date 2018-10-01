@@ -309,9 +309,9 @@ class ManageUsers extends Component {
                         { 
                             (usersList !== "") ? (
                             (usersList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                )
                                 : (
                                 usersList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

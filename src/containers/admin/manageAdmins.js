@@ -294,9 +294,9 @@ class ManageAdmins extends Component {
                         { 
                             (adminList !== "") ? (
                             (adminList.length === 0) ? 
-                                (<TableRow className="tableRow">
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                )
                                 : (
                                 adminList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

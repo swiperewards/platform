@@ -394,9 +394,9 @@ class RedeemRequestList extends Component {
                         { 
                             (redeemList !== "") ? (
                             (redeemList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                )
                                 : (
                                 redeemList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

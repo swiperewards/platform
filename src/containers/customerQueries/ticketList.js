@@ -416,9 +416,9 @@ class TicketList extends Component {
                         { 
                             (ticketList !== "") ? (
                             (ticketList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                )
                                 : (
                                 ticketList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
