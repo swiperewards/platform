@@ -57,7 +57,7 @@ const styles = {
 class TicketList extends Component {
 
     state = {
-        ticketList:'',
+        ticketList:undefined,
         queryTypeList:'',
         responseMessage: '',
         page: 0,
@@ -114,12 +114,14 @@ class TicketList extends Component {
 
             if (nextProps.CustomerQueriesResponse){
                 if(nextProps.CustomerQueriesResponse.status === 200){
+                    this.setState({showLoader:false})
                     this.setState({ticketList: nextProps.CustomerQueriesResponse.responseData})
                 }
             }
 
             if (nextProps.queryTypeResponse){
                 if(nextProps.queryTypeResponse.status === 200){
+                    this.setState({showLoader:false})
                     this.setState({queryTypeList: nextProps.queryTypeResponse.responseData})
                 }
             }
@@ -140,6 +142,7 @@ class TicketList extends Component {
             }
 
             if( nextProps.initialValues && nextProps.initialValues !== this.props.initialValues){
+                this.setState({showLoader:false})
                 this.props.change('description',nextProps.initialValues.feedback)
                 this.props.change('ticketTypeId', nextProps.initialValues.ticketTypeId)
                 this.props.change('ticketStatus', (nextProps.initialValues.status).toString())
@@ -155,6 +158,7 @@ class TicketList extends Component {
 
     resetHandler(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:false})
             this.props.getCustomerQueryList("", "", "", "", this.props.userData.user.responseData.token)
         }    
     }
@@ -170,6 +174,7 @@ class TicketList extends Component {
     getAllCustomerQueries(){
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getCustomerQueryList(this.props.username, this.props.status, this.props.userType, this.props.ticketType, this.props.userData.user.responseData.token)
         }
         else{
@@ -232,7 +237,7 @@ class TicketList extends Component {
 
     render() {
         const { ticketList, rowsPerPage, page, dialogOpen, openManageTicketPopUp, openResolveTicketPopUp, responseMessage } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, ticketList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (ticketList !== undefined ? ticketList.length : 0) - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose.bind(this)} color="primary" autoFocus>
@@ -414,7 +419,7 @@ class TicketList extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (ticketList !== "") ? (
+                            (ticketList !== undefined) ? (
                             (ticketList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -442,7 +447,7 @@ class TicketList extends Component {
                                                         disabled={object.status === 2 ? true : false}  
                                                         onClick={() => this.manageTicket(object.id)} 
                                                         className={object.status === 2 ? "disabledButton" : "enabledButton"}
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
@@ -453,7 +458,7 @@ class TicketList extends Component {
                                                         disabled={object.status === 2 ? true : false}
                                                         onClick={() => this.resolveTicket(object.id)} 
                                                         className={object.status === 2 ? "disabledButton" : "enabledButton"}
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_respond.svg" alt="" />
                                                     </button>
@@ -476,7 +481,7 @@ class TicketList extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={8}
-                                count={ticketList.length}
+                                count={(ticketList !== undefined) ? ticketList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

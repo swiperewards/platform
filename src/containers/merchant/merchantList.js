@@ -46,7 +46,7 @@ class MerchantsList extends Component {
         name:'',
         status: '',
         location:'',
-        merchantList:'',
+        merchantList:undefined,
         page: 0,
         rowsPerPage: 5,
         disableReset: true,
@@ -151,7 +151,7 @@ class MerchantsList extends Component {
     render() {
 
         const { merchantList, rowsPerPage, page } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (merchantList !== undefined ? merchantList.length : 0) - page * rowsPerPage);
 
         return (
           <div className="row">
@@ -247,7 +247,7 @@ class MerchantsList extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
+                            (merchantList !== undefined) ? (
                             (merchantList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -282,7 +282,7 @@ class MerchantsList extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={6}
-                                count={merchantList.length}
+                                count={(merchantList !== undefined) ? merchantList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

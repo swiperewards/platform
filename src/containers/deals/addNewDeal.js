@@ -15,6 +15,7 @@ import Button from '@material-ui/core/Button';
 //Components
 import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
+import LocationSearchBar from '../../components/locationSearchBar';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
 import DatePickerControl from '../../components/datePickerControl';
@@ -72,16 +73,17 @@ class AddNewDeal extends Component {
         if (nextProps) {
 
           if (nextProps.newDealResponse){
-            this.setState({showLoader:false})
             if(nextProps.newDealResponse.status === 200){
                 this.setState({message: nextProps.newDealResponse.message})
                 this.setState({ dialogOpen: true });
+                this.setState({showLoader:false})
             }
             else{
                 errorMessage =
                             <div 
                                 className="errorDiv"
                             >{nextProps.newDealResponse.message}</div>
+                this.setState({showLoader:false})
             }
           }
 
@@ -185,7 +187,7 @@ class AddNewDeal extends Component {
                                     </Field>    
                                 </FormControl>  
                             </div>  
-                            <div className="col-xs-12 col-sm-6 col-md-3">
+                            {/* <div className="col-xs-12 col-sm-6 col-md-3">
                                 Store Location
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
@@ -193,10 +195,10 @@ class AddNewDeal extends Component {
                                     myType="number" 
                                     name="storeLocation" 
                                     fullWidth={true} 
-                                    component={InputField} 
+                                    component={LocationSearchBar} 
                                     validate={required}
                                 />  
-                            </div>
+                            </div> */}
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">

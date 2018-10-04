@@ -112,17 +112,23 @@ class Login extends Component {
                         else if(nextProps.validateAction_Data.user.responseData.role === 'merchant'){
                             this.props.history.push(`/merchantdashboard`);
                         }
+                        this.setState({showLoader:false})
                     }
                     else{
+                        if(nextProps.validateAction_Data.user.status === 1002){
+                            this.props.history.push({pathname:'/verificationPending',state: { detail: nextProps.validateAction_Data.user.responseData.email }})
+                        }    
+
                         errorMessage =
                             <div 
                                 className="errorDiv"
-                            >{nextProps.validateAction_Data.user.message}</div >
+                            >{nextProps.validateAction_Data.user.message}</div>
+                            this.setState({showLoader:false})
+
                     }
                 }
             }
         }
-        this.setState({showLoader:false})
     }
 
     onSubmit(values) {
@@ -134,7 +140,6 @@ class Login extends Component {
 
         return (
             <div>
-                
                 <Loader status={this.state.showLoader} />
 
                 <div className="pageContainer">

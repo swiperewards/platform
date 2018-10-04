@@ -36,8 +36,8 @@ class AddNewTicket extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.newTicketResponse){
-              this.setState({showLoader:false})
               if(nextProps.newTicketResponse.status === 200){
+                this.setState({showLoader:false})
                   this.setState({message: nextProps.newTicketResponse.message})
                   this.setState({ dialogOpen: true });
               }
@@ -46,6 +46,7 @@ class AddNewTicket extends Component {
                 <div 
                     className="errorDiv"
                 >{nextProps.newTicketResponse.message}</div>
+                this.setState({showLoader:false})
               }
 
               this.props.clearNewTicketTypeResponse();

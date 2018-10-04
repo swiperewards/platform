@@ -48,7 +48,7 @@ class ManageUsers extends Component {
         name:'',
         status: '',
         userType:'',
-        usersList:'',
+        usersList:undefined,
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -66,13 +66,14 @@ class ManageUsers extends Component {
         if (nextProps) {
           if (nextProps.userPayload){
             if(nextProps.userPayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({usersList: nextProps.userPayload.responseData})
             }
           }
           
           if(nextProps.deleteUserResponse){
-            this.setState({showLoader:false})
             if(nextProps.deleteUserResponse.status === 200){
+                this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
                 this.getAllUsers();
             }
@@ -103,6 +104,7 @@ class ManageUsers extends Component {
 
     getAllUsers(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getUsersByFilter(this.state.name, this.state.status, this.state.userType, this.props.userData.user.responseData.token)
         }
         else{
@@ -155,6 +157,7 @@ class ManageUsers extends Component {
         this.props.reset();
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getUsersByFilter("", "", "" ,this.props.userData.user.responseData.token)
         }
     
@@ -163,7 +166,7 @@ class ManageUsers extends Component {
     render() {
 
         const { usersList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, usersList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (usersList !== undefined ? usersList.length : 0) - page * rowsPerPage);
         
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -307,7 +310,7 @@ class ManageUsers extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (usersList !== "") ? (
+                            (usersList !== undefined) ? (
                             (usersList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -335,7 +338,7 @@ class ManageUsers extends Component {
                                                             type="button" 
                                                             onClick={() => this.updateUser(object.userId)} 
                                                             className="enabledButton"
-                                                            style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                            style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                             > 
                                                             <img src="../images/ic_edit.svg" alt="" /> 
                                                         </button>
@@ -345,7 +348,7 @@ class ManageUsers extends Component {
                                                             type="button" 
                                                             onClick={() => this.deleteUserById(object.userId)} 
                                                             className="enabledButton"
-                                                            style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                            style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                             > 
                                                             <img src="../images/ic_delete.svg" alt="" />
                                                         </button>
@@ -368,7 +371,7 @@ class ManageUsers extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={7}
-                                count={usersList.length}
+                                count={(usersList !== undefined) ? usersList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

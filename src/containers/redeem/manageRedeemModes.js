@@ -28,7 +28,7 @@ import { getRedeemModeList, deleteRedeemMode, clearDeleteRedeemModeResponse, get
 class ManageRedeemModes extends Component {
 
     state = {
-        redeemModeList:'',
+        redeemModeList:undefined,
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -46,6 +46,7 @@ class ManageRedeemModes extends Component {
         if (nextProps) {
           if (nextProps.redeemModePayload){
             if(nextProps.redeemModePayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({redeemModeList: nextProps.redeemModePayload.responseData})
             }
           }
@@ -71,6 +72,7 @@ class ManageRedeemModes extends Component {
 
     getAllRedeemModes(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getRedeemModeList(this.props.userData.user.responseData.token)
         }
         else{
@@ -121,7 +123,7 @@ class ManageRedeemModes extends Component {
     render() {
 
         const { redeemModeList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, redeemModeList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (redeemModeList !== undefined ? redeemModeList.length : 0) - page * rowsPerPage);
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
                 OK
@@ -195,7 +197,7 @@ class ManageRedeemModes extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (redeemModeList !== "") ? (
+                            (redeemModeList !== undefined) ? (
                             (redeemModeList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -221,7 +223,7 @@ class ManageRedeemModes extends Component {
                                                         disabled={object.inactive_v === 1 ? true : false} 
                                                         onClick={() => this.updateRedeemMode(object.modeId)} 
                                                         className="enabledButton"
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
@@ -231,7 +233,7 @@ class ManageRedeemModes extends Component {
                                                         type="button" 
                                                         onClick={() => this.deleteRedeemOption(object.modeId)} 
                                                         className="enabledButton"
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
@@ -254,7 +256,7 @@ class ManageRedeemModes extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={5}
-                                count={redeemModeList.length}
+                                count={(redeemModeList !== undefined) ? redeemModeList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

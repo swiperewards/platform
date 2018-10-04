@@ -50,6 +50,7 @@ class ManageRedemption extends Component {
     componentWillMount()
     {
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getRedeemModeList(this.props.userData.user.responseData.token)
         }
 
@@ -62,13 +63,17 @@ class ManageRedemption extends Component {
 
           if (nextProps.redeemRequestPayload){
             if(nextProps.redeemRequestPayload.status === 200){
-                this.setState({redeemList: nextProps.redeemRequestPayload.responseData.redeemRequests})
-                this.setState({redeemSummary: nextProps.redeemRequestPayload.responseData.summary})
+                if(nextProps.redeemRequestPayload.responseData){
+                    this.setState({showLoader:false})
+                    this.setState({redeemList: nextProps.redeemRequestPayload.responseData.redeemRequests})
+                    this.setState({redeemSummary: nextProps.redeemRequestPayload.responseData.summary})
+                }
             }
           }
 
           if (nextProps.redeemModePayload){
             if(nextProps.redeemModePayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({redeemModeList: nextProps.redeemModePayload.responseData})
             }
           }
@@ -89,6 +94,7 @@ class ManageRedemption extends Component {
 
     getAllRedeemRequests(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getRedeemRequestList(this.state.name, this.state.status, this.state.mode, this.state.fromDate, this.state.toDate, this.props.userData.user.responseData.token)
         }
         else{

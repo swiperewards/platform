@@ -100,25 +100,22 @@ class AddNewRedeemMode extends Component {
 
     componentWillMount() {
         errorMessage = "";
-
-        if(this.props.userData.user.responseData.token && this.props.merchant){
-            this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
-        }
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.redeemModeResponse){
-              this.setState({showLoader:false})
               if(nextProps.redeemModeResponse.status === 200){
                   this.setState({message: nextProps.redeemModeResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                 errorMessage =
                 <div 
                     className="errorDiv"
                 >{nextProps.redeemModeResponse.message}</div>
+                this.setState({showLoader:false})
               }
 
               this.props.clearCreateRedeemModeResponse();

@@ -28,7 +28,7 @@ import { getDealsListWithFilter, deleteDeal, getDealDetails, getCitiesList } fro
 class DealList extends Component {
 
     state = {
-        dealsList:'',
+        dealsList:undefined,
         citiesList:'',
         page: 0,
         rowsPerPage: 5,
@@ -55,15 +55,15 @@ class DealList extends Component {
 
         if (nextProps) {
           if (nextProps.dealsPayload){
-            this.setState({showLoader:false})
             if(nextProps.dealsPayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({dealsList: nextProps.dealsPayload.responseData})
             }
           }
           
           if(nextProps.dealDelete){
-            this.setState({showLoader:false})
             if(nextProps.dealDelete.status === 200){
+                this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
                 this.getAllDeals();
             }
@@ -71,6 +71,7 @@ class DealList extends Component {
 
           if(nextProps.citiesPayload){
             if(nextProps.citiesPayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({citiesList:nextProps.citiesPayload.responseData})
             }
           }
@@ -87,6 +88,7 @@ class DealList extends Component {
 
     getAllDeals(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getDealsListWithFilter(this.props.name, this.props.status, this.props.location, this.props.fromDate, this.props.toDate, this.props.userData.user.responseData.token)
         }
         else{
@@ -118,6 +120,7 @@ class DealList extends Component {
     updateDeal = (dealId) =>{
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getDealDetails(dealId, this.props.userData.user.responseData.token)
             this.props.history.push('/updateDeal')
         }
@@ -144,6 +147,7 @@ class DealList extends Component {
     resetHandler(){
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getDealsListWithFilter("", "", "", "", "", this.props.userData.user.responseData.token)
         }
     
@@ -152,7 +156,7 @@ class DealList extends Component {
     render() {
 
         const { dealsList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, dealsList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (dealsList !== undefined ? dealsList.length : 0) - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose.bind(this)} color="primary" autoFocus>
@@ -206,7 +210,7 @@ class DealList extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (dealsList !== "") ? (
+                            (dealsList !== undefined) ? (
                             (dealsList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -235,7 +239,7 @@ class DealList extends Component {
                                                         disabled={object.inactive_v === 1 ? true : false} 
                                                         onClick={() => this.updateDeal(object.id)} 
                                                         className="enabledButton"
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
@@ -245,7 +249,7 @@ class DealList extends Component {
                                                         type="button" 
                                                         onClick={() => this.deleteDealById(object.id)} 
                                                         className="enabledButton"
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
@@ -268,7 +272,7 @@ class DealList extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={7}
-                                count={dealsList.length}
+                                count={(dealsList !== undefined) ? dealsList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

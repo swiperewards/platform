@@ -52,16 +52,17 @@ class UpdateTicket extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.updateTicketResponse){
-              this.setState({showLoader:false})
               if(nextProps.updateTicketResponse.status === 200){
                   this.setState({message: nextProps.updateTicketResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                 errorMessage =
                 <div 
                     className="errorDiv"
                 >{nextProps.updateTicketResponse.message}</div>
+                this.setState({showLoader:false})
               }
 
               this.props.clearNewTicketTypeResponse();

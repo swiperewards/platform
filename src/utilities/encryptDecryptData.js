@@ -4,7 +4,6 @@ const CryptoJS = require('crypto-js')
 
 // method to encrypt data(password)
 export function encryptData(plainText) {
-    console.log(secretKeyDataEncryption)
     var data = JSON.stringify(plainText);
     var encrypted = CryptoJS.AES.encrypt(data,secretKeyDataEncryption);
     var encryptedText = encrypted.toString();

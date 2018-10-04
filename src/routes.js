@@ -12,6 +12,7 @@ import ActivationComplete from './containers/account/activationComplete'
 import ResetPassword from './containers/account/resetPasswordMail'
 import ChangePassword from './containers/account/changePassword'
 import UpdateUserDetails from './containers/user/updateUserDetails'
+import VerificationPending from './containers/account/verificationPending'
 
 import ManageAdmins from './containers/admin/manageAdmins'
 import AddAdmin from './containers/admin/addNewAdmin'
@@ -69,6 +70,7 @@ class Routes extends Component {
                         <Route exact path="/resetPasswordMail" component={ResetPassword} />
                         <Route exact path="/setPassword" component={ChangePassword}/> 
                         <Route exact path="/setPassword/:token" component={ChangePassword} />
+                        <Route exact path="/verificationPending" component={VerificationPending} />
 
                         <App>
                             <Route exact path="/admindashboard" component={AdminDashboard} />

@@ -58,16 +58,17 @@ class AddAdmin extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.newAdminResponse){
-              this.setState({showLoader:false})
               if(nextProps.newAdminResponse.status === 200){
                   this.setState({message: nextProps.newAdminResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                   errorMessage =
-                              <div 
-                                  className="errorDiv"
-                              >{nextProps.newAdminResponse.message}</div>
+                    <div 
+                        className="errorDiv"
+                    >{nextProps.newAdminResponse.message}</div>
+                    this.setState({showLoader:false})
               }
             }
         }

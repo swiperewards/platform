@@ -118,16 +118,17 @@ class UpdateRedeemMode extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.updateRedeemResponse){
-              this.setState({showLoader:false})
               if(nextProps.updateRedeemResponse.status === 200){
                   this.setState({message: nextProps.updateRedeemResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                 errorMessage =
                 <div 
                     className="errorDiv"
                 >{nextProps.updateRedeemResponse.message}</div>
+                this.setState({showLoader:false})
               }
 
               this.props.clearUpdateRedeemDetailsResponse();

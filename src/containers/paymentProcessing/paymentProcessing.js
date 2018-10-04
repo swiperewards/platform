@@ -31,7 +31,7 @@ class PaymentProcessing extends Component {
         name:'',
         status: '',
         location:'',
-        merchantList:'',
+        merchantList:undefined,
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -50,6 +50,7 @@ class PaymentProcessing extends Component {
         if (nextProps) {
           if (nextProps.merchantPayload){
             if(nextProps.merchantPayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({merchantList: nextProps.merchantPayload.responseData})
             }
           }
@@ -86,6 +87,7 @@ class PaymentProcessing extends Component {
 
     getAllMerchants(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
         }
         else{
@@ -144,7 +146,7 @@ class PaymentProcessing extends Component {
     render() {
 
         const { merchantList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (merchantList !== undefined ? merchantList.length : 0) - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -245,7 +247,7 @@ class PaymentProcessing extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
+                            (merchantList !== undefined) ? (
                             (merchantList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -294,7 +296,7 @@ class PaymentProcessing extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={3}
-                                count={merchantList.length}
+                                count={(merchantList !== undefined) ? merchantList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

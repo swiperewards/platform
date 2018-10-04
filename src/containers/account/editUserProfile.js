@@ -49,16 +49,17 @@ class UserProfile extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.updateProfileResponse){
-              this.setState({showLoader:false})
               if(nextProps.updateProfileResponse.status === 200){
                   this.setState({message: nextProps.updateProfileResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                   errorMessage =
                     <div 
                         className="errorDiv"
                     >{nextProps.updateProfileResponse.message}</div>
+                    this.setState({showLoader:false})
               }
 
               this.props.clearUpdateProfileResponse();

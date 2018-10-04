@@ -71,16 +71,17 @@ class UpdateUserDetails extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.updateUserResponse){
-              this.setState({showLoader:false})
               if(nextProps.updateUserResponse.status === 200){
                   this.setState({message: nextProps.updateUserResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                   errorMessage =
                     <div 
                         className="errorDiv"
                     >{nextProps.updateUserResponse.message}</div>
+                    this.setState({showLoader:false})
               }
 
               this.props.clearUserUpdateResponse();

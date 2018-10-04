@@ -53,9 +53,9 @@ const styles = {
 class RedeemRequestList extends Component {
 
     state = {
-        redeemList:'',
+        redeemList:undefined,
         redeemSummary:'',
-        redeemModeList:'',
+        redeemModeList:undefined,
         errorMessage:'',
         page: 0,
         rowsPerPage: 5,
@@ -114,14 +114,20 @@ class RedeemRequestList extends Component {
 
           if (nextProps.redeemRequestPayload){
             if(nextProps.redeemRequestPayload.status === 200){
-                this.setState({redeemList: nextProps.redeemRequestPayload.responseData.redeemRequests})
-                this.setState({redeemSummary: nextProps.redeemRequestPayload.responseData.summary})
+                if (nextProps.redeemRequestPayload.responseData){
+                    this.setState({showLoader:false})
+                    this.setState({redeemList: nextProps.redeemRequestPayload.responseData.redeemRequests})
+                    this.setState({redeemSummary: nextProps.redeemRequestPayload.responseData.summary})
+                }
             }
           }
 
           if (nextProps.redeemModePayload){
             if(nextProps.redeemModePayload.status === 200){
-                this.setState({redeemModeList: nextProps.redeemModePayload.responseData})
+                if (nextProps.redeemModePayload.responseData){
+                    this.setState({showLoader:false})
+                    this.setState({redeemModeList: nextProps.redeemModePayload.responseData})
+                }
             }
           }
 
@@ -142,6 +148,7 @@ class RedeemRequestList extends Component {
           }
 
           if( nextProps.initialValues && nextProps.initialValues !== this.props.initialValues){
+            this.setState({showLoader:false})
             this.props.change('fullName',nextProps.initialValues.fullName)
             this.props.change('amount', (nextProps.initialValues.amount).toString())
             this.props.change('modeName', nextProps.initialValues.redeemModeId)
@@ -171,6 +178,7 @@ class RedeemRequestList extends Component {
 
     getAllRedeemRequests(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getRedeemRequestList(this.props.name, this.props.status, this.props.mode, this.props.fromDate, this.props.toDate, this.props.userData.user.responseData.token)
         }
         else{
@@ -184,6 +192,7 @@ class RedeemRequestList extends Component {
 
     resetHandler(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getRedeemRequestList("", "", "", "", "", this.props.userData.user.responseData.token)
         }    
     }
@@ -228,7 +237,7 @@ class RedeemRequestList extends Component {
 
     render() {
         const { redeemList, rowsPerPage, page, dialogOpen, permissionDisplayBox, errorMessage, openApproveRequestPopUp, openRejectRequestPopUp } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, redeemList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (redeemList !== undefined ? redeemList.length : 0) - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose.bind(this)} color="primary" autoFocus>
@@ -392,7 +401,7 @@ class RedeemRequestList extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (redeemList !== "") ? (
+                            (redeemList !== undefined) ? (
                             (redeemList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -420,7 +429,7 @@ class RedeemRequestList extends Component {
                                                             disabled={object.status === 2 ? true : false} 
                                                             onClick={() => this.approveRedeemRequest(object.id)} 
                                                             className={object.status === 2 ? "disabledButton" : "enabledButton"}
-                                                            style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                            style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                             > 
                                                             <img src="../images/ic_approve.svg" alt="" /> 
                                                         </button>
@@ -431,7 +440,7 @@ class RedeemRequestList extends Component {
                                                             disabled={object.status === 3 ? true : false}
                                                             onClick={() => this.rejectRedeemRequest(object.id)} 
                                                             className={object.status === 3 ? "disabledButton" : "enabledButton"}
-                                                            style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                            style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                             > 
                                                             <img src="../images/ic_reject.svg" alt="" />
                                                         </button>
@@ -454,7 +463,7 @@ class RedeemRequestList extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={8}
-                                count={redeemList.length}
+                                count={(redeemList !== undefined) ? redeemList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

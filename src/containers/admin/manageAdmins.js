@@ -49,7 +49,7 @@ class ManageAdmins extends Component {
     state = {
         name:'',
         status: '',
-        adminList:'',
+        adminList:undefined,
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -68,14 +68,15 @@ class ManageAdmins extends Component {
           if (nextProps.adminPayload){
             if(nextProps.adminPayload.status === 200){
                 this.setState({adminList: nextProps.adminPayload.responseData})
+                this.setState({showLoader:false})
             }
           }
           
           if(nextProps.adminDelete){
-            this.setState({showLoader:false})
             if(nextProps.adminDelete.status === 200){
                 this.setState({ dialogOpen: true });
                 this.getAllAdmins();
+                this.setState({showLoader:false})
             }
           }
         }
@@ -103,6 +104,7 @@ class ManageAdmins extends Component {
 
     getAllAdmins(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getAdminListWithFilter(this.state.name, this.state.status, this.props.userData.user.responseData.token)
         }
         else{
@@ -134,6 +136,7 @@ class ManageAdmins extends Component {
     updateAdmin = (adminId) => {
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getAdminDetails(adminId, this.props.userData.user.responseData.token)
             this.props.history.push('/updateAdmin')
         }
@@ -156,6 +159,7 @@ class ManageAdmins extends Component {
         this.props.reset();
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:false})
             this.props.getAdminListWithFilter("", "", this.props.userData.user.responseData.token)
         }
     
@@ -164,7 +168,7 @@ class ManageAdmins extends Component {
     render() {
 
         const { adminList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, adminList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (adminList !== undefined ? adminList.length : 0) - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -292,7 +296,7 @@ class ManageAdmins extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (adminList !== "") ? (
+                            (adminList !== undefined) ? (
                             (adminList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -325,7 +329,7 @@ class ManageAdmins extends Component {
                                                         disabled={object.inactive_v === 1 ? true : false} 
                                                         onClick={() => this.updateAdmin(object.userId)}
                                                         className="enabledButton"
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
@@ -335,7 +339,7 @@ class ManageAdmins extends Component {
                                                         type="button" 
                                                         onClick={() => this.deleteAdminById(object.userId)} 
                                                         className="enabledButton"
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
@@ -358,7 +362,7 @@ class ManageAdmins extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={7}
-                                count={adminList.length}
+                                count={(adminList !== undefined) ? adminList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

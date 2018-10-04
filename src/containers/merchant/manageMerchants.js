@@ -49,7 +49,7 @@ class ManageMerchants extends Component {
         name:'',
         status: '',
         location:'',
-        merchantList:'',
+        merchantList:undefined,
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -69,6 +69,7 @@ class ManageMerchants extends Component {
         if (nextProps) {
           if (nextProps.merchantPayload){
             if(nextProps.merchantPayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({merchantList: nextProps.merchantPayload.responseData})
             }
           }
@@ -106,6 +107,7 @@ class ManageMerchants extends Component {
 
     getAllMerchants(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
         }
         else{
@@ -164,7 +166,7 @@ class ManageMerchants extends Component {
     render() {
 
         const { merchantList, rowsPerPage, page, dialogOpen, permissionDisplayBox, inactive } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (merchantList !== undefined ? merchantList.length : 0) - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -318,7 +320,7 @@ class ManageMerchants extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
+                            (merchantList !== undefined) ? (
                             (merchantList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -345,7 +347,7 @@ class ManageMerchants extends Component {
                                                         disabled={object.inactive_v === 1 ? true : false} 
                                                         onClick={() => this.updateMerchant(object.id)} 
                                                         className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
@@ -355,7 +357,7 @@ class ManageMerchants extends Component {
                                                         type="button" 
                                                         onClick={() => this.deleteMerchant(object.id, !object.inactive_v)} 
                                                         className="enabledButton"
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         {
                                                             object.inactive_v === 1 ?
@@ -383,7 +385,7 @@ class ManageMerchants extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={7}
-                                count={merchantList.length}
+                                count={(merchantList !== undefined) ? merchantList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

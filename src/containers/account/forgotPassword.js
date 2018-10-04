@@ -60,9 +60,9 @@ class ForgotPassword extends Component {
 
         if (nextProps) {
             if (nextProps.forgotPasswordResponse){
-                this.setState({showLoader:false})
                 if (nextProps.forgotPasswordResponse.status === 200) {
                     errorMessage = undefined
+                    this.setState({showLoader:false})
                     this.props.history.push({pathname:'/resetPasswordMail',state: { detail: nextProps.forgotPasswordResponse.responseData.emailId }})
                 }
                 else{
@@ -70,6 +70,7 @@ class ForgotPassword extends Component {
                         <div 
                             className="errorDiv"
                         >{nextProps.forgotPasswordResponse.message}</div>
+                        this.setState({showLoader:false})
                 }
             }
         }

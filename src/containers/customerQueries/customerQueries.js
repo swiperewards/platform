@@ -13,6 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
 import TicketList from '../../containers/customerQueries/ticketList';
+import Loader from '../../components/loader'
 
 //Actions
 import 
@@ -92,6 +93,7 @@ class CustomerQueries extends Component {
         return (
   
         <div className="row">
+                <Loader status={this.state.showLoader} />
             <div className="col-xs-12">
                 <div className="row">
                     <div className="col-xs-12">

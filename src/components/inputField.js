@@ -116,7 +116,6 @@ class CustomizedInputs extends Component {
             width = {this.props.minWidth}
             disabled={this.props.disabled ? true : false}
             InputProps={{
-              maxLength: 10,
               disableUnderline: false,
               classes: {
                 root: classes.bootstrapRoot,

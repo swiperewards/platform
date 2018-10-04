@@ -59,16 +59,17 @@ class updateAdmin extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.updateAdminResponse){
-              this.setState({showLoader:false})
               if(nextProps.updateAdminResponse.status === 200){
                   this.setState({message: nextProps.updateAdminResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                   errorMessage =
                     <div 
                         className="errorDiv"
                     >{nextProps.updateAdminResponse.message}</div>
+                    this.setState({showLoader:false})
               }
             }
           }

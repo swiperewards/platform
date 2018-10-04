@@ -28,7 +28,7 @@ import { getTicketTypes, getTicketTypeDetails, clearGetTicketTypeResponse, delet
 class ManageTickets extends Component {
 
     state = {
-        ticketTypeList:'',
+        ticketTypeList:undefined,
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -46,6 +46,7 @@ class ManageTickets extends Component {
         if (nextProps) {
           if (nextProps.ticketTypePayload){
             if(nextProps.ticketTypePayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({ticketTypeList: nextProps.ticketTypePayload.responseData})
             }
           }
@@ -72,6 +73,7 @@ class ManageTickets extends Component {
 
     getTicketTypeList(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getTicketTypes(this.props.userData.user.responseData.token)
         }
         else{
@@ -117,7 +119,7 @@ class ManageTickets extends Component {
     render() {
 
         const { ticketTypeList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, ticketTypeList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (ticketTypeList !== undefined ? ticketTypeList.length : 0) - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -192,7 +194,7 @@ class ManageTickets extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (ticketTypeList !== "") ? (
+                            (ticketTypeList !== undefined) ? (
                             (ticketTypeList.length === 0) ? 
                                 (
                                     <span className="dashboardText"><b>No Record Found</b></span>
@@ -219,7 +221,7 @@ class ManageTickets extends Component {
                                                         disabled={object.inactive_v === 1 ? true : false} 
                                                         onClick={() => this.updateTicket(object.id)} 
                                                         className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
@@ -230,7 +232,7 @@ class ManageTickets extends Component {
                                                         disabled={object.inactive_v === 1 ? true : false}
                                                         onClick={() => this.deleteTicketType(object.id)} 
                                                         className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
-                                                        style={ index%2 !== 0 ? {height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'}}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
@@ -253,7 +255,7 @@ class ManageTickets extends Component {
                             <TableRow>
                                 <TablePagination
                                 colSpan={5}
-                                count={ticketTypeList.length}
+                                count={(ticketTypeList !== undefined) ? ticketTypeList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}
