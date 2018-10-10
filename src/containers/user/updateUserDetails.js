@@ -23,7 +23,7 @@ import DialogBox from '../../components/alertDialog'
 import {updateUserDetails, clearUserUpdateResponse} from '../../actions/userAction'
 
 //Validation
-import { required, minimum8, email, phoneMask, zipMask, between1to100} from '../../utilities/validation'
+import { required, minimum8, email, phoneMask, zipMask, between1to100, between1to50} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -138,20 +138,21 @@ class UpdateUserDetails extends Component {
                         <Divider style={{marginBottom:'20px'}}/>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Name
+                                Name *
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     myType="text" 
                                     name="fullName" 
                                     fullWidth={true} 
-                                    component={InputField} 
+                                    component={InputField}
+                                    validate={[required, between1to50]} 
                                 /> 
                             </div>  
                         </div>   
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Email ID
+                                Email ID *
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
@@ -159,7 +160,7 @@ class UpdateUserDetails extends Component {
                                     name="emailId" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={email}
+                                    validate={[required, email]}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">

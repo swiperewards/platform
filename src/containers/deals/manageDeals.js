@@ -89,11 +89,11 @@ class ManageDeals extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name !=="" || this.state.status !=="" || this.state.location !=="" || this.state.fromDate !== "" || this.state.toDate !== ""){
-            this.setState({disableReset: true});
+        if(event.target.value !== undefined || event.target.value !== ""){
+            this.setState({disableReset:false});
         }
         else{
-            this.setState({disableReset:false});
+            this.setState({disableReset:true});
         }
     };
 

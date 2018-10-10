@@ -1,5 +1,6 @@
 import { hostURL, addNewDealAPI, getDealsFilterAPI, deleteDealAPI, getDealDetailsAPI, updateDealAPI, getCitiesAPI } from '../app.config';
 import moment from 'moment'
+import {normalizedNumber} from '../utilities/validation'
 import {encryptData, decryptData} from '../utilities/encryptDecryptData'
 
 var axios = require('axios');
@@ -10,7 +11,7 @@ export function addNewDeal(values, merchantId, token) {
         "merchantId": merchantId, 
         "startDate": values.fromDate === undefined ? undefined : moment(values.fromDate).format('YYYY-MM-DD'),
         "endDate": values.toDate === undefined ? undefined : moment(values.toDate).format('YYYY-MM-DD'),
-        "cashBonus": values.cashBonus,
+        "cashBonus": (values.cashBonus === undefined || values.cashBonus === null || values.cashBonus === '') ? undefined : (values.cashBonus).replace(normalizedNumber,''),
         "location": values.location,
         "status": values.status,
         "shortDescription": "Deal New",
@@ -198,7 +199,7 @@ export function updateDeal(values,token) {
         "longDescription": "",
         "startDate": values.startDate === undefined ? undefined : moment(values.startDate).format('YYYY-MM-DD'),
         "endDate": values.endDate === undefined ? undefined : moment(values.endDate).format('YYYY-MM-DD'),
-        "cashBonus": values.cashBonus,
+        "cashBonus": (values.cashBonus === undefined || values.cashBonus === null || values.cashBonus === '') ? undefined : (values.cashBonus).replace(normalizedNumber,''),
         "location": values.location,
         "status" : values.status,
     }

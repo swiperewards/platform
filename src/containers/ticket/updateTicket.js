@@ -22,7 +22,7 @@ import Loader from '../../components/loader'
 import { updateTicketType, clearNewTicketTypeResponse } from '../../actions/ticketAction';
 
 //Validation
-import {required, dropDownRequired} from '../../utilities/validation'
+import {required, dropDownRequired, between1to100} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -126,7 +126,7 @@ class UpdateTicket extends Component {
                                     name="ticketTypeName" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required, between1to100]}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">

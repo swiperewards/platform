@@ -19,7 +19,7 @@ import Loader from '../../components/loader'
 import { createTicketType, clearNewTicketTypeResponse } from '../../actions/ticketAction';
 
 //Validation
-import {required} from '../../utilities/validation'
+import {required, between1to100} from '../../utilities/validation'
 
 let errorMessage
 
@@ -109,7 +109,7 @@ class AddNewTicket extends Component {
                                     name="ticketName" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required, between1to100]}
                                 />  
                             </div>
                         </div>

@@ -86,11 +86,11 @@ class ManageUsers extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name === "" && this.state.status === "" && this.state.userType === ""){
-            this.setState({disableReset: true});
+        if(event.target.value !== undefined || event.target.value !== ""){
+            this.setState({disableReset:false});
         }
         else{
-            this.setState({disableReset:false});
+            this.setState({disableReset:true});
         }
     };
 
@@ -313,7 +313,11 @@ class ManageUsers extends Component {
                             (usersList !== undefined) ? (
                             (usersList.length === 0) ? 
                                 (
-                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={7}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
+                                        </TableCell>
+                                    </TableRow>
                                 )
                                 : (
                                 usersList

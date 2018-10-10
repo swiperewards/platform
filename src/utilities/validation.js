@@ -20,6 +20,10 @@ const minimum8 = value => value && !/^.{8,}$/.test(value) ? 'Password must be mi
 
 const between1to100 = value => value && !/^.{1,100}$/.test(value) ? 'This field only accepts characters strings between 1 and 100 characters long' : undefined
 
+const between1to500 = value => value && !/^.{1,500}$/.test(value.replace(normalizedNewline,'')) ? 'This field only accepts characters strings between 1 and 500 characters long' : undefined
+
+const between1to50 = value => value && !/^.{1,50}$/.test(value) ? 'This field only accepts characters strings between 1 and 50 characters long' : undefined
+
 const between5to20 = value => value && !/^.{5,20}$/.test(value) ? 'This field only accepts characters strings between 5 and 20 characters long' : undefined
 
 const exact9 = value => value && !/^.{9,9}$/.test(value.replace(normalizedPhone,'')) ? 'Field should be 9 chatacters long' : undefined
@@ -42,6 +46,8 @@ const drivingLicenseMask = "################";
 
 
 const normalizedPhone = /\D/g;
+const normalizedNewline = /\n/g;
+const normalizedNumber = /,/g;
 
 export {
     required, 
@@ -60,9 +66,12 @@ export {
     exact9, 
     ipAddressMatch,
     between1to100,
+    between1to50,
     between5to20,
     drivingLicense,
     between5to16,
     between5to9,
     dateRequired,
+    normalizedNumber,
+    between1to500,
 }

@@ -23,7 +23,7 @@ import Loader from '../../components/loader'
 import { addNewAdmin } from '../../actions/adminAction';
 
 //Validation
-import {required, dropDownRequired, phoneMask, email, between1to100} from '../../utilities/validation'
+import {required, dropDownRequired, phoneMask, email, between1to100, between1to50} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -44,6 +44,7 @@ class AddAdmin extends Component {
 
     state = {
         image:'',
+        defaultImage:'../images/profile.png',
         dialogOpen: false,
       };
 
@@ -91,12 +92,25 @@ class AddAdmin extends Component {
     };
 
     onImageChange(event) {
+
+        errorMessage = ""
+
         if (event.target.files && event.target.files[0]) {
-            let reader = new FileReader();
-            reader.onload = (e) => {
-                this.setState({image: e.target.result});
-            };
-            reader.readAsDataURL(event.target.files[0]);
+            var FileSize = event.target.files[0].size / 1024 / 1024; // in MB
+            if (FileSize > 2) {
+                errorMessage =
+                        <div 
+                            className="errorDiv"
+                        >{"File size exceeds 2 MB"}</div>
+                        event.target.value = null;
+                        this.setState({image: this.state.defaultImage});
+            } else {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    this.setState({image: e.target.result});
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
         }
     }
 
@@ -139,7 +153,7 @@ class AddAdmin extends Component {
                                     name="adminName" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required,between1to50]}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
@@ -200,7 +214,7 @@ class AddAdmin extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Avatar
                                     alt="profile"
-                                    src={this.state.image === '' ? "../images/profile.png" : this.state.image} 
+                                    src={this.state.image === '' ? this.state.defaultImage : this.state.image} 
                                     className="bigAvatar"
                                 />
                             </div>

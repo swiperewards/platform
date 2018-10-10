@@ -15,7 +15,6 @@ import Button from '@material-ui/core/Button';
 //Components
 import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
-import LocationSearchBar from '../../components/locationSearchBar';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
 import DatePickerControl from '../../components/datePickerControl';
@@ -24,11 +23,13 @@ import DatePickerControl from '../../components/datePickerControl';
 import { addNewDeal, getCitiesList } from '../../actions/dealAction';
 
 //Validation
-import {required, dropDownRequired, dateRequired} from '../../utilities/validation'
+import {required, dropDownRequired, dateRequired, normalizedPhone} from '../../utilities/validation'
 
 //Data
 import moment from 'moment'
 import Data from '../../staticData';
+
+const intMaxRangeMatch = (value) => parseFloat(value.replace(normalizedPhone,'')) > 2147483647 ? 'Invalid pool amount' : undefined;
 
 let errorMessage
 
@@ -206,11 +207,13 @@ class AddNewDeal extends Component {
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
-                                    myType="number" 
+                                    myType="text" 
                                     name="cashBonus" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required, intMaxRangeMatch]}
+                                    masked={true}
+                                    myMaskType="number"
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">

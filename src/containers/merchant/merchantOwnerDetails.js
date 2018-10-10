@@ -16,7 +16,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 //Validation
-import {required, dropDownRequired, email, ssnMask, phoneMask, zipMask, percentage, drivingLicense} from '../../utilities/validation'
+import {required, dropDownRequired, email, ssnMask, phoneMask, zipMask, percentage, drivingLicense, between1to50, between1to100} from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
@@ -89,13 +89,13 @@ const styles = {
                                 First Name*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name={`${member}.ownerFirstName`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field myType="text" name={`${member}.ownerFirstName`} fullWidth={true} component={InputField} validate={[required, between1to50]}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Last Name*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">    
-                                <Field myType="text" name={`${member}.ownerLastName`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field myType="text" name={`${member}.ownerLastName`} fullWidth={true} component={InputField} validate={[required, between1to50]}/>  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -126,7 +126,7 @@ const styles = {
                             Business Title*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name={`${member}.ownerBusinessTitle`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field myType="text" name={`${member}.ownerBusinessTitle`} fullWidth={true} component={InputField} validate={[required, between1to50]}/>  
                             </div>
                             {
                                 businessType !== "0"
@@ -201,7 +201,7 @@ const styles = {
                                 City*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name={`${member}.ownerCity`} fullWidth={true} component={InputField} validate={required}/>  
+                                <Field myType="text" name={`${member}.ownerCity`} fullWidth={true} component={InputField} validate={[required, between1to100]}/>  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 State*

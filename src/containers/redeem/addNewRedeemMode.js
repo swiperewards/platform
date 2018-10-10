@@ -19,7 +19,7 @@ import Loader from '../../components/loader'
 import { createNewRedeemMode, clearCreateRedeemModeResponse } from '../../actions/redeemAction';
 
 //Validation
-import {required} from '../../utilities/validation'
+import {required, between1to100} from '../../utilities/validation'
 
 let errorMessage
 
@@ -73,7 +73,7 @@ const styles = {
                             SubMode { idx+1 }*
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-6">
-                            <Field myType="text" name={`${member}.optionName`} fullWidth={true} component={InputField} validate={required}/>  
+                            <Field myType="text" name={`${member}.optionName`} fullWidth={true} component={InputField} validate={[required, between1to100]}/>  
                         </div>
                     </div>
                  </Paper>
@@ -179,7 +179,7 @@ class AddNewRedeemMode extends Component {
                                     name="modeName" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required, between1to100]}
                                 />  
                             </div>
                         </div>

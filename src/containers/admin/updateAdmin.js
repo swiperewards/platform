@@ -23,7 +23,7 @@ import Loader from '../../components/loader'
 import { updateAdminDetails } from '../../actions/adminAction';
 
 //Validation
-import {required, dropDownRequired, phoneMask, email, between1to100} from '../../utilities/validation'
+import {required, dropDownRequired, phoneMask, email, between1to100, between1to50} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -141,7 +141,7 @@ class updateAdmin extends Component {
                                     name="fullName" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required, between1to50]}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">

@@ -213,7 +213,11 @@ class DealList extends Component {
                             (dealsList !== undefined) ? (
                             (dealsList.length === 0) ? 
                                 (
-                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={7}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
+                                        </TableCell>
+                                    </TableRow>                                
                                 )
                                 : (
                                 dealsList

@@ -44,6 +44,8 @@ import
 //Data
 import Data from '../../staticData';
 
+import {between1to500} from '../../utilities/validation'
+
 const styles = {
     formControl: {
         minWidth: '100%',
@@ -359,6 +361,7 @@ class TicketList extends Component {
                                     name="description" 
                                     fullWidth={true} 
                                     component={TextAreaControl} 
+                                    validate={between1to500}
                                 />
                             </div>
                             {
@@ -369,6 +372,7 @@ class TicketList extends Component {
                                         name="reply" 
                                         fullWidth={true} 
                                         component={TextAreaControl} 
+                                        validate={between1to500}
                                     />
                                 </div> : 
                                     <div className="col-xs-6">
@@ -377,6 +381,7 @@ class TicketList extends Component {
                                         name="feedback" 
                                         fullWidth={true} 
                                         component={TextAreaControl} 
+                                        validate={between1to500}
                                     />
                                 </div>
                             }
@@ -422,7 +427,11 @@ class TicketList extends Component {
                             (ticketList !== undefined) ? (
                             (ticketList.length === 0) ? 
                                 (
-                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={8}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
+                                        </TableCell>
+                                    </TableRow>                                
                                 )
                                 : (
                                 ticketList

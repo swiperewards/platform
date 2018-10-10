@@ -200,7 +200,11 @@ class ManageRedeemModes extends Component {
                             (redeemModeList !== undefined) ? (
                             (redeemModeList.length === 0) ? 
                                 (
-                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={5}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
+                                        </TableCell>
+                                    </TableRow>                                
                                 )
                                 : (
                                 redeemModeList

@@ -250,7 +250,11 @@ class PaymentProcessing extends Component {
                             (merchantList !== undefined) ? (
                             (merchantList.length === 0) ? 
                                 (
-                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={6}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
+                                        </TableCell>
+                                    </TableRow>                                
                                 )
                                 : (
                                 merchantList
@@ -295,7 +299,7 @@ class PaymentProcessing extends Component {
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
+                                colSpan={6}
                                 count={(merchantList !== undefined) ? merchantList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}

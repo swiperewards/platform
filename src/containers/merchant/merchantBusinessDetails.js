@@ -154,7 +154,13 @@ class BusinessDetails extends Component {
                                 DBA - Statement Descriptor
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field myType="text" name="dba" fullWidth={true} component={InputField} />  
+                                <Field 
+                                    myType="text" 
+                                    name="dba" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={between1to100}
+                                    />  
                             </div>
                         </div>
                         <div className="row middle-md">

@@ -1,5 +1,5 @@
 import { hostURL, addMerchantAPI, deleteMerchantAPI, getMerchantsFilterAPI, getMerchantDetailAPI, updateMerchantDetailAPI } from '../app.config';
-import {normalizedPhone} from '../utilities/validation'
+import {normalizedPhone, normalizedNumber} from '../utilities/validation'
 import {encryptData, decryptData} from '../utilities/encryptDecryptData'
 import moment from 'moment'
 
@@ -12,7 +12,7 @@ export function addNewMerchant(values, registeredEmail, token) {
     var requestData = {
         "new": values.isCreditCardYes ? "0" : "1",
         "established": (values.businessPeriod === undefined || values.businessPeriod === null || values.businessPeriod === "") ? undefined : (values.businessPeriod).replace(normalizedPhone,''),
-        "annualCCSales": (values.ccSale === undefined || values.ccSale === null || values.ccSale === '') ? undefined : (values.ccSale).replace(normalizedPhone,''),
+        "annualCCSales": (values.ccSale === undefined || values.ccSale === null || values.ccSale === '') ? undefined : (values.ccSale).replace(normalizedNumber,''),
         "mcc": values.mccNumber,
         "dba": values.dba,
         "status": values.boardingStatus,
@@ -352,7 +352,7 @@ export function updateMerchantDetails(values, screenType, token) {
             "merchantId":values.merchantId,
             "new": values.isCreditCardYes ? "0" : "1",
             "established": (values.businessPeriod === undefined || values.businessPeriod === "" ? undefined : (values.businessPeriod).replace(normalizedPhone,'')), 
-            "annualCCSales": (values.isCreditCardYes === false ? "0" : (values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedPhone,''))),
+            "annualCCSales": (values.isCreditCardYes === false ? "0" : (values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedNumber,''))),
             "dba":values.dba,
             "mcc":values.mccNumber,
             "environment":values.merchantType,

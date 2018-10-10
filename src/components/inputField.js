@@ -69,7 +69,7 @@ class CustomizedInputs extends Component {
               inputRef = {(el) => this.inputElem = el}
               placeholder={this.props.myPlaceHolder}
               id={this.props.id}
-              type={this.props.myType}
+              type={this.props.myType === undefined ? "text" : this.props.myType}
               fullWidth = {this.props.fullWidth}
               width = {this.props.minWidth} 
               customInput={TextField} 
@@ -91,7 +91,7 @@ class CustomizedInputs extends Component {
               inputRef = {(el) => this.inputElem = el}
               placeholder={this.props.myPlaceHolder}
               id={this.props.id}
-              type={this.props.myType}
+              type={this.props.myType === undefined ? "text" : this.props.myType}
               fullWidth = {this.props.fullWidth}
               width = {this.props.minWidth} 
               customInput={TextField} 
@@ -111,7 +111,7 @@ class CustomizedInputs extends Component {
             helperText={this.props.meta.touched ? this.props.meta.error : ''}
             placeholder={this.props.myPlaceHolder}
             id={this.props.id}
-            type={this.props.myType}
+            type={this.props.myType === undefined ? "text" : this.props.myType}
             fullWidth = {this.props.fullWidth}
             width = {this.props.minWidth}
             disabled={this.props.disabled ? true : false}

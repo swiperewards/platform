@@ -40,6 +40,8 @@ import {
     clearApproveRedeemResponse,
 } from '../../actions/redeemAction';
 
+import {between1to500} from '../../utilities/validation'
+
 const styles = {
     formControl: {
         minWidth: '100%',
@@ -291,9 +293,9 @@ class RedeemRequestList extends Component {
                                 {openApproveRequestPopUp ? "APPROVAL" : "REJECTION"}
                             </div>
                         </div>
-                        <div className="row center-xs">
-                            <div className="col-xs-4 start-xs"> 
-                                User Name   
+                        <div className="row middle-xs">
+                            <div className="col-xs-4 end-xs"> 
+                                User Name :  
                             </div>
                             <div className="col-xs-6 start-xs"> 
                                 <Field 
@@ -306,9 +308,9 @@ class RedeemRequestList extends Component {
                                 />
                             </div>
                         </div>   
-                        <div className="row center-xs">
-                            <div className="col-xs-4 start-xs"> 
-                                Amount 
+                        <div className="row middle-xs">
+                            <div className="col-xs-4 end-xs"> 
+                                Amount :
                             </div>
                             <div className="col-xs-6 start-xs"> 
                                 <Field 
@@ -321,9 +323,9 @@ class RedeemRequestList extends Component {
                                     />
                             </div>
                         </div>   
-                        <div className="row center-xs">
-                            <div className="col-xs-4 start-xs"> 
-                                Mode 
+                        <div className="row middle-xs">
+                            <div className="col-xs-4 end-xs"> 
+                                Mode :
                             </div>
                             <div className="col-xs-6 start-xs">
                                 <FormControl style={styles.formControl}>
@@ -350,15 +352,16 @@ class RedeemRequestList extends Component {
                                 </FormControl> 
                             </div>    
                         </div>
-                        <div className="row center-xs">
-                        <div className="col-xs-4 start-xs"> 
-                                Note 
+                        <div className="row middle-xs">
+                        <div className="col-xs-4 end-xs"> 
+                                Note :
                             </div>
                             <div className="col-xs-6 start-xs">
                                 <Field 
                                     name="note" 
                                     fullWidth={true} 
                                     component={TextAreaControl} 
+                                    validate={between1to500}
                                 />
                             </div>
                         </div>
@@ -404,7 +407,11 @@ class RedeemRequestList extends Component {
                             (redeemList !== undefined) ? (
                             (redeemList.length === 0) ? 
                                 (
-                                    <span className="dashboardText"><b>No Record Found</b></span>
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={8}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
+                                        </TableCell>
+                                    </TableRow>
                                 )
                                 : (
                                 redeemList
