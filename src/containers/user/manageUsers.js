@@ -54,6 +54,7 @@ class ManageUsers extends Component {
         dialogOpen: false,
         disableReset: true,
         permissionDisplayBox: false,
+        message:'',
     };
 
     componentWillMount()
@@ -73,6 +74,7 @@ class ManageUsers extends Component {
           
           if(nextProps.deleteUserResponse){
             if(nextProps.deleteUserResponse.status === 200){
+                this.setState({message:nextProps.deleteUserResponse.message});
                 this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
                 this.getAllUsers();
@@ -116,20 +118,20 @@ class ManageUsers extends Component {
         this.getAllUsers();
     }
 
-    deleteUserById = (userId) => {
+    deleteUserById = (userId, inactive) => {
 
         if (this.state.permissionDisplayBox) {
             this.handleClose();
             if(this.props.userData.user.responseData.token){
                 this.setState({showLoader:true})
-                this.props.deleteUser(this.state.userId, this.props.userData.user.responseData.token);
+                this.props.deleteUser(this.state.userId, this.state.inactive, this.props.userData.user.responseData.token);
             }
             else{
                 //#TODO: Handle token expire case here
             }
         }
         else{
-            this.setState({ permissionDisplayBox: true, userId: userId });
+            this.setState({ permissionDisplayBox: true, userId: userId, inactive : inactive });
         }
     }
 
@@ -191,13 +193,13 @@ class ManageUsers extends Component {
             <div>
                 <DialogBox 
                     displayDialogBox={dialogOpen} 
-                    message="User deleted successfully" 
+                    message={this.state.message} 
                     actions={actions} 
                 />
 
                 <DialogBox 
                     displayDialogBox={permissionDisplayBox} 
-                    message="Are you sure to delete user?" 
+                    message="Are you sure to deactivate user?" 
                     actions={permissionActions} 
                 />
             </div> 
@@ -350,11 +352,16 @@ class ManageUsers extends Component {
                                                     <div className="col-xs-6">
                                                         <button 
                                                             type="button" 
-                                                            onClick={() => this.deleteUserById(object.userId)} 
+                                                            onClick={() => this.deleteUserById(object.userId, !object.status)} 
                                                             className="enabledButton"
                                                             style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                             > 
-                                                            <img src="../images/ic_delete.svg" alt="" />
+                                                            {
+                                                                object.status === 0 ?
+                                                                    <img src="../images/switch_off.svg" alt="" />
+                                                                :
+                                                                    <img src="../images/switch_on.svg" alt="" />
+                                                            }
                                                         </button>
                                                     </div>
                                                 </div>

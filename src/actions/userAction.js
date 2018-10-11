@@ -47,9 +47,10 @@ export function getUsersByFilter(name, status, userType, token) {
 
 
 //Function to delete user for selected user Id
-export function deleteUser(userId,token) {
+export function deleteUser(userId, inactive, token) {
     var requestData = {
         "id" : userId,
+        "status" : inactive
     }
     
     var setting = {
