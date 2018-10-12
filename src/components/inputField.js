@@ -1,5 +1,5 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React,{Component} from 'react';
+import NumberFormat from "react-number-format";
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import purple from '@material-ui/core/colors/purple';
@@ -32,11 +32,10 @@ const styles = theme => ({
   bootstrapInput: {
     borderRadius: 1,
     backgroundColor: theme.palette.common.white,
-    border: '1px solid #ced4da',
+    border: '0px solid #ced4da',
     fontSize: 14,
     color:'#000',
     padding: '10px 12px',
-    width: 'calc(100% - 24px)',
     height: '17px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [
@@ -51,43 +50,82 @@ const styles = theme => ({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
-    '&:focus': {
-      borderColor: '#80bdff',
-      boxShadow: '0 0 0 0.1rem rgba(0,123,255,.25)'
-    },
   },
   bootstrapFormLabel: {
     fontSize: 18,
   },
 });
 
-function CustomizedInputs(props) {
-  const { classes } = props;
+class CustomizedInputs extends Component {
+    render(){
+      const { classes } = this.props;
 
-  return (
-      <TextField
-        defaultValue=""
-        label=""
-        id={props.id}
-        type={props.myType}
-        fullWidth = {true}
-        InputProps={{
-          disableUnderline: true,
-          classes: {
-            root: classes.bootstrapRoot,
-            input: classes.bootstrapInput,
-          },
-        }}
-        InputLabelProps={{
-          shrink: false,
-          className: classes.bootstrapFormLabel,
-        }}
-      />
-  );
+      return(
+        this.props.masked ?
+          (this.props.myMaskType === "text" ?
+            <NumberFormat {...this.props.input} 
+              error={this.props.meta.touched ? this.props.meta.invalid : false}
+              helperText={this.props.meta.touched ? this.props.meta.error : ''}
+              inputRef = {(el) => this.inputElem = el}
+              placeholder={this.props.myPlaceHolder}
+              id={this.props.id}
+              type={this.props.myType === undefined ? "text" : this.props.myType}
+              fullWidth = {this.props.fullWidth}
+              width = {this.props.minWidth} 
+              customInput={TextField} 
+              disabled={this.props.disabled ? true : false}
+              InputProps={{
+                disableUnderline: false,
+                classes: {
+                  root: classes.bootstrapRoot,
+                  input: classes.bootstrapInput,
+                },
+              }}
+              format={this.props.maskReg}
+              mask="_"
+            />
+            :
+            <NumberFormat {...this.props.input} 
+              error={this.props.meta.touched ? this.props.meta.invalid : false}
+              helperText={this.props.meta.touched ? this.props.meta.error : ''}
+              inputRef = {(el) => this.inputElem = el}
+              placeholder={this.props.myPlaceHolder}
+              id={this.props.id}
+              type={this.props.myType === undefined ? "text" : this.props.myType}
+              fullWidth = {this.props.fullWidth}
+              width = {this.props.minWidth} 
+              customInput={TextField} 
+              disabled={this.props.disabled ? true : false}
+              InputProps={{
+                disableUnderline: false,
+                classes: {
+                  root: classes.bootstrapRoot,
+                  input: classes.bootstrapInput,
+                },
+              }}
+              thousandSeparator
+            />)
+          :
+          <TextField {...this.props.input}
+            error={this.props.meta.touched ? this.props.meta.invalid : false}
+            helperText={this.props.meta.touched ? this.props.meta.error : ''}
+            placeholder={this.props.myPlaceHolder}
+            id={this.props.id}
+            type={this.props.myType === undefined ? "text" : this.props.myType}
+            fullWidth = {this.props.fullWidth}
+            width = {this.props.minWidth}
+            disabled={this.props.disabled ? true : false}
+            InputProps={{
+              disableUnderline: false,
+              classes: {
+                root: classes.bootstrapRoot,
+                input: classes.bootstrapInput,
+              },
+            }}
+          >
+          </TextField>
+      )
+    }
 }
-
-CustomizedInputs.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(CustomizedInputs);
