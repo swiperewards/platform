@@ -83,7 +83,7 @@ class ForgotPassword extends Component {
     };
 
     onSubmit(values) {
-        errorMessage = undefined
+        errorMessage = ""
 
         this.setState({showLoader:true})
         this.props.forgotPassword(values.email);

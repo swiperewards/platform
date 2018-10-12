@@ -72,6 +72,9 @@ class ManageMerchants extends Component {
                 this.setState({showLoader:false})
                 this.setState({merchantList: nextProps.merchantPayload.responseData})
             }
+            else{
+                this.setState({showLoader:false})
+            }
           }
         
           if(nextProps.merchantDelete){
@@ -80,6 +83,9 @@ class ManageMerchants extends Component {
                 this.setState({ dialogOpen: true });
                 this.setState({message:nextProps.merchantDelete.message});
                 this.getAllMerchants();
+            }
+            else{                
+                this.setState({showLoader:false})
             }
           }
         }
@@ -377,13 +383,14 @@ class ManageMerchants extends Component {
                                     );
                                 })
                                 )
-                                ):(null)
+                                ):(
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={7}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
                             }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={7} />
-                                </TableRow>
-                            )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>

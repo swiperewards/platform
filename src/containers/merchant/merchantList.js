@@ -274,13 +274,14 @@ class MerchantsList extends Component {
                                     );
                                 })
                                 )
-                                ):(null)
+                                ):(
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={6}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
                             }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>

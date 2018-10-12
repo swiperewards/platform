@@ -54,8 +54,7 @@ class ManageDeals extends Component {
         }
 
         if(this.props.userData.user.responseData.role === 'merchant'){
-            const profileMerchantId = this.props.userProfile === undefined ? null : this.props.userProfile.responseData.merchantId
-            if(this.props.userData.user.responseData.token && profileMerchantId === null){
+            if(this.props.userData.user.responseData.token){
                 this.setState({showLoader:true})
                 this.props.getUserProfile(this.props.userData.user.responseData.token);
             }
@@ -74,12 +73,8 @@ class ManageDeals extends Component {
 
           if(nextProps.userProfile){
             this.setState({showLoader:false})
-            if(nextProps.userProfile.status === 200){
-                if(nextProps.userProfile.responseData){
-                    if(nextProps.userProfile.responseData.merchantId === null){
-                        this.setState({showOverlay:true});
-                    }
-                }
+            if(nextProps.userProfile.status === 1092){
+                this.setState({showOverlay:true});
             }
           }
         }

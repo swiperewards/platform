@@ -247,13 +247,14 @@ class ManageTickets extends Component {
                                     );
                                 })
                                 )
-                                ):(null)
+                                ):(
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={5}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
                             }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={5} />
-                                </TableRow>
-                            )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>

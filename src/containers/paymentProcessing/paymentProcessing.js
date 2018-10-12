@@ -53,6 +53,9 @@ class PaymentProcessing extends Component {
                 this.setState({showLoader:false})
                 this.setState({merchantList: nextProps.merchantPayload.responseData})
             }
+            else{
+                this.setState({showLoader:false})
+            }
           }
         
           if(nextProps.merchantDelete){
@@ -251,7 +254,7 @@ class PaymentProcessing extends Component {
                             (merchantList.length === 0) ? 
                                 (
                                     <TableRow style={{ height: 48 * emptyRows }}>
-                                        <TableCell colSpan={6}>
+                                        <TableCell colSpan={7}>
                                             <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
                                         </TableCell>
                                     </TableRow>                                
@@ -288,18 +291,19 @@ class PaymentProcessing extends Component {
                                     );
                                 })
                                 )
-                                ):(null)
+                                ):(
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={7}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
                             }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={6}
+                                colSpan={7}
                                 count={(merchantList !== undefined) ? merchantList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
