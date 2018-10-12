@@ -52,17 +52,18 @@ class ChangePassword extends Component {
 
         if (nextProps) {
             if (nextProps.setPasswordResponse){
-                this.setState({showLoader:false})
                 if (nextProps.setPasswordResponse.status === 200) {
                     errorMessage = undefined
                     this.setState({message:nextProps.setPasswordResponse.message});
                     this.setState({dialogOpen:true})
+                    this.setState({showLoader:false})
                 }
                 else{
                     errorMessage =
                         <div 
                             className="errorDiv"
                         >{nextProps.setPasswordResponse.message}</div>
+                        this.setState({showLoader:false})
                 }
 
                 this.props.clearsetPasswordResponse()

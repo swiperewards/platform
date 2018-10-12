@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import moment from 'moment'
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -15,7 +16,6 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
-import AddIcon from '@material-ui/icons/Add';
 
 //Components
 import TablePaginationActions from '../../components/tableGrid';
@@ -23,12 +23,13 @@ import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getTicketTypes, getTicketTypeDetails, clearGetTicketTypeResponse, deleteTicketType, clearDeleteTicketTypeResponse } from '../../actions/ticketAction';
+import { getDealsListWithFilter, deleteDeal, getDealDetails, getCitiesList } from '../../actions/dealAction';
 
-class ManageTickets extends Component {
+class DealList extends Component {
 
     state = {
-        ticketTypeList:undefined,
+        dealsList:undefined,
+        citiesList:'',
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -38,27 +39,41 @@ class ManageTickets extends Component {
 
     componentWillMount()
     {
-        this.getTicketTypeList();
+        this.props.onRef(this)
+        this.getAllDeals();
+
+        if(this.props.userData.user.responseData.token){
+            this.props.getCitiesList(this.props.userData.user.responseData.token)
+        }
     }
+
+    componentWillUnmount() {
+        this.props.onRef(undefined)
+     }
 
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
-          if (nextProps.ticketTypePayload){
-            if(nextProps.ticketTypePayload.status === 200){
+          if (nextProps.dealsPayload){
+            if(nextProps.dealsPayload.status === 200){
                 this.setState({showLoader:false})
-                this.setState({ticketTypeList: nextProps.ticketTypePayload.responseData})
+                this.setState({dealsList: nextProps.dealsPayload.responseData})
             }
           }
           
-          if(nextProps.deleteTicketResponse){
-            this.setState({showLoader:false})
-            if(nextProps.deleteTicketResponse.status === 200){
+          if(nextProps.dealDelete){
+            if(nextProps.dealDelete.status === 200){
+                this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
-                this.getTicketTypeList();
+                this.getAllDeals();
             }
+          }
 
-            this.props.clearDeleteTicketTypeResponse()
+          if(nextProps.citiesPayload){
+            if(nextProps.citiesPayload.status === 200){
+                this.setState({showLoader:false})
+                this.setState({citiesList:nextProps.citiesPayload.responseData})
+            }
           }
         }
     }
@@ -71,67 +86,89 @@ class ManageTickets extends Component {
         this.setState({ rowsPerPage: event.target.value });
     };
 
-    getTicketTypeList(){
+    getAllDeals(){
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
-            this.props.getTicketTypes(this.props.userData.user.responseData.token)
+            this.props.getDealsListWithFilter(this.props.name, this.props.status, this.props.location, this.props.fromDate, this.props.toDate, this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
         }
     }
 
-    deleteTicketType = (ticketId) => {
+    searchHandler(){
+        this.getAllDeals();
+    }
+
+    deleteDealById = (dealId) => {
 
         if (this.state.permissionDisplayBox) {
             this.handleClose();
             if(this.props.userData.user.responseData.token){
                 this.setState({showLoader:true})
-                this.props.deleteTicketType(this.state.ticketId, this.props.userData.user.responseData.token);
+                this.props.deleteDeal(this.state.dealId, this.props.userData.user.responseData.token);
             }
             else{
                 //#TODO: Handle token expire case here
             }
         }
         else{
-            this.setState({ permissionDisplayBox: true, ticketId: ticketId });
+            this.setState({ permissionDisplayBox: true, dealId: dealId });
         }
     }
 
-    updateTicket = (ticketId) => {
+    updateDeal = (dealId) =>{
 
         if(this.props.userData.user.responseData.token){
-            this.props.getTicketTypeDetails(ticketId, this.props.userData.user.responseData.token)
-            this.props.clearGetTicketTypeResponse()
-            this.props.history.push('/updateTicket')
+            this.setState({showLoader:true})
+            this.props.getDealDetails(dealId, this.props.userData.user.responseData.token)
+            this.props.history.push('/updateDeal')
         }
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
         this.setState({ permissionDisplayBox: false });
+
+        if(this.props.action !== undefined){
+            this.props.action()
+            this.getAllDeals();
+        }
     };
 
-    addNewTicket(){
-        this.props.history.push('/addNewTicket')
+    addNewDeal(){
+        if(this.props.userData.user.responseData.merchantId !== null){
+            this.props.history.push({pathname:'/addNewDeal',state: { detail: this.props.userData.user.responseData.merchantId }})
+        }else{
+            this.props.history.push('/merchantList')
+        }
+    }
+
+    resetHandler(){
+
+        if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
+            this.props.getDealsListWithFilter("", "", "", "", "", this.props.userData.user.responseData.token)
+        }
+    
     }
 
     render() {
 
-        const { ticketTypeList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (ticketTypeList !== undefined ? ticketTypeList.length : 0) - page * rowsPerPage);
+        const { dealsList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (dealsList !== undefined ? dealsList.length : 0) - page * rowsPerPage);
 
         const actions = [
-            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+            <Button key="ok" onClick={this.handleClose.bind(this)} color="primary" autoFocus>
                 OK
             </Button>
         ];
 
         const permissionActions = [
-            <Button key="no" onClick={this.handleClose} color="primary">
+            <Button key="no" onClick={this.handleClose.bind(this)} color="primary">
                 No
             </Button>,
-            <Button key="yes" onClick={this.deleteTicketType} color="primary" autoFocus>
+            <Button key="yes" onClick={this.deleteDealById} color="primary" autoFocus>
                 Yes
             </Button>,
         ];
@@ -144,41 +181,17 @@ class ManageTickets extends Component {
             <div>
                 <DialogBox 
                     displayDialogBox={dialogOpen} 
-                    message="Ticket deleted successfully" 
+                    message="Deal deleted successfully" 
                     actions={actions} 
                 />
+
                 <DialogBox 
                     displayDialogBox={permissionDisplayBox} 
-                    message="Are you sure to delete ticket type?" 
+                    message="Are you sure to delete deal?" 
                     actions={permissionActions} 
                 />
             </div> 
 
-            <div className="row">
-            <div className="col-xs-12">
-            <Paper className="pagePaper">
-                <form size='large' className="form-horizontal">
-                    <div className="row appTitleLabel">
-                        MANAGE TICKET TYPE
-                    </div>
-                    <div className="row middle-md">
-                        <div className="col-xs-12 col-sm-6 col-md-9">
-                            Number of Types : <b>{ticketTypeList !== undefined ? ticketTypeList.length : "0"}</b>
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-3 end-md">
-                            <Button 
-                            variant="fab"
-                            type="button"
-                            color="primary"
-                            onClick={this.addNewTicket.bind(this)}
-                            style={{backgroundColor:'#27A24F'}}
-                            > <AddIcon /></Button> 
-                        </div>
-                    </div>
-                </form>
-            </Paper> 
-            </div>
-            </div>
             <div className="row">
             <div className="col-xs-12">
                     <Paper className="pagePaper">
@@ -187,44 +200,49 @@ class ManageTickets extends Component {
                         <TableHead>
                             <TableRow>
                                 <TableCell numeric>#</TableCell>
-                                <TableCell>Type</TableCell>
+                                <TableCell>Merchant Name</TableCell>
+                                <TableCell>Location</TableCell>
+                                <TableCell>Period</TableCell>
+                                <TableCell>Cashback</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                         { 
-                            (ticketTypeList !== undefined) ? (
-                            (ticketTypeList.length === 0) ? 
+                            (dealsList !== undefined) ? (
+                            (dealsList.length === 0) ? 
                                 (
                                     <TableRow style={{ height: 48 * emptyRows }}>
-                                        <TableCell colSpan={5}>
+                                        <TableCell colSpan={7}>
                                             <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
                                         </TableCell>
-                                    </TableRow>
+                                    </TableRow>                                
                                 )
                                 : (
-                                ticketTypeList
+                                dealsList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
                                     <TableRow className="tableRow" key={object.id}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>{object.ticketTypeName}</TableCell>
+                                        <TableCell>{object.entityName}</TableCell>
+                                        <TableCell>{object.location}</TableCell>
+                                        <TableCell>{moment(object.startDate).format('MM/DD/YYYY') + " - " + moment(object.endDate).format('MM/DD/YYYY')}</TableCell>
+                                        <TableCell>${object.cashBonus}</TableCell>
                                         <TableCell>
                                             <div className={object.status === 0 ? "titleRed" : "titleGreen"}>
-                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Deactive" : "Active"}</FormLabel>
+                                                <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Expired" : "Active"}</FormLabel>
                                             </div>
                                         </TableCell>
                                         <TableCell> 
-
                                             <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
                                                 <div className="col-xs-6">
                                                     <button 
                                                         type="button" 
                                                         disabled={object.inactive_v === 1 ? true : false} 
-                                                        onClick={() => this.updateTicket(object.id)} 
-                                                        className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
+                                                        onClick={() => this.updateDeal(object.id)} 
+                                                        className="enabledButton"
                                                         style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
@@ -233,9 +251,8 @@ class ManageTickets extends Component {
                                                 <div className="col-xs-6">
                                                     <button 
                                                         type="button" 
-                                                        disabled={object.inactive_v === 1 ? true : false}
-                                                        onClick={() => this.deleteTicketType(object.id)} 
-                                                        className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
+                                                        onClick={() => this.deleteDealById(object.id)} 
+                                                        className="enabledButton"
                                                         style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
                                                         > 
                                                         <img src="../images/ic_delete.svg" alt="" />
@@ -251,15 +268,15 @@ class ManageTickets extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={5} />
+                                <TableCell colSpan={7} />
                                 </TableRow>
                             )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={5}
-                                count={(ticketTypeList !== undefined) ? ticketTypeList.length : 0}
+                                colSpan={7}
+                                count={(dealsList !== undefined) ? dealsList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}
@@ -281,16 +298,17 @@ class ManageTickets extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getTicketTypes, getTicketTypeDetails, clearGetTicketTypeResponse, deleteTicketType, clearDeleteTicketTypeResponse }, dispatch)
+    return bindActionCreators({ getDealsListWithFilter, deleteDeal, getDealDetails, getCitiesList }, dispatch)
   }
   
-  ManageTickets = connect(
+  DealList = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
-      ticketTypePayload: state.ticket.ticketTypeList === undefined ? undefined : state.ticket.ticketTypeList,
-      deleteTicketResponse: state.ticket.deleteTicketType === undefined ? undefined : state.ticket.deleteTicketType
+      dealsPayload: state.deal.dealList === undefined ? undefined : state.deal.dealList,
+      dealDelete: state.deal.deleteDeal === undefined ? undefined : state.deal.deleteDeal,
+      citiesPayload: state.deal.citiesList === undefined ? undefined : state.deal.citiesList,
     }),
     mapDispatchToProps,
-  )(ManageTickets)
+  )(DealList)
   
-  export default reduxForm({form: 'FrmManageTickets'})(ManageTickets)
+  export default reduxForm({form: 'FrmDealList'})(DealList)

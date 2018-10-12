@@ -8,31 +8,17 @@ import { bindActionCreators } from 'redux';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import Button from '@material-ui/core/Button';
-import FormLabel from '@material-ui/core/FormLabel';
 
 //Components
 import InputField from '../../components/inputField';
-import TablePaginationActions from '../../components/tableGrid';
 import {renderSelectField} from '../../components/selectControl';
-import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
+import RedeemRequestList from '../../containers/redemption/redeemRequestList'
 
 //Actions
 import { 
     getRedeemRequestList, 
-    getRedeemRequestDetails, 
-    updateRedeemRequest, 
-    rejectRedeemRequest,
     getRedeemModeList,
-    clearRejectRedeemResponse,
 } from '../../actions/redeemAction';
 
 //Data
@@ -59,45 +45,12 @@ class ManageRedemption extends Component {
         redeemList:'',
         redeemSummary:'',
         redeemModeList:'',
-        errorMessage:'',
-        page: 0,
-        rowsPerPage: 5,
-        dialogOpen: false,
-        disableReset: true,
-        permissionDisplayBox: false,
     };
-
-    //Get status text based on status value 
-    statusText(status) {
-        switch(status) {
-          case 2:
-            return "Approved";
-          case 1:
-            return "Pending";  
-          case 3:
-            return "Rejected";
-          default:
-            return "Pending";
-        }
-      }
-
-    //Get status color based on status value 
-    statusColor(status) {
-        switch(status) {
-          case 2:
-            return "titleGreen";
-          case 1:
-            return "titleOrange";  
-          case 3:
-            return "titleRed";
-          default:
-            return "titleOrange";
-        }
-      }
 
     componentWillMount()
     {
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getRedeemModeList(this.props.userData.user.responseData.token)
         }
 
@@ -110,25 +63,20 @@ class ManageRedemption extends Component {
 
           if (nextProps.redeemRequestPayload){
             if(nextProps.redeemRequestPayload.status === 200){
-                this.setState({redeemList: nextProps.redeemRequestPayload.responseData.redeemRequests})
-                this.setState({redeemSummary: nextProps.redeemRequestPayload.responseData.summary})
+                if(nextProps.redeemRequestPayload.responseData){
+                    this.setState({showLoader:false})
+                    this.setState({redeemList: nextProps.redeemRequestPayload.responseData.redeemRequests})
+                    this.setState({redeemSummary: nextProps.redeemRequestPayload.responseData.summary})
+                }
             }
           }
 
           if (nextProps.redeemModePayload){
             if(nextProps.redeemModePayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({redeemModeList: nextProps.redeemModePayload.responseData})
             }
           }
-
-          if (nextProps.rejectRedeemPayload){
-            this.setState({showLoader:false})
-            this.setState({ dialogOpen: true });
-            this.setState({errorMessage: nextProps.rejectRedeemPayload.message})
-            this.props.clearRejectRedeemResponse();
-            this.getAllRedeemRequests();
-          }
-
         }
     }
 
@@ -136,24 +84,17 @@ class ManageRedemption extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name === "" && this.state.status === "" && this.state.mode === ""){
-            this.setState({disableReset: true});
-        }
-        else{
+        if(event.target.value !== undefined || event.target.value !== ""){
             this.setState({disableReset:false});
         }
-    };
-
-    handleChangePage = (event, page) => {
-        this.setState({ page });
-    };
-    
-    handleChangeRowsPerPage = event => {
-        this.setState({ rowsPerPage: event.target.value });
+        else{
+            this.setState({disableReset:true});
+        }
     };
 
     getAllRedeemRequests(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getRedeemRequestList(this.state.name, this.state.status, this.state.mode, this.state.fromDate, this.state.toDate, this.props.userData.user.responseData.token)
         }
         else{
@@ -162,29 +103,7 @@ class ManageRedemption extends Component {
     }
 
     onHandleSearch(){
-        this.getAllRedeemRequests();
-    }
-
-    handleClose = () => {
-        this.setState({ dialogOpen: false });
-        this.setState({ permissionDisplayBox: false });
-    };
-
-    rejectRedeemRequestById = (redeemId) => {
-
-        if (this.state.permissionDisplayBox) {
-            this.handleClose();
-            if(this.props.userData.user.responseData.token){
-                this.setState({showLoader:true})
-                this.props.rejectRedeemRequest(this.state.redeemId, this.props.userData.user.responseData.token);
-            }
-            else{
-                //#TODO: Handle token expire case here
-            }
-        }
-        else{
-            this.setState({ permissionDisplayBox: true, redeemId: redeemId });
-        }
+        this.child.searchHandler();
     }
 
     onHandleReset(){
@@ -195,256 +114,144 @@ class ManageRedemption extends Component {
         this.setState({toDate:''});
         this.setState({disableReset:true});
         this.props.reset();
-
-        if(this.props.userData.user.responseData.token){
-            this.props.getRedeemRequestList("", "", "", "", "", this.props.userData.user.responseData.token)
-        }
-    
+        this.child.resetHandler();
     }
 
     render() {
-        const { redeemList, rowsPerPage, page, dialogOpen, permissionDisplayBox, errorMessage } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, redeemList.length - page * rowsPerPage);
-
-        const actions = [
-            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
-                OK
-            </Button>
-        ];
-
-        const permissionActions = [
-            <Button key="no" onClick={this.handleClose} color="primary">
-                No
-            </Button>,
-            <Button key="yes" onClick={this.rejectRedeemRequestById} color="primary" autoFocus>
-                Yes
-            </Button>,
-        ];
-
         return (
           <div className="row">
             <div className="col-xs-12">
             <Loader status={this.state.showLoader} />
 
-            <div>
-                <DialogBox 
-                    displayDialogBox={dialogOpen} 
-                    message={errorMessage} 
-                    actions={actions} 
-                />
-            </div> 
-
-            <DialogBox 
-                    displayDialogBox={permissionDisplayBox} 
-                    message="Are you sure to reject redeem request?" 
-                    actions={permissionActions} 
-                />
-
             <div className="row">
             <div className="col-xs-12">
             <Paper className="pagePaper">
-                <form size='large' className="form-horizontal">
-                    <div className="row appTitleLabel">
-                        REDEEM REQUESTS
+                <div className="row appTitleLabel">
+                    REDEEM REQUESTS
+                </div>
+                <div className="row middle-md">
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        Pending : &nbsp; <span style={{color:"#E77F25"}}><b>{this.state.redeemSummary.pending === undefined ? "0" : this.state.redeemSummary.pending}</b></span>
                     </div>
-                    <div className="row middle-md">
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            Pending : &nbsp; <span style={{color:"#E77F25"}}><b>{this.state.redeemSummary.pending}</b></span>
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            Approved : &nbsp; <span style={{color:"#2EC55D"}}><b>{this.state.redeemSummary.approved}</b></span>
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            Rejected : &nbsp; <span style={{color:"#DE3630"}}><b>{this.state.redeemSummary.rejected}</b></span>
-                        </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        Approved : &nbsp; <span style={{color:"#2EC55D"}}><b>{this.state.redeemSummary.approved === undefined ? "0" : this.state.redeemSummary.approved}</b></span>
+                    </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        Rejected : &nbsp; <span style={{color:"#DE3630"}}><b>{this.state.redeemSummary.rejected === undefined ? "0" : this.state.redeemSummary.rejected}</b></span>
+                    </div>
+                </div>    
+                <div className="row middle-md">
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <Field 
+                        type="text"
+                        name="name" 
+                        myPlaceHolder="Name" 
+                        fullWidth={true} 
+                        component={InputField} 
+                        onChange={this.handleChange}
+                        />
+                    </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <FormControl style={styles.formControl}>
+                            <Field
+                                name="status"
+                                component={renderSelectField}
+                                fullWidth={true}
+                                onChange={this.handleChange}
+                                displayEmpty
+                                >
+                                <MenuItem value="" disabled>
+                                    Status
+                                </MenuItem>
+                                {
+                                Data.redeemStatus.map((item) =>{
+                                    return <MenuItem 
+                                        style={styles.selectControl}
+                                        key={item.id}
+                                        value={item.id}>
+                                        {item.name}
+                                    </MenuItem>
+                                })
+                                }
+                            </Field>    
+                        </FormControl>  
+                    </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <FormControl style={styles.formControl}>
+                            <Field
+                                name="mode"
+                                component={renderSelectField}
+                                fullWidth={true}
+                                onChange={this.handleChange}
+                                displayEmpty
+                                >
+                                <MenuItem value="" disabled>
+                                    Mode
+                                </MenuItem>
+                                {
+                                    this.state.redeemModeList ?
+                                        this.state.redeemModeList.map((item) =>{
+                                            return <MenuItem 
+                                                style={styles.selectControl}
+                                                key={item.modeId}
+                                                value={item.mode}>
+                                                {item.mode}
+                                            </MenuItem>
+                                        })
+                                    : null    
+                                }
+                            </Field>    
+                        </FormControl>  
                     </div>    
-                    <div className="row middle-md">
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <Field 
-                            type="text"
-                            name="name" 
-                            myPlaceHolder="Name" 
-                            fullWidth={true} 
-                            component={InputField} 
-                            onChange={this.handleChange}
-                            />
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="status"
-                                    component={renderSelectField}
-                                    fullWidth={true}
-                                    onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Status
-                                    </MenuItem>
-                                    {
-                                    Data.redeemStatus.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.id}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
-                                    }
-                                </Field>    
-                            </FormControl>  
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="mode"
-                                    component={renderSelectField}
-                                    fullWidth={true}
-                                    onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Mode
-                                    </MenuItem>
-                                    {
-                                        this.state.redeemModeList ?
-                                            this.state.redeemModeList.map((item) =>{
-                                                return <MenuItem 
-                                                    style={styles.selectControl}
-                                                    key={item.modeId}
-                                                    value={item.mode}>
-                                                    {item.mode}
-                                                </MenuItem>
-                                            })
-                                        : null    
-                                    }
-                                </Field>    
-                            </FormControl>  
-                        </div>    
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <Field 
-                            myType="date"
-                            name="fromDate" 
-                            fullWidth={true} 
-                            component={InputField} 
-                            onChange={this.handleChange}
-                            />
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <Field 
-                            myType="date"
-                            name="toDate" 
-                            myPlaceHolder="To Date" 
-                            fullWidth={true} 
-                            component={InputField} 
-                            onChange={this.handleChange}
-                            />
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <button 
-                                type="button"
-                                onClick={this.onHandleReset.bind(this)}
-                                style={{backgroundColor:'#BCBCBC'}}
-                                disabled={this.state.disableReset}
-                                className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
-                                > Reset
-                            </button>
-                            <button 
-                                type="button"
-                                onClick={this.onHandleSearch.bind(this)}
-                                className="button"
-                                > Search
-                            </button> 
-                        </div>       
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <Field 
+                        myType="date"
+                        name="fromDate" 
+                        fullWidth={true} 
+                        component={InputField} 
+                        onChange={this.handleChange}
+                        />
                     </div>
-                </form>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <Field 
+                        myType="date"
+                        name="toDate" 
+                        myPlaceHolder="To Date" 
+                        fullWidth={true} 
+                        component={InputField} 
+                        onChange={this.handleChange}
+                        />
+                    </div>
+                    <div className="col-xs-12 col-sm-6 col-md-2">
+                        <button 
+                            type="button"
+                            onClick={this.onHandleReset.bind(this)}
+                            style={{backgroundColor:'#BCBCBC'}}
+                            disabled={this.state.disableReset}
+                            className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
+                            > Reset
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={this.onHandleSearch.bind(this)}
+                            className="button"
+                            > Search
+                        </button> 
+                    </div>       
+                </div>
             </Paper> 
             </div>
             </div>
 
-            <div className="row">
-            <div className="col-xs-12">
-                    <Paper className="pagePaper">
-                    <div className="tableWrapperMaterial">
-                    <Table className="tableMaterial">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell numeric>#</TableCell>
-                                <TableCell>User Name</TableCell>
-                                <TableCell>Email Address</TableCell>
-                                <TableCell>Amount</TableCell>
-                                <TableCell>Mode</TableCell>
-                                <TableCell>Transaction No</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                        { 
-                            (redeemList !== "") ? (
-                            (redeemList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
-                                : (
-                                redeemList
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((object, index) => {
-                                    return (
-                                    <TableRow className="tableRow" key={object.serial_number}>
-                                        <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>{object.fullName}</TableCell>
-                                        <TableCell>{object.emailId}</TableCell>
-                                        <TableCell>$ {object.amount}</TableCell>
-                                        <TableCell>{object.mode}</TableCell>
-                                        <TableCell>{object.transactionNumber}</TableCell>
-                                        <TableCell>
-                                            <div className={this.statusColor(object.status)}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{this.statusText(object.status)}</FormLabel></div>
-                                        </TableCell>
-                                        <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={true} onClick={() => this.manageTicket(object.id)} className="disabledButton"> 
-                                                        <img src="../images/ic_approve.svg" alt="" /> 
-                                                    </button>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={true} onClick={() => this.rejectRedeemRequestById(object.id)} className="disabledButton"> 
-                                                        <img src="../images/ic_reject.svg" alt="" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </TableCell>    
-                                    </TableRow>
-                                    );
-                                })
-                                )
-                                ):(null)
-                            }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={8} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                colSpan={3}
-                                count={redeemList.length}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onChangePage={this.handleChangePage}
-                                onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                                ActionsComponent={TablePaginationActions}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                    </div>
-                </Paper>
-              </div>
-            </div>   
+            <RedeemRequestList 
+                name={this.state.name}
+                status={this.state.status}
+                mode={this.state.mode}
+                fromDate={this.state.fromDate}
+                toDate={this.state.toDate}
+                onRef={ref => (this.child = ref)} 
+            />
+
         </div> 
         </div>
         );
@@ -455,11 +262,7 @@ class ManageRedemption extends Component {
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({  
         getRedeemRequestList, 
-        getRedeemRequestDetails, 
-        updateRedeemRequest, 
-        rejectRedeemRequest, 
         getRedeemModeList,
-        clearRejectRedeemResponse,
     }, dispatch)
   }
   
@@ -468,7 +271,6 @@ const mapDispatchToProps = (dispatch) => {
       userData: state.account === undefined ? undefined : state.account,
       redeemRequestPayload: state.redeem.redeemRequestList === undefined ? undefined : state.redeem.redeemRequestList,
       redeemModePayload: state.redeem.redeemModeList === undefined ? undefined : state.redeem.redeemModeList,
-      rejectRedeemPayload: state.redeem.rejectRedeemRequest === undefined ? undefined : state.redeem.rejectRedeemRequest,
     }),
     mapDispatchToProps,
   )(ManageRedemption)

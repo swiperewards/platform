@@ -1,5 +1,6 @@
 import { hostURL, addMerchantAPI, deleteMerchantAPI, getMerchantsFilterAPI, getMerchantDetailAPI, updateMerchantDetailAPI } from '../app.config';
-import {normalizedPhone} from '../utilities/validation'
+import {normalizedPhone, normalizedNumber} from '../utilities/validation'
+import {encryptData, decryptData} from '../utilities/encryptDecryptData'
 import moment from 'moment'
 
 var axios = require('axios');
@@ -8,70 +9,71 @@ var axios = require('axios');
 export function addNewMerchant(values, registeredEmail, token) {
 
     var acceptanceDateTime = moment().format('YYYYMMDDHHMM')
+    var requestData = {
+        "new": values.isCreditCardYes ? "0" : "1",
+        "established": (values.businessPeriod === undefined || values.businessPeriod === null || values.businessPeriod === "") ? undefined : (values.businessPeriod).replace(normalizedPhone,''),
+        "annualCCSales": (values.ccSale === undefined || values.ccSale === null || values.ccSale === '') ? undefined : (values.ccSale).replace(normalizedNumber,''),
+        "mcc": values.mccNumber,
+        "dba": values.dba,
+        "status": values.boardingStatus,
+        "entityType": values.businessType,
+        "entityName": values.businessName === undefined ? (values.owners[0].ownerFirstName + ' ' + values.owners[0].ownerLastName) : values.businessName,
+        "entityEnvironment":values.merchantType,
+        "entityAddress1": values.businessAddress,
+        "entityAddress2":values.businessAddress2,
+        "entityCity": values.businessCity,
+        "entityState": values.businessStateName,
+        "entityZip": (values.businessZip === undefined || values.businessZip === null || values.businessZip === '') ? undefined : (values.businessZip).replace(normalizedPhone,''),
+        "entityCountry": "USA",
+        "entityPhone": (values.businessPhone === undefined || values.businessPhone === null || values.businessPhone === '') ? undefined : (values.businessPhone).replace(normalizedPhone,''),
+        "entityCustomerPhone":(values.servicePhone === undefined || values.servicePhone === null || values.servicePhone === '') ? undefined : (values.servicePhone).replace(normalizedPhone,''),
+        "entityFax": (values.businessFax === undefined || values.businessFax === null || values.businessFax === '') ? undefined : (values.businessFax).replace(normalizedPhone,''),
+        "entityEmail": values.businessEmail,
+        "entityEin": (values.taxId === undefined || values.taxId === null || values.taxId === '') ? undefined : (values.taxId).replace(normalizedPhone,''),
+        "entityPublic": values.publicCompany,
+        "entityWebsite": values.businessWebsite,
+        "registeredWithNouvo": registeredEmail !== undefined ? true : false,
+        "registeredEmail": registeredEmail !== undefined ? registeredEmail : undefined,
+        "entityaccounts": [{
+            "primary": "1",
+            "accountMethod": values.bankAccountType,
+            "accountNumber": values.accountNumber,
+            "accountRouting": values.routeNumber
+        }],
 
+        "entityTcAcceptDate": acceptanceDateTime,
+        "entityTcAcceptIp":values.ipAddress,
+
+        "members": 
+            values.owners.map((owner,index)=>(
+            {
+                "title": owner.ownerBusinessTitle,
+                "first": owner.ownerFirstName,
+                "last": owner.ownerLastName,
+                "dob": (owner.ownerDob === undefined || owner.ownerDob === null || owner.ownerDob === '') ? undefined : (owner.ownerDob).replace(normalizedPhone,''),
+                "ownership": values.businessType !== "0" ? (parseFloat(owner.ownership)) * 100 : (parseFloat("100")) * 100,
+                "email":owner.ownerEmail,
+                "ssn":(owner.ownerSsn === undefined || owner.ownerSsn === null || owner.ownerSsn === '') ? undefined : (owner.ownerSsn).replace(normalizedPhone,''),
+                "address1":owner.ownerAddress,
+                "address2":owner.ownerAddress2,
+                "city":owner.ownerCity,	
+                "state":owner.ownerState,
+                "zip":(owner.ownerZip === undefined || owner.ownerZip === null || owner.ownerZip === '') ? undefined : (owner.ownerZip).replace(normalizedPhone,''),
+                "country":"USA",
+                "timezone":"est",
+                "dl":owner.ownerDrivingLicense,
+                "dlstate":owner.ownerDlState,
+                "primary":index === 0 ? "1" : "0",
+                "phone":(owner.ownerPhone === undefined || owner.ownerPhone === null || owner.ownerPhone === '') ? undefined : (owner.ownerPhone).replace(normalizedPhone,''),
+            }
+            ))
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + addMerchantAPI,
         data: {
-	        "requestData":{
-		        "new": values.isCreditCardYes ? "0" : "1",
-                "established": (values.businessPeriod === undefined || values.businessPeriod === null || values.businessPeriod === "") ? undefined : (values.businessPeriod).replace(normalizedPhone,''),
-                "annualCCSales": (values.ccSale === undefined || values.ccSale === null || values.ccSale === '') ? undefined : (values.ccSale).replace(normalizedPhone,''),
-                "mcc": values.mccNumber,
-                "dba": values.dba,
-                "status": values.boardingStatus,
-                "entityType": values.businessType,
-                "entityName": values.businessName === undefined ? (values.owners[0].ownerFirstName + ' ' + values.owners[0].ownerLastName) : values.businessName,
-                "entityEnvironment":values.merchantType,
-                "entityAddress1": values.businessAddress,
-                "entityAddress2":values.businessAddress2,
-                "entityCity": values.businessCity,
-                "entityState": values.businessStateName,
-                "entityZip": (values.businessZip === undefined || values.businessZip === null || values.businessZip === '') ? undefined : (values.businessZip).replace(normalizedPhone,''),
-                "entityCountry": "USA",
-                "entityPhone": (values.businessPhone === undefined || values.businessPhone === null || values.businessPhone === '') ? undefined : (values.businessPhone).replace(normalizedPhone,''),
-                "entityCustomerPhone":(values.servicePhone === undefined || values.servicePhone === null || values.servicePhone === '') ? undefined : (values.servicePhone).replace(normalizedPhone,''),
-                "entityFax": (values.businessFax === undefined || values.businessFax === null || values.businessFax === '') ? undefined : (values.businessFax).replace(normalizedPhone,''),
-                "entityEmail": values.businessEmail,
-                "entityEin": (values.taxId === undefined || values.taxId === null || values.taxId === '') ? undefined : (values.taxId).replace(normalizedPhone,''),
-                "entityPublic": values.publicCompany,
-                "entityWebsite": values.businessWebsite,
-                "registeredWithNouvo": registeredEmail !== undefined ? true : false,
-                "registeredEmail": registeredEmail !== undefined ? registeredEmail : undefined,
-                "entityaccounts": [{
-                    "primary": "1",
-                    "accountMethod": values.bankAccountType,
-                    "accountNumber": values.accountNumber,
-                    "accountRouting": values.routeNumber
-                }],
-		
-                "entityTcAcceptDate": acceptanceDateTime,
-                "entityTcAcceptIp":values.ipAddress,
-
-                "members": 
-                    values.owners.map((owner,index)=>(
-                    {
-                        "title": owner.ownerBusinessTitle,
-                        "first": owner.ownerFirstName,
-                        "last": owner.ownerLastName,
-                        "dob": (owner.ownerDob === undefined || owner.ownerDob === null || owner.ownerDob === '') ? undefined : (owner.ownerDob).replace(normalizedPhone,''),
-                        "ownership": values.businessType !== "0" ? (parseFloat(owner.ownership)) * 100 : (parseFloat("100")) * 100,
-                        "email":owner.ownerEmail,
-                        "ssn":(owner.ownerSsn === undefined || owner.ownerSsn === null || owner.ownerSsn === '') ? undefined : (owner.ownerSsn).replace(normalizedPhone,''),
-                        "address1":owner.ownerAddress,
-                        "address2":owner.ownerAddress2,
-                        "city":owner.ownerCity,	
-                        "state":owner.ownerState,
-                        "zip":(owner.ownerZip === undefined || owner.ownerZip === null || owner.ownerZip === '') ? undefined : (owner.ownerZip).replace(normalizedPhone,''),
-                        "country":"USA",
-                        "timezone":"est",
-                        "dl":owner.ownerDrivingLicense,
-                        "dlstate":owner.ownerDlState,
-                        "primary":index === 0 ? "1" : "0",
-                        "phone":(owner.ownerPhone === undefined || owner.ownerPhone === null || owner.ownerPhone === '') ? undefined : (owner.ownerPhone).replace(normalizedPhone,''),
-                    }
-                    ))
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -80,7 +82,10 @@ export function addNewMerchant(values, registeredEmail, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -112,16 +117,17 @@ export function clearMerchantUpdateState() {
 
 //Function to delete merchant from splash payment system
 export function deleteMerchant(merchantId, inactive, token) {
-
+    var requestData = {
+        "merchantId" : merchantId,
+        "inactive" : inactive === true ? "1" : "0"
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + deleteMerchantAPI,
         data: {
             "platform": 'Web',
-	        "requestData":{
-                "merchantId" : merchantId,
-                "inactive" : inactive === true ? "1" : "0"
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -130,7 +136,10 @@ export function deleteMerchant(merchantId, inactive, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -147,17 +156,18 @@ export function deleteMerchant(merchantId, inactive, token) {
 
 //Function to fetch list of all merchants from splash payment system
 export function getMerchantListWithFilter(name, inactive, statePrefix, token) {
-
+    var requestData = {
+        "nameFilter" : name === undefined ? "" : name,
+        "inactiveFilter" : inactive === undefined ? "" : inactive,
+        "stateFilter": statePrefix === undefined ? "" : statePrefix
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + getMerchantsFilterAPI,
         data: {
             "platform": 'Web',
-	        "requestData":{
-                "nameFilter" : name === undefined ? "" : name,
-                "inactiveFilter" : inactive === undefined ? "" : inactive,
-                "stateFilter": statePrefix === undefined ? "" : statePrefix
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -166,7 +176,10 @@ export function getMerchantListWithFilter(name, inactive, statePrefix, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -183,15 +196,16 @@ export function getMerchantListWithFilter(name, inactive, statePrefix, token) {
 
 //Function to get merchant details from splash payment system
 export function getMerchantDetailsAPI(merchantId,token) {
+    var requestData = {
+        "merchantId" : merchantId,
+    }
 
     var setting = {
         method: 'post',
         url: hostURL + getMerchantDetailAPI,
         data: {
             "platform": 'Web',
-	        "requestData":{
-                "merchantId" : merchantId,
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -202,6 +216,7 @@ export function getMerchantDetailsAPI(merchantId,token) {
     var response = axios(setting).then(
         response => 
         {
+            response.data.responseData = decryptData(response.data.responseData)
             var responseDetails = response.data.responseData
             var output ={
                 "message": response.data.message,
@@ -285,92 +300,93 @@ export function getMerchantDetailsAPI(merchantId,token) {
 export function updateMerchantDetails(values, screenType, token) {
 
     var acceptanceDateTime = moment().format('YYYYMMDDHHMM')
+    var requestData = {
+        "accountData": {
+            "accountId": values.accountId,
+            "account": {
+                "method": values.bankAccountType,
+                "number": values.accountNumber,
+                "routing": values.routeNumber
+            },
+            "isRecordUpdated":screenType === "bankAccount" ? "1" : "0"
+        },
+        "memberData":
+            values.owners !== undefined 
+            ?
+                (
+                    values.owners.map((owner)=>(
+                        {
+                            "merchant":owner.merchantId,
+                            "memberId":owner.memberId,
+                            "title": owner.ownerBusinessTitle,
+                            "first": owner.ownerFirstName,
+                            "last": owner.ownerLastName,
+                            "dob": (owner.ownerDob === undefined ? undefined : (owner.ownerDob).replace(normalizedPhone,'')),
+                            "ownership": (parseFloat(owner.ownership)) * 100,
+                            "email":owner.ownerEmail,
+                            "ssn":(owner.ownerSsn === undefined ? undefined : (owner.ownerSsn).replace(normalizedPhone,'')),
+                            "address1":owner.ownerAddress,
+                            "address2":owner.ownerAddress2,
+                            "city":owner.ownerCity,	
+                            "state":owner.ownerState,
+                            "zip":(owner.ownerZip === undefined ? undefined : (owner.ownerZip).replace(normalizedPhone,'')),
+                            "country":"USA",
+                            "timezone":"est",
+                            "dl":owner.ownerDrivingLicense,
+                            "dlstate":owner.ownerDlState,
+                            "phone":(owner.ownerPhone === undefined ? undefined : (owner.ownerPhone).replace(normalizedPhone,'')),
+                            "isRecordUpdated":screenType === "memberDetails" ? "1" : "0",
+                            "isNewRecord":  "0"
+                        }
+                    )
+                )
+            )
+            :
+            (
+                [{
+                    "isRecordUpdated":screenType === "memberDetails" ? "1" : "0",
+                    "isNewRecord":  "0"
+                }]
+            ),
+        "merchantData": {
+            "merchantId":values.merchantId,
+            "new": values.isCreditCardYes ? "0" : "1",
+            "established": (values.businessPeriod === undefined || values.businessPeriod === "" ? undefined : (values.businessPeriod).replace(normalizedPhone,'')), 
+            "annualCCSales": (values.isCreditCardYes === false ? "0" : (values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedNumber,''))),
+            "dba":values.dba,
+            "mcc":values.mccNumber,
+            "environment":values.merchantType,
+            "status":values.boardingStatus === "2" ? undefined : values.boardingStatus,
+            "isRecordUpdated": screenType === "businessDetails" ? "1" : "0"
+        },
+        "entityData": {
+            "entityId": values.entityId,
+            "type": values.businessType,
+            "name": values.businessName === undefined ? (values.owners[0].ownerFirstName + ' ' + values.owners[0].ownerLastName) : values.businessName,
+            "address1": values.businessAddress,
+            "address2": values.businessAddress2,
+            "city": values.businessCity,
+            "state": values.businessStateName,
+            "zip": values.businessZip === undefined ? undefined : (values.businessZip).replace(normalizedPhone,''),
+            "phone": values.businessPhone === undefined ? undefined : (values.businessPhone).replace(normalizedPhone,''),
+            "fax":  values.businessFax === undefined || values.businessFax === null ? undefined : (values.businessFax).replace(normalizedPhone,''),
+            "email": values.businessEmail,
+            "website": values.businessWebsite,
+            "ein": values.taxId === undefined ? undefined : (values.taxId).replace(normalizedPhone,''),
+            "public": values.publicCompany,
+            "customerPhone": values.servicePhone === undefined || values.servicePhone === null ? undefined : (values.servicePhone).replace(normalizedPhone,''),
+            "tcAcceptDate": acceptanceDateTime,
+            "tcAcceptIp": values.ipAddress,
+            "merchantType":values.merchantType,
+            "isRecordUpdated":screenType === "businessDetails" ? "1" : "0",
+        }
+    }
 
     var setting = {
         method: 'post',
         url: hostURL + updateMerchantDetailAPI,
         data: {
-	        "requestData":{
-		        "accountData": {
-                    "accountId": values.accountId,
-                    "account": {
-                        "method": values.bankAccountType,
-                        "number": values.accountNumber,
-                        "routing": values.routeNumber
-                    },
-                    "isRecordUpdated":screenType === "bankAccount" ? "1" : "0"
-                },
-                "memberData":
-                    values.owners !== undefined 
-                    ?
-                        (
-                            values.owners.map((owner)=>(
-                                {
-                                    "merchant":owner.merchantId,
-                                    "memberId":owner.memberId,
-                                    "title": owner.ownerBusinessTitle,
-                                    "first": owner.ownerFirstName,
-                                    "last": owner.ownerLastName,
-                                    "dob": (owner.ownerDob === undefined ? undefined : (owner.ownerDob).replace(normalizedPhone,'')),
-                                    "ownership": (parseFloat(owner.ownership)) * 100,
-                                    "email":owner.ownerEmail,
-                                    "ssn":(owner.ownerSsn === undefined ? undefined : (owner.ownerSsn).replace(normalizedPhone,'')),
-                                    "address1":owner.ownerAddress,
-                                    "address2":owner.ownerAddress2,
-                                    "city":owner.ownerCity,	
-                                    "state":owner.ownerState,
-                                    "zip":(owner.ownerZip === undefined ? undefined : (owner.ownerZip).replace(normalizedPhone,'')),
-                                    "country":"USA",
-                                    "timezone":"est",
-                                    "dl":owner.ownerDrivingLicense,
-                                    "dlstate":owner.ownerDlState,
-                                    "phone":(owner.ownerPhone === undefined ? undefined : (owner.ownerPhone).replace(normalizedPhone,'')),
-                                    "isRecordUpdated":screenType === "memberDetails" ? "1" : "0",
-                                    "isNewRecord":  "0"
-                                }
-                            )
-                        )
-                    )
-                    :
-                    (
-                        [{
-                            "isRecordUpdated":screenType === "memberDetails" ? "1" : "0",
-                            "isNewRecord":  "0"
-                        }]
-                    ),
-                "merchantData": {
-                    "merchantId":values.merchantId,
-                    "new": values.isCreditCardYes ? "0" : "1",
-                    "established": (values.businessPeriod === undefined || values.businessPeriod === "" ? undefined : (values.businessPeriod).replace(normalizedPhone,'')), 
-                    "annualCCSales": (values.isCreditCardYes === false ? "0" : (values.ccSale === undefined ? undefined : (values.ccSale).replace(normalizedPhone,''))),
-                    "dba":values.dba,
-                    "mcc":values.mccNumber,
-                    "environment":values.merchantType,
-                    "status":values.boardingStatus === "2" ? undefined : values.boardingStatus,
-                    "isRecordUpdated": screenType === "businessDetails" ? "1" : "0"
-                },
-                "entityData": {
-                    "entityId": values.entityId,
-                    "type": values.businessType,
-                    "name": values.businessName === undefined ? (values.owners[0].ownerFirstName + ' ' + values.owners[0].ownerLastName) : values.businessName,
-                    "address1": values.businessAddress,
-                    "address2": values.businessAddress2,
-                    "city": values.businessCity,
-                    "state": values.businessStateName,
-                    "zip": values.businessZip === undefined ? undefined : (values.businessZip).replace(normalizedPhone,''),
-                    "phone": values.businessPhone === undefined ? undefined : (values.businessPhone).replace(normalizedPhone,''),
-                    "fax":  values.businessFax === undefined || values.businessFax === null ? undefined : (values.businessFax).replace(normalizedPhone,''),
-                    "email": values.businessEmail,
-                    "website": values.businessWebsite,
-                    "ein": values.taxId === undefined ? undefined : (values.taxId).replace(normalizedPhone,''),
-                    "public": values.publicCompany,
-                    "customerPhone": values.servicePhone === undefined || values.servicePhone === null ? undefined : (values.servicePhone).replace(normalizedPhone,''),
-                    "tcAcceptDate": acceptanceDateTime,
-                    "tcAcceptIp": values.ipAddress,
-                    "merchantType":values.merchantType,
-                    "isRecordUpdated":screenType === "businessDetails" ? "1" : "0",
-                }
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -379,7 +395,10 @@ export function updateMerchantDetails(values, screenType, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,

@@ -23,11 +23,13 @@ import DatePickerControl from '../../components/datePickerControl';
 import { addNewDeal, getCitiesList } from '../../actions/dealAction';
 
 //Validation
-import {required, dropDownRequired, dateRequired} from '../../utilities/validation'
+import {required, dropDownRequired, dateRequired, normalizedPhone} from '../../utilities/validation'
 
 //Data
 import moment from 'moment'
 import Data from '../../staticData';
+
+const intMaxRangeMatch = (value) => parseFloat(value.replace(normalizedPhone,'')) > 2147483647 ? 'Invalid pool amount' : undefined;
 
 let errorMessage
 
@@ -72,16 +74,17 @@ class AddNewDeal extends Component {
         if (nextProps) {
 
           if (nextProps.newDealResponse){
-            this.setState({showLoader:false})
             if(nextProps.newDealResponse.status === 200){
                 this.setState({message: nextProps.newDealResponse.message})
                 this.setState({ dialogOpen: true });
+                this.setState({showLoader:false})
             }
             else{
                 errorMessage =
                             <div 
                                 className="errorDiv"
                             >{nextProps.newDealResponse.message}</div>
+                this.setState({showLoader:false})
             }
           }
 
@@ -159,7 +162,7 @@ class AddNewDeal extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Location
+                                City
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControl style={styles.formControl}>
@@ -185,6 +188,34 @@ class AddNewDeal extends Component {
                                     </Field>    
                                 </FormControl>  
                             </div>  
+                            {/* <div className="col-xs-12 col-sm-6 col-md-3">
+                                Store Location
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    myType="number" 
+                                    name="storeLocation" 
+                                    fullWidth={true} 
+                                    component={LocationSearchBar} 
+                                    validate={required}
+                                />  
+                            </div> */}
+                        </div>
+                        <div className="row middle-md">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Pool Amount*
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    myType="text" 
+                                    name="cashBonus" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={[required, intMaxRangeMatch]}
+                                    masked={true}
+                                    myMaskType="number"
+                                />  
+                            </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 From Date*
                             </div>
@@ -198,33 +229,6 @@ class AddNewDeal extends Component {
                                     onChange={this.handleDateChange}
                                     validate={dateRequired}
                                 />  
-                            </div>
-                        </div>
-                        <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                Cash Bonus (%)*
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    myType="number" 
-                                    name="cashBonus" 
-                                    fullWidth={true} 
-                                    component={InputField} 
-                                    validate={required}
-                                />  
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                To Date*
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    name="toDate" 
-                                    fullWidth={true} 
-                                    keyboard={false}
-                                    disabled={true}
-                                    component={DatePickerControl} 
-                                    onChange={this.handleDateChange}
-                                />   
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -252,6 +256,19 @@ class AddNewDeal extends Component {
                                         }
                                     </Field>    
                                 </FormControl>  
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                To Date*
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    name="toDate" 
+                                    fullWidth={true} 
+                                    keyboard={false}
+                                    disabled={true}
+                                    component={DatePickerControl} 
+                                    onChange={this.handleDateChange}
+                                />   
                             </div>
                         </div> 
                         <div className="row end-xs">

@@ -13,6 +13,7 @@ const styles = theme => ({
   },
   margin: {
     margin: theme.spacing.unit,
+    marginLeft: '0px',
   },
   cssRoot: {
     color: theme.palette.getContrastText(purple[500]),

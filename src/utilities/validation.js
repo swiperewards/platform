@@ -9,7 +9,7 @@ const email = value =>
     value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value) ?
         'Invalid email address' : undefined
        
-const ipAddressMatch = value => value && !/^(([0-2]*[0-9]+[0-9]+)\.([0-2]*[0-9]+[0-9]+)\.([0-2]*[0-9]+[0-9]+)\.([0-2]*[0-9]+[0-9]+))$/.test(value) ? 
+const ipAddressMatch = value => value && !/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/.test(value) ? 
 'Invalid IP Address' : undefined;
 
 const website = value => 
@@ -20,6 +20,10 @@ const minimum8 = value => value && !/^.{8,}$/.test(value) ? 'Password must be mi
 
 const between1to100 = value => value && !/^.{1,100}$/.test(value) ? 'This field only accepts characters strings between 1 and 100 characters long' : undefined
 
+const between1to500 = value => value && !/^.{1,500}$/.test(value.replace(normalizedNewline,'')) ? 'This field only accepts characters strings between 1 and 500 characters long' : undefined
+
+const between1to50 = value => value && !/^.{1,50}$/.test(value) ? 'This field only accepts characters strings between 1 and 50 characters long' : undefined
+
 const between5to20 = value => value && !/^.{5,20}$/.test(value) ? 'This field only accepts characters strings between 5 and 20 characters long' : undefined
 
 const exact9 = value => value && !/^.{9,9}$/.test(value.replace(normalizedPhone,'')) ? 'Field should be 9 chatacters long' : undefined
@@ -27,7 +31,7 @@ const exact9 = value => value && !/^.{9,9}$/.test(value.replace(normalizedPhone,
 const percentage = value => value && !/(^100(\.0{1,2})?$)|(^([1-9]([0-9])?|0)(\.[0-9]{1,2})?$)/i.test(value) ?
 'Invalid percent value' : undefined
 
-const drivingLicense = value => value && !/^[a-zA-Z0-9]{0,15}$/.test(value) ? 'Invalid driving license' : undefined
+const drivingLicense = value => value && !/^[a-zA-Z0-9]{0,16}$/.test(value) ? 'Invalid driving license' : undefined
 
 const between5to9 = value => value && !/^.{5,9}$/.test(value) ? 'This field only accepts characters strings between 5 and 9 characters long' : undefined
 const between5to16 = value => value && !/^.{5,16}$/.test(value) ? 'This field only accepts characters strings between 5 and 16 characters long' : undefined
@@ -38,10 +42,12 @@ const phoneMask = "(###) ###-####";
 const taxNumberMask = "##-#######"; 
 const zipMask = "#####-####"; 
 const ssnMask = "###-##-####"; 
-const drivingLicenseMask = "###############"; 
+const drivingLicenseMask = "################"; 
 
 
 const normalizedPhone = /\D/g;
+const normalizedNewline = /\n/g;
+const normalizedNumber = /,/g;
 
 export {
     required, 
@@ -60,9 +66,12 @@ export {
     exact9, 
     ipAddressMatch,
     between1to100,
+    between1to50,
     between5to20,
     drivingLicense,
     between5to16,
     between5to9,
     dateRequired,
+    normalizedNumber,
+    between1to500,
 }

@@ -8,9 +8,10 @@ import
     getRedeemModeDetailsAPI,
     getRedeemRequestAPI, 
     getRedeemReqDetailsAPI,
-    updateRedeemRequestAPI,
+    approveRedeemRequestAPI,
     rejectRedeemRequestAPI,
 } from '../app.config';
+import {encryptData, decryptData} from '../utilities/encryptDecryptData'
 import moment from 'moment'
 
 var axios = require('axios');
@@ -31,7 +32,10 @@ export function getRedeemModeList(token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -57,16 +61,17 @@ export function createNewRedeemMode(values, token) {
         })
     }
     
+    var requestData = {
+        "mode": values.modeName,
+        "options": ArrOptions
+    }
 
     var setting = {
         method: 'post',
         url: hostURL + createRedeemModeAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "mode": values.modeName,
-                "options": ArrOptions
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -75,7 +80,10 @@ export function createNewRedeemMode(values, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -100,14 +108,16 @@ export function clearCreateRedeemModeResponse() {
 //Function to delete redeem mode by mode id
 export function deleteRedeemMode(modeId, token) {
 
+    var requestData = {
+        "id": modeId
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + deleteRedeemModeAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id": modeId
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -116,7 +126,10 @@ export function deleteRedeemMode(modeId, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -148,17 +161,19 @@ export function updateRedeemMode(values, token) {
         })
     }
 
+    var requestData = {
+        "id":values.modeId,
+        "mode": values.modeName,
+        "options": ArrOptions,
+        "status":values.status,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + updateRedeemModeAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id":values.modeId,
-                "mode": values.modeName,
-                "options": ArrOptions,
-                "status":values.status,
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -167,7 +182,10 @@ export function updateRedeemMode(values, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -191,15 +209,16 @@ export function clearUpdateRedeemDetailsResponse() {
 
 //Function to get redeem mode details
 export function getRedeemModeDetails(modeId, token) {
-
+    var requestData = {
+        "id" : modeId,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + getRedeemModeDetailsAPI,
         data: {
-            "platform": "web",
-            "requestData":{
-                "id" : modeId,
-            }
+            "platform":"web",
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -210,6 +229,7 @@ export function getRedeemModeDetails(modeId, token) {
     var response = axios(setting).then(
         response => 
         {
+            response.data.responseData = decryptData(response.data.responseData)
             var responseDetails = response.data.responseData
             var output ={
                 "message": response.data.message,
@@ -253,20 +273,21 @@ export function clearGetRedeemModeDetailResponse() {
 
 //Function to get redemption requests
 export function getRedeemRequestList(name, status, mode, fromDate, toDate ,token) {
-
+    var requestData = {
+        "name": name,
+        "status": status,
+        "amount": "",
+        "mode": mode,
+        "fromDate": (fromDate !== "") ? moment(fromDate).format('DD-MM-YYYY') : undefined,
+        "toDate": (toDate !== "") ? moment(toDate).format('DD-MM-YYYY') : undefined,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + getRedeemRequestAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "name": name,
-                "status": status,
-                "amount": "",
-                "mode": mode,
-                "fromDate": (fromDate !== "") ? moment(fromDate).format('DD-MM-YYYY') : undefined,
-                "toDate": (toDate !== "") ? moment(toDate).format('DD-MM-YYYY') : undefined,
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -275,7 +296,10 @@ export function getRedeemRequestList(name, status, mode, fromDate, toDate ,token
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -292,15 +316,16 @@ export function getRedeemRequestList(name, status, mode, fromDate, toDate ,token
 
 //Function to get redemption request details
 export function getRedeemRequestDetails(redeemId ,token) {
-
+    var requestData = {
+        "id": redeemId,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + getRedeemReqDetailsAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id": redeemId,
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -309,7 +334,10 @@ export function getRedeemRequestDetails(redeemId ,token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -325,17 +353,20 @@ export function getRedeemRequestDetails(redeemId ,token) {
 }
 
 //Function to Update redemption request
-export function updateRedeemRequest(redeemId, amount ,token) {
-
+export function approveRedeemRequest(redeemId, values ,token) {
+    var requestData = {
+        "id": redeemId.toString(),
+        "amount": values.amount,
+        "redeemModeId": values.modeName,
+        "note": values.note
+    }
+    
     var setting = {
         method: 'post',
-        url: hostURL + updateRedeemRequestAPI,
+        url: hostURL + approveRedeemRequestAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id": redeemId,
-                "amount": amount
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -344,7 +375,10 @@ export function updateRedeemRequest(redeemId, amount ,token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -354,22 +388,31 @@ export function updateRedeemRequest(redeemId, amount ,token) {
         );
 
     return {
-        type: 'UPDATE_REDEEM_REQUEST',
+        type: 'APPROVE_REDEEM_REQUEST',
         payload: response
     }
 }
 
-//Function to Reject redemption request
-export function rejectRedeemRequest(redeemId, token) {
+export function clearApproveRedeemResponse() {
+    return {
+        type: 'APPROVE_REDEEM_REQUEST',
+        payload: undefined
+    }
+}
 
+//Function to Reject redemption request
+export function rejectRedeemRequest(redeemId, values, token) {
+    var requestData = {
+        "id": redeemId.toString(),
+        "note": values.note,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + rejectRedeemRequestAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id": redeemId,
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -378,7 +421,10 @@ export function rejectRedeemRequest(redeemId, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,

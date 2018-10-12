@@ -24,11 +24,13 @@ import DatePickerControl from '../../components/datePickerControl';
 import { updateDeal, getCitiesList } from '../../actions/dealAction';
 
 //Validation
-import {required, dropDownRequired, dateRequired} from '../../utilities/validation'
+import {required, dropDownRequired, dateRequired, normalizedPhone} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
 import moment from 'moment'
+
+const intMaxRangeMatch = (value) => parseFloat(value.replace(normalizedPhone,'')) > 2147483647 ? 'Invalid pool amount' : undefined;
 
 let errorMessage
 
@@ -185,6 +187,23 @@ class UpdateDeal extends Component {
                                     </Field>    
                                 </FormControl>  
                             </div>  
+                            
+                        </div>
+                        <div className="row middle-md">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Pool Amount*
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    myType="text" 
+                                    name="cashBonus" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    validate={[required, intMaxRangeMatch]}
+                                    masked={true}
+                                    myMaskType="number"
+                                />  
+                            </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 From Date*
                             </div>
@@ -198,33 +217,6 @@ class UpdateDeal extends Component {
                                     onChange={this.handleDateChange}
                                     validate={dateRequired}
                                 />   
-                            </div>
-                        </div>
-                        <div className="row middle-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                Cash Bonus (%)*
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    myType="number" 
-                                    name="cashBonus" 
-                                    fullWidth={true} 
-                                    component={InputField} 
-                                    validate={required}
-                                />  
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                To Date*
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    name="endDate" 
-                                    fullWidth={true} 
-                                    keyboard={false}
-                                    disabled={true}
-                                    component={DatePickerControl} 
-                                    onChange={this.handleDateChange}
-                                />  
                             </div>
                         </div>
                         <div className="row middle-md">
@@ -252,6 +244,19 @@ class UpdateDeal extends Component {
                                         }
                                     </Field>    
                                 </FormControl>  
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                To Date*
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    name="endDate" 
+                                    fullWidth={true} 
+                                    keyboard={false}
+                                    disabled={true}
+                                    component={DatePickerControl} 
+                                    onChange={this.handleDateChange}
+                                />  
                             </div>
                         </div> 
                         <div className="row end-xs">

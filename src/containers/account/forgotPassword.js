@@ -24,6 +24,8 @@ import {required, email} from '../../utilities/validation'
 //Actions
 import { forgotPassword } from '../../actions/accountAction'
 
+import {appName} from '../../app.config'
+
 let errorMessage
 
 const styles = {
@@ -60,9 +62,9 @@ class ForgotPassword extends Component {
 
         if (nextProps) {
             if (nextProps.forgotPasswordResponse){
-                this.setState({showLoader:false})
                 if (nextProps.forgotPasswordResponse.status === 200) {
                     errorMessage = undefined
+                    this.setState({showLoader:false})
                     this.props.history.push({pathname:'/resetPasswordMail',state: { detail: nextProps.forgotPasswordResponse.responseData.emailId }})
                 }
                 else{
@@ -70,6 +72,7 @@ class ForgotPassword extends Component {
                         <div 
                             className="errorDiv"
                         >{nextProps.forgotPasswordResponse.message}</div>
+                        this.setState({showLoader:false})
                 }
             }
         }
@@ -112,14 +115,14 @@ class ForgotPassword extends Component {
                         </div>
                         <div className="formContent">
                             <form size='large' className="form-horizontal" onSubmit={this.props.handleSubmit((event) => this.onSubmit(event))}>
-                                <div className="titleLabel">Forgot Password
+                                <div className="titleLabel">Forgot your Password?
                                 </div>
                                 <div className="formGroup">
-                                    <label className="controlLabel">Enter Your Register Email</label>
+                                    <label className="controlLabel">Don't worry. Resetting your password is easy, just enter the email registered with {appName}.</label>
                                     <Field name="email" fullWidth={true} component={InputField} validate={[required, email]} />
                                 </div>
                                 <div style={{paddingTop:'10px', textAlign:'center'}}> 
-                                    <RaiseButton type="submit" style={{display:'inline-block' , float:'none'}} variant="contained" color="primary" label="SENT MAIL"/>
+                                    <RaiseButton type="submit" style={{display:'inline-block' , float:'none'}} variant="contained" color="primary" label="SEND"/>
                                 </div>        
                                 <div style={styles.accountTxt}>
                                         <span className="controlLabel">Don’t have an account?</span><span style={styles.signUpTxt}><Link to='/register' style={styles.signupLink}> Register Now</Link>

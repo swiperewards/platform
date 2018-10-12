@@ -62,21 +62,23 @@ class ContactUs extends Component {
         if (nextProps) {
           if (nextProps.queryTypeResponse){
             if(nextProps.queryTypeResponse.status === 200){
+                this.setState({showLoader:false})
                 this.setState({queryTypeList: nextProps.queryTypeResponse.responseData})
             }
           }
 
           if (nextProps.generateTicketResponse){
-            this.setState({showLoader:false})
             if(nextProps.generateTicketResponse.status === 200){
                 this.setState({message: nextProps.generateTicketResponse.message})
                 this.setState({ dialogOpen: true });
+                this.setState({showLoader:false})
             }
             else{
                 errorMessage =
-                            <div 
-                                className="errorDiv"
-                            >{nextProps.generateTicketResponse.message}</div>
+                    <div 
+                        className="errorDiv"
+                    >{nextProps.generateTicketResponse.message}</div>
+                    this.setState({showLoader:false})
             }
 
             this.props.clearGenerateTicketResponse()
@@ -84,6 +86,7 @@ class ContactUs extends Component {
 
           if(nextProps.userData){
             if(nextProps.userData.user){
+                this.setState({showLoader:false})
                 nextProps.change('fullName', nextProps.userData.user.responseData.fullName);
                 nextProps.change('email', nextProps.userData.user.responseData.emailId);
             }

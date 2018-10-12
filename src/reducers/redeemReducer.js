@@ -28,9 +28,9 @@ export default function (state = {}, action) {
             return{
                 redeemRequestDetails: action.payload
             }   
-        case 'UPDATE_REDEEM_REQUEST':
+        case 'APPROVE_REDEEM_REQUEST':
             return{
-                updateRedeemRequest: action.payload
+                approveRedeemRequest: action.payload
             }     
         case 'REJECT_REDEEM_REQUEST':
             return{

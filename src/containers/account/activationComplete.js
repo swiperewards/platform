@@ -13,6 +13,7 @@ import Button from '@material-ui/core/Button';
 
 //Components
 import DialogBox from '../../components/alertDialog'
+import Loader from '../../components/loader'
 
 import {resendVerificationMail, activateUserAccount, clearResendMailResponse} from '../../actions/accountAction';
 import { appName } from '../../app.config';
@@ -56,6 +57,7 @@ class ActivationComplete extends Component {
 
     componentWillMount() {
         if (this.props.match.params.token) {
+            this.setState({showLoader:true})
             this.props.activateUserAccount(this.props.match.params.token);
         }
     }
@@ -66,10 +68,12 @@ class ActivationComplete extends Component {
             if (nextProps.activateUserResponse){
                 if (nextProps.activateUserResponse.status === 200) {
                     this.setState({errorCode: nextProps.activateUserResponse.status})
+                    this.setState({showLoader:false})
                 }
                 else{
                     this.setState({errorCode: nextProps.activateUserResponse.status})
                     this.setState({message: nextProps.activateUserResponse.message})
+                    this.setState({showLoader:false})
                 }
             }
 
@@ -77,16 +81,17 @@ class ActivationComplete extends Component {
                 if (nextProps.resendEmailResponse.status === 200) {
                     this.setState({message: nextProps.resendEmailResponse.message})
                     this.setState({ dialogOpen: true });
+                    this.setState({showLoader:false})
                 }
                 else{
                     this.setState({message: nextProps.resendEmailResponse.message})
                     this.setState({ dialogOpen: true });
+                    this.setState({showLoader:false})
                 }
 
                 this.props.clearResendMailResponse();
             }
         }
-        this.setState({showLoader:false})
     }
 
     handleClose = () => {
@@ -98,6 +103,7 @@ class ActivationComplete extends Component {
     }
 
     resendMailClick(){
+        this.setState({showLoader:true})
         this.props.resendVerificationMail(this.props.location.state !== undefined ? this.props.location.state.detail : undefined)
     }
 
@@ -113,6 +119,7 @@ class ActivationComplete extends Component {
 
         return (
            <div> 
+               <Loader status={this.state.showLoader} />
                <DialogBox 
                         displayDialogBox={dialogOpen} 
                         message={this.state.message} 

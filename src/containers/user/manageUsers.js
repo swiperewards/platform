@@ -48,12 +48,13 @@ class ManageUsers extends Component {
         name:'',
         status: '',
         userType:'',
-        usersList:'',
+        usersList:undefined,
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
         disableReset: true,
         permissionDisplayBox: false,
+        message:'',
     };
 
     componentWillMount()
@@ -66,13 +67,15 @@ class ManageUsers extends Component {
         if (nextProps) {
           if (nextProps.userPayload){
             if(nextProps.userPayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({usersList: nextProps.userPayload.responseData})
             }
           }
           
           if(nextProps.deleteUserResponse){
-            this.setState({showLoader:false})
             if(nextProps.deleteUserResponse.status === 200){
+                this.setState({message:nextProps.deleteUserResponse.message});
+                this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
                 this.getAllUsers();
             }
@@ -85,11 +88,11 @@ class ManageUsers extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name === "" && this.state.status === "" && this.state.userType === ""){
-            this.setState({disableReset: true});
+        if(event.target.value !== undefined || event.target.value !== ""){
+            this.setState({disableReset:false});
         }
         else{
-            this.setState({disableReset:false});
+            this.setState({disableReset:true});
         }
     };
 
@@ -103,6 +106,7 @@ class ManageUsers extends Component {
 
     getAllUsers(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getUsersByFilter(this.state.name, this.state.status, this.state.userType, this.props.userData.user.responseData.token)
         }
         else{
@@ -114,20 +118,20 @@ class ManageUsers extends Component {
         this.getAllUsers();
     }
 
-    deleteUserById = (userId) => {
+    deleteUserById = (userId, inactive) => {
 
         if (this.state.permissionDisplayBox) {
             this.handleClose();
             if(this.props.userData.user.responseData.token){
                 this.setState({showLoader:true})
-                this.props.deleteUser(this.state.userId, this.props.userData.user.responseData.token);
+                this.props.deleteUser(this.state.userId, this.state.inactive, this.props.userData.user.responseData.token);
             }
             else{
                 //#TODO: Handle token expire case here
             }
         }
         else{
-            this.setState({ permissionDisplayBox: true, userId: userId });
+            this.setState({ permissionDisplayBox: true, userId: userId, inactive : inactive });
         }
     }
 
@@ -155,6 +159,7 @@ class ManageUsers extends Component {
         this.props.reset();
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getUsersByFilter("", "", "" ,this.props.userData.user.responseData.token)
         }
     
@@ -163,7 +168,7 @@ class ManageUsers extends Component {
     render() {
 
         const { usersList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, usersList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (usersList !== undefined ? usersList.length : 0) - page * rowsPerPage);
         
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -188,13 +193,13 @@ class ManageUsers extends Component {
             <div>
                 <DialogBox 
                     displayDialogBox={dialogOpen} 
-                    message="User deleted successfully" 
+                    message={this.state.message} 
                     actions={actions} 
                 />
 
                 <DialogBox 
                     displayDialogBox={permissionDisplayBox} 
-                    message="Are you sure to delete user?" 
+                    message="Are you sure to deactivate user?" 
                     actions={permissionActions} 
                 />
             </div> 
@@ -307,11 +312,15 @@ class ManageUsers extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (usersList !== "") ? (
+                            (usersList !== undefined) ? (
                             (usersList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={7}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
                                 : (
                                 usersList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -329,18 +338,33 @@ class ManageUsers extends Component {
                                             </div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.updateUser(object.userId)} className="enabledButton"> 
-                                                        <img src="../images/ic_edit.svg" alt="" /> 
-                                                    </button>
+                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => this.updateUser(object.userId)} 
+                                                            className="enabledButton"
+                                                            style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                            > 
+                                                            <img src="../images/ic_edit.svg" alt="" /> 
+                                                        </button>
+                                                    </div>
+                                                    <div className="col-xs-6">
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => this.deleteUserById(object.userId, !object.status)} 
+                                                            className="enabledButton"
+                                                            style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                            > 
+                                                            {
+                                                                object.status === 0 ?
+                                                                    <img src="../images/switch_off.svg" alt="" />
+                                                                :
+                                                                    <img src="../images/switch_on.svg" alt="" />
+                                                            }
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.deleteUserById(object.userId)} className="enabledButton"> 
-                                                        <img src="../images/ic_delete.svg" alt="" />
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </TableCell>     
                                     </TableRow>
                                     );
@@ -350,15 +374,15 @@ class ManageUsers extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={7} />
                                 </TableRow>
                             )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
-                                count={usersList.length}
+                                colSpan={7}
+                                count={(usersList !== undefined) ? usersList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

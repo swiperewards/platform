@@ -16,6 +16,7 @@ import {forgotPassword} from '../../actions/accountAction';
 
 //Components
 import DialogBox from '../../components/alertDialog'
+import Loader from '../../components/loader'
 
 const styles = {
     signUpTxt :{
@@ -57,14 +58,15 @@ class ResetPassword extends Component {
 
         if (nextProps) {
             if (nextProps.forgotPasswordResponse){
-                this.setState({showLoader:false})
                 if (nextProps.forgotPasswordResponse.status === 200) {
                     this.setState({message: nextProps.forgotPasswordResponse.message})
                     this.setState({ dialogOpen: true });
+                    this.setState({showLoader:false})
                 }
                 else{
                     this.setState({message: nextProps.forgotPasswordResponse.message})
                     this.setState({ dialogOpen: true });
+                    this.setState({showLoader:false})
                 }
             }
         }
@@ -91,6 +93,7 @@ class ResetPassword extends Component {
         
         return (
             <div>
+                <Loader status={this.state.showLoader} />
                 <DialogBox 
                         displayDialogBox={dialogOpen} 
                         message={this.state.message} 

@@ -12,7 +12,7 @@ import {
     updateCustomerQueryAPI,
     resolveCustomerQueryAPI,
 } from '../app.config';
-
+import {encryptData, decryptData} from '../utilities/encryptDecryptData'
 var axios = require('axios');
 
 //Function to get various query types
@@ -31,7 +31,10 @@ export function getQueryType(token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -48,17 +51,18 @@ export function getQueryType(token) {
 
 //Function to generate ticket
 export function generateTicket(values, token) {
-
+    var requestData = {
+        "ticketTypeId":values.ticketType,
+        "feedback": values.message,
+        "userCategory": "Merchant"
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + generateTicketAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "ticketTypeId":values.ticketType,
-                "feedback": values.message,
-                "userCategory": "Merchant"
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -67,7 +71,10 @@ export function generateTicket(values, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -105,7 +112,10 @@ export function getTicketTypes(token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -122,15 +132,16 @@ export function getTicketTypes(token) {
 
 //Function to get Ticket type Details
 export function getTicketTypeDetails(ticketId, token) {
-
+    var requestData = {
+        "id" : ticketId,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + getTicketTypeDetailsAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id" : ticketId,
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -140,6 +151,7 @@ export function getTicketTypeDetails(ticketId, token) {
 
     var response = axios(setting).then(
         response => {
+            response.data.responseData = decryptData(response.data.responseData)
             response.data.responseData.status = response.data.responseData.status === undefined ? false : (response.data.responseData.status).toString()
             return response.data;
         }
@@ -166,15 +178,16 @@ export function clearGetTicketTypeResponse() {
 
 //Function to delete Ticket type
 export function deleteTicketType(ticketId, token) {
-
+    var requestData = {
+        "id": ticketId
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + deleteTicketTypeAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id": ticketId
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -183,7 +196,10 @@ export function deleteTicketType(ticketId, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -207,15 +223,16 @@ export function clearDeleteTicketTypeResponse() {
 
 //Function to create new ticket type
 export function createTicketType(values, token) {
-
+    var requestData = {
+        "ticketTypeName":values.ticketName,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + addTicketTypeAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "ticketTypeName":values.ticketName,
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -224,7 +241,10 @@ export function createTicketType(values, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -248,17 +268,18 @@ export function clearNewTicketTypeResponse() {
 
 //Function to update ticket type
 export function updateTicketType(values, token) {
-
+    var requestData = {
+        "id":values.id,
+        "ticketTypeName":values.ticketTypeName,
+        "status":values.status,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + updateTicketTypeAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id":values.id,
-                "ticketTypeName":values.ticketTypeName,
-                "status":values.status,
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -267,7 +288,10 @@ export function updateTicketType(values, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -286,20 +310,21 @@ export function updateTicketType(values, token) {
 
 //Function to get all the customer queries
 export function getCustomerQueryList(name, status, userType, ticketType, token) {
-
+    var requestData = {
+        "name": name,
+        "status": status,
+        "userType": userType,
+        "ticketType": ticketType,
+        "pageNumber": 0,
+        "pageSize": 0
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + getCustomerQueriesListAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "name": name,
-                "status": status,
-                "userType": userType,
-                "ticketType": ticketType,
-                "pageNumber": 0,
-                "pageSize": 0
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -308,7 +333,10 @@ export function getCustomerQueryList(name, status, userType, ticketType, token) 
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -325,15 +353,16 @@ export function getCustomerQueryList(name, status, userType, ticketType, token) 
 
 //Function to get customer query details
 export function getCustomerQueryDetails(ticketId, token) {
-
+    var requestData = {
+        "id": ticketId,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + getCustomerQueryDetailsAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id": ticketId,
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -342,7 +371,10 @@ export function getCustomerQueryDetails(ticketId, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -366,17 +398,18 @@ export function clearCustomerQueryDetailsResponse() {
 
 //Function to mange customer query details
 export function manageCustomerQueryDetails(ticketId, values, token) {
-
+    var requestData = {
+        "id": ticketId.toString(),
+        "ticketTypeId" : (values.ticketTypeId).toString(),
+        "replyDescription" : values.feedback,
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + updateCustomerQueryAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id": ticketId.toString(),
-                "ticketTypeId" : (values.ticketTypeId).toString(),
-                "replyDescription" : values.feedback,
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -385,7 +418,10 @@ export function manageCustomerQueryDetails(ticketId, values, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -409,19 +445,20 @@ export function clearManageCustomerQueryResponse() {
 
 //Function to resolve customer query details
 export function resolveCustomerQueryDetails(ticketId, values, token) {
-
+    var requestData = {
+        "id": ticketId,
+        "ticketTypeId" : values.ticketTypeId,
+        "resolveDescription" : values.feedback,
+        "replyMessage" : values.reply,
+        "status" : values.ticketStatus
+    }
+    
     var setting = {
         method: 'post',
         url: hostURL + resolveCustomerQueryAPI,
         data: {
             "platform": "web",
-            "requestData":{
-                "id": ticketId,
-                "ticketTypeId" : values.ticketTypeId,
-                "resolveDescription" : values.feedback,
-                "replyMessage" : values.reply,
-                "status" : values.ticketStatus
-            }
+            "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -430,7 +467,10 @@ export function resolveCustomerQueryDetails(ticketId, values, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,

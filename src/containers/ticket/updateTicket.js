@@ -22,7 +22,7 @@ import Loader from '../../components/loader'
 import { updateTicketType, clearNewTicketTypeResponse } from '../../actions/ticketAction';
 
 //Validation
-import {required, dropDownRequired} from '../../utilities/validation'
+import {required, dropDownRequired, between1to100} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -52,16 +52,17 @@ class UpdateTicket extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.updateTicketResponse){
-              this.setState({showLoader:false})
               if(nextProps.updateTicketResponse.status === 200){
                   this.setState({message: nextProps.updateTicketResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                 errorMessage =
                 <div 
                     className="errorDiv"
                 >{nextProps.updateTicketResponse.message}</div>
+                this.setState({showLoader:false})
               }
 
               this.props.clearNewTicketTypeResponse();
@@ -125,7 +126,7 @@ class UpdateTicket extends Component {
                                     name="ticketTypeName" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required, between1to100]}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">

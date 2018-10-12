@@ -43,7 +43,7 @@ const styles = {
     }
 };
 
-class AccountActivate extends Component {
+class VerificationPending extends Component {
 
     constructor(props) {
         super(props)
@@ -71,7 +71,6 @@ class AccountActivate extends Component {
                 this.props.clearResendMailResponse();
             }
         }
-        this.setState({showLoader:false})
     }
 
     cancelClick(){
@@ -99,7 +98,6 @@ class AccountActivate extends Component {
         return (
             <div>
                 <Loader status={this.state.showLoader} />
-
                 <DialogBox 
                         displayDialogBox={dialogOpen} 
                         message={this.state.message} 
@@ -120,17 +118,8 @@ class AccountActivate extends Component {
 
                                     <div className="row">
                                         <div className="col-md-12">
-                                            <div style={styles.greenBox}>
-                                                <img src="../images/greenTick.png" alt="" style={{paddingRight:'10px'}} />
-                                                <span>An e-mail with a link to activate your account has been sent to</span> <span style={styles.emailText}>{this.props.location.state !== undefined ? this.props.location.state.detail : undefined}</span>
-                                            </div>
-                                        </div>    
-                                    </div>
-
-                                    <div className="row">
-                                        <div className="col-md-12">
+                                            Account verification pending.
                                             To activate your account with {appName}, click the link contained in the email.
-                                            Note that it might take few minutes for email to reach your inbox.
                                         </div>    
                                     </div>
                                     <div className="row">
@@ -179,6 +168,6 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default reduxForm({
-    form: 'FrmAccountActivate'
+    form: 'FrmVerificationPending'
 }
-)(connect(mapStateToProps, mapDispatchToProps)(AccountActivate))
+)(connect(mapStateToProps, mapDispatchToProps)(VerificationPending))

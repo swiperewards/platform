@@ -49,7 +49,7 @@ class ManageMerchants extends Component {
         name:'',
         status: '',
         location:'',
-        merchantList:'',
+        merchantList:undefined,
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -69,6 +69,7 @@ class ManageMerchants extends Component {
         if (nextProps) {
           if (nextProps.merchantPayload){
             if(nextProps.merchantPayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({merchantList: nextProps.merchantPayload.responseData})
             }
           }
@@ -88,11 +89,11 @@ class ManageMerchants extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name!=="" && this.state.status!=="" && this.state.location!==""){
-            this.setState({disableReset: true});
+        if(event.target.value !== undefined || event.target.value !== ""){
+            this.setState({disableReset:false});
         }
         else{
-            this.setState({disableReset:false});
+            this.setState({disableReset:true});
         }
     };
 
@@ -106,6 +107,7 @@ class ManageMerchants extends Component {
 
     getAllMerchants(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getMerchantListWithFilter(this.state.name, this.state.status, this.state.location, this.props.userData.user.responseData.token)
         }
         else{
@@ -164,7 +166,7 @@ class ManageMerchants extends Component {
     render() {
 
         const { merchantList, rowsPerPage, page, dialogOpen, permissionDisplayBox, inactive } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, merchantList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (merchantList !== undefined ? merchantList.length : 0) - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -318,11 +320,15 @@ class ManageMerchants extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (merchantList !== "") ? (
+                            (merchantList !== undefined) ? (
                             (merchantList.length === 0) ? 
-                                (<TableRow>
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={7}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
+                                        </TableCell>
+                                    </TableRow>                                
+                                )
                                 : (
                                 merchantList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -338,20 +344,30 @@ class ManageMerchants extends Component {
                                             <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" disabled={object.inactive_v === 1 ? true : false} onClick={() => this.updateMerchant(object.id)} className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}> 
+                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.inactive_v === 1 ? true : false} 
+                                                        onClick={() => this.updateMerchant(object.id)} 
+                                                        className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                        > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.deleteMerchant(object.id, !object.inactive_v)} className="enabledButton"> 
-                                                        
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => this.deleteMerchant(object.id, !object.inactive_v)} 
+                                                        className="enabledButton"
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                        > 
                                                         {
                                                             object.inactive_v === 1 ?
-                                                                <img src="../images/switch_on.svg" alt="" />
-                                                            :
                                                                 <img src="../images/switch_off.svg" alt="" />
+                                                            :
+                                                                <img src="../images/switch_on.svg" alt="" />
                                                         }
                                                     </button>
                                                 </div>
@@ -365,15 +381,15 @@ class ManageMerchants extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={7} />
                                 </TableRow>
                             )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
-                                count={merchantList.length}
+                                colSpan={7}
+                                count={(merchantList !== undefined) ? merchantList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

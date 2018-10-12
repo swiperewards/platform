@@ -338,8 +338,8 @@ $primary-Text-Color:#231f20;
 }
 
 .dashboardBox{
-  height:80%;
-  width:80%;
+  height:60%;
+  width:90%;
   text-align:center;
   padding: 40px 5px;
   border: solid rgb(226, 226, 226);
@@ -363,4 +363,57 @@ $primary-Text-Color:#231f20;
 
 .disabled-link {
   pointer-events: none;
+}
+
+.dashboardText{
+  color: rgb(118, 120, 137)
+}
+
+.dashboardCountText{
+  color: black;
+  font-size: 18pt;
+}
+
+.dashboardLine{
+  height: 1px;
+  width: 20%;
+  color: rgb(58, 163, 236);
+  background-color: rgb(58, 163, 236);
+  border-width: 0px;
+  margin-top: 5%;
+}
+
+.tableCell{
+  margin-Right:'0px';
+  margin-Bottom:'0px';
+}
+
+.tableButtonEven{
+  background-Color:'#f2f6f2';
+  height:'100%';
+}
+
+.tableButtonEven{
+  background-Color:'#ffffff';
+  height:'100%';
+}
+
+.autocomplete-container {
+  border-bottom: honeydew;
+  border-left: honeydew;
+  border-right: honeydew;
+  border-top: 1px solid #e6e6e6;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border-radius: 0 0 2px 2px;
+}
+
+.suggestion-item {
+  padding: 8px;
+  text-align: left;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.suggestion-item--active {
+  background-color: #fafafa;
 }

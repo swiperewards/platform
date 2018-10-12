@@ -49,7 +49,7 @@ class ManageAdmins extends Component {
     state = {
         name:'',
         status: '',
-        adminList:'',
+        adminList:undefined,
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -68,14 +68,15 @@ class ManageAdmins extends Component {
           if (nextProps.adminPayload){
             if(nextProps.adminPayload.status === 200){
                 this.setState({adminList: nextProps.adminPayload.responseData})
+                this.setState({showLoader:false})
             }
           }
           
           if(nextProps.adminDelete){
-            this.setState({showLoader:false})
             if(nextProps.adminDelete.status === 200){
                 this.setState({ dialogOpen: true });
                 this.getAllAdmins();
+                this.setState({showLoader:false})
             }
           }
         }
@@ -85,11 +86,11 @@ class ManageAdmins extends Component {
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
 
-        if(this.state.name==="" && this.state.status===""){
-            this.setState({disableReset: true});
+        if(event.target.value !== undefined || event.target.value !== ""){
+            this.setState({disableReset:false});
         }
         else{
-            this.setState({disableReset:false});
+            this.setState({disableReset:true});
         }
     };
 
@@ -103,6 +104,7 @@ class ManageAdmins extends Component {
 
     getAllAdmins(){
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getAdminListWithFilter(this.state.name, this.state.status, this.props.userData.user.responseData.token)
         }
         else{
@@ -134,6 +136,7 @@ class ManageAdmins extends Component {
     updateAdmin = (adminId) => {
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:true})
             this.props.getAdminDetails(adminId, this.props.userData.user.responseData.token)
             this.props.history.push('/updateAdmin')
         }
@@ -156,6 +159,7 @@ class ManageAdmins extends Component {
         this.props.reset();
 
         if(this.props.userData.user.responseData.token){
+            this.setState({showLoader:false})
             this.props.getAdminListWithFilter("", "", this.props.userData.user.responseData.token)
         }
     
@@ -164,7 +168,7 @@ class ManageAdmins extends Component {
     render() {
 
         const { adminList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, adminList.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (adminList !== undefined ? adminList.length : 0) - page * rowsPerPage);
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -292,11 +296,15 @@ class ManageAdmins extends Component {
                         </TableHead>
                         <TableBody>
                         { 
-                            (adminList !== "") ? (
+                            (adminList !== undefined) ? (
                             (adminList.length === 0) ? 
-                                (<TableRow className="tableRow">
-                                    <TableCell><div style={{ fontSize: 12, textAlign: 'center' }}>Loading...</div></TableCell>
-                                </TableRow>)
+                                (
+                                    <TableRow style={{ height: 48 * emptyRows}}>
+                                        <TableCell colSpan={7}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
+                                        </TableCell>
+                                    </TableRow>                                
+                                )
                                 : (
                                 adminList
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -318,14 +326,25 @@ class ManageAdmins extends Component {
                                             <div className={object.status === 0 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Deactive" : "Active"}</FormLabel></div>
                                         </TableCell>
                                         <TableCell> 
-                                            <div className="row start-md middle-md">
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.updateAdmin(object.userId)} className="enabledButton"> 
+                                        <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.inactive_v === 1 ? true : false} 
+                                                        onClick={() => this.updateAdmin(object.userId)}
+                                                        className="enabledButton"
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                        > 
                                                         <img src="../images/ic_edit.svg" alt="" /> 
                                                     </button>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <button type="button" onClick={() => this.deleteAdminById(object.userId)} className="enabledButton"> 
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => this.deleteAdminById(object.userId)} 
+                                                        className="enabledButton"
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                        > 
                                                         <img src="../images/ic_delete.svg" alt="" />
                                                     </button>
                                                 </div>
@@ -339,15 +358,15 @@ class ManageAdmins extends Component {
                             }
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={7} />
                                 </TableRow>
                             )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={3}
-                                count={adminList.length}
+                                colSpan={7}
+                                count={(adminList !== undefined) ? adminList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 onChangePage={this.handleChangePage}

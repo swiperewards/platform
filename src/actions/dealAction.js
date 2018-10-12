@@ -1,26 +1,29 @@
 import { hostURL, addNewDealAPI, getDealsFilterAPI, deleteDealAPI, getDealDetailsAPI, updateDealAPI, getCitiesAPI } from '../app.config';
 import moment from 'moment'
+import {normalizedNumber} from '../utilities/validation'
+import {encryptData, decryptData} from '../utilities/encryptDecryptData'
 
 var axios = require('axios');
 
 //Function to add new deal to processing system
 export function addNewDeal(values, merchantId, token) {
+    var requestData = {
+        "merchantId": merchantId, 
+        "startDate": values.fromDate === undefined ? undefined : moment(values.fromDate).format('YYYY-MM-DD'),
+        "endDate": values.toDate === undefined ? undefined : moment(values.toDate).format('YYYY-MM-DD'),
+        "cashBonus": (values.cashBonus === undefined || values.cashBonus === null || values.cashBonus === '') ? undefined : (values.cashBonus).replace(normalizedNumber,''),
+        "location": values.location,
+        "status": values.status,
+        "shortDescription": "Deal New",
+        "longDescription": "New Deal",
+    }
 
     var setting = {
         method: 'post',
         url: hostURL + addNewDealAPI,
         data: {
             "platform": "web", 
-	        "requestData":{
-                "merchantId": merchantId, 
-		        "startDate": values.fromDate === undefined ? undefined : moment(values.fromDate).format('YYYY-MM-DD'),
-		        "endDate": values.toDate === undefined ? undefined : moment(values.toDate).format('YYYY-MM-DD'),
-		        "cashBonus": values.cashBonus,
-                "location": values.location,
-                "status": values.status,
-                "shortDescription": "Deal New",
-                "longDescription": "New Deal",
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -29,7 +32,10 @@ export function addNewDeal(values, merchantId, token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -46,21 +52,22 @@ export function addNewDeal(values, merchantId, token) {
 
 //Function to fetch list of all Deals based on various filter option.
 export function getDealsListWithFilter(name, inactive, statePrefix, fromDate, toDate, token) {
+    var requestData = {
+        "merchantName" : name === undefined ? "" : name,
+        "status" : inactive === undefined ? "" : inactive,
+        "location": statePrefix === undefined ? "" : statePrefix,
+        "fromDate" : fromDate === undefined ? "" : fromDate,
+        "toDate" : toDate === undefined ? "" : toDate,
+        "pageNumber" : "0",
+        "pageSize" : "0"
+    }
 
     var setting = {
         method: 'post',
         url: hostURL + getDealsFilterAPI,
         data: {
             "platform": 'Web',
-	        "requestData":{
-                "merchantName" : name === undefined ? "" : name,
-                "status" : inactive === undefined ? "" : inactive,
-                "location": statePrefix === undefined ? "" : statePrefix,
-                "fromDate" : fromDate === undefined ? "" : fromDate,
-                "toDate" : toDate === undefined ? "" : toDate,
-                "pageNumber" : "0",
-		        "pageSize" : "0"
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -69,7 +76,10 @@ export function getDealsListWithFilter(name, inactive, statePrefix, fromDate, to
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -86,15 +96,16 @@ export function getDealsListWithFilter(name, inactive, statePrefix, fromDate, to
 
 //Function to delete deal for selected Id
 export function deleteDeal(dealId,token) {
+    var requestData = {
+        "id" : dealId,
+    }
 
     var setting = {
         method: 'post',
         url: hostURL + deleteDealAPI,
         data: {
             "platform": 'Web',
-	        "requestData":{
-                "id" : dealId,
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -103,7 +114,10 @@ export function deleteDeal(dealId,token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -120,15 +134,16 @@ export function deleteDeal(dealId,token) {
 
 //Function to get deal details
 export function getDealDetails(dealId,token) {
+    var requestData = {
+        "id" : dealId,
+    }
 
     var setting = {
         method: 'post',
         url: hostURL + getDealDetailsAPI,
         data: {
             "platform": 'Web',
-	        "requestData":{
-                "id" : dealId,
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -139,6 +154,7 @@ export function getDealDetails(dealId,token) {
     var response = axios(setting).then(
         response => 
         {
+            response.data.responseData = decryptData(response.data.responseData)
             var responseDetails = response.data.responseData
             var output ={
                 "message": response.data.message,
@@ -177,22 +193,23 @@ export function getDealDetails(dealId,token) {
 
 //Function to update deal details
 export function updateDeal(values,token) {
+    var requestData = {
+        "id":values.id,
+        "shortDescription": "",
+        "longDescription": "",
+        "startDate": values.startDate === undefined ? undefined : moment(values.startDate).format('YYYY-MM-DD'),
+        "endDate": values.endDate === undefined ? undefined : moment(values.endDate).format('YYYY-MM-DD'),
+        "cashBonus": (values.cashBonus === undefined || values.cashBonus === null || values.cashBonus === '') ? undefined : (values.cashBonus).replace(normalizedNumber,''),
+        "location": values.location,
+        "status" : values.status,
+    }
 
     var setting = {
         method: 'post',
         url: hostURL + updateDealAPI,
         data: {
             "platform": 'Web',
-	        "requestData":{
-                "id":values.id,
-                "shortDescription": "",
-                "longDescription": "",
-                "startDate": values.startDate === undefined ? undefined : moment(values.startDate).format('YYYY-MM-DD'),
-		        "endDate": values.endDate === undefined ? undefined : moment(values.endDate).format('YYYY-MM-DD'),
-                "cashBonus": values.cashBonus,
-                "location": values.location,
-                "status" : values.status,
-            }
+	        "requestData":encryptData(requestData)
 	    },
         headers: {
             'content-type': 'application/json',
@@ -201,7 +218,10 @@ export function updateDeal(values,token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
         .catch(response => response = {
             success: 500,
@@ -233,7 +253,10 @@ export function getCitiesList(token) {
     }
 
     var response = axios(setting).then(
-        response => response.data
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
     )
 
         .catch(response => response = {

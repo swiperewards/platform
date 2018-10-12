@@ -19,7 +19,7 @@ import Loader from '../../components/loader'
 import { createNewRedeemMode, clearCreateRedeemModeResponse } from '../../actions/redeemAction';
 
 //Validation
-import {required} from '../../utilities/validation'
+import {required, between1to100} from '../../utilities/validation'
 
 let errorMessage
 
@@ -70,10 +70,10 @@ const styles = {
                     </div>
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-3">
-                            Option { idx+1 }*
+                            SubMode { idx+1 }*
                         </div>
                         <div className="col-xs-12 col-sm-6 col-md-6">
-                            <Field myType="text" name={`${member}.optionName`} fullWidth={true} component={InputField} validate={required}/>  
+                            <Field myType="text" name={`${member}.optionName`} fullWidth={true} component={InputField} validate={[required, between1to100]}/>  
                         </div>
                     </div>
                  </Paper>
@@ -85,7 +85,7 @@ const styles = {
                 onClick={() => fields.push({})} 
                 className="button"
                 style={{backgroundColor:'#27A24F'}}>
-                + Add additional option
+                + Add additional subMode
             </button>           
         </div>
     </React.Fragment>
@@ -100,25 +100,22 @@ class AddNewRedeemMode extends Component {
 
     componentWillMount() {
         errorMessage = "";
-
-        if(this.props.userData.user.responseData.token && this.props.merchant){
-            this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
-        }
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.redeemModeResponse){
-              this.setState({showLoader:false})
               if(nextProps.redeemModeResponse.status === 200){
                   this.setState({message: nextProps.redeemModeResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                 errorMessage =
                 <div 
                     className="errorDiv"
                 >{nextProps.redeemModeResponse.message}</div>
+                this.setState({showLoader:false})
               }
 
               this.props.clearCreateRedeemModeResponse();
@@ -182,7 +179,7 @@ class AddNewRedeemMode extends Component {
                                     name="modeName" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required, between1to100]}
                                 />  
                             </div>
                         </div>

@@ -32,6 +32,8 @@ import RenderCheckbox from '../../components/renderCheckbox';
 
 //Data
 import Data from '../../staticData'
+// const PublicIp = require('nodejs-publicip');
+
 
 const styles = {
     formControl: {
@@ -63,7 +65,6 @@ class AccountSetup extends Component {
             updatedList: Data.mccCodes,
             mccNumber: '',
         };
-
     }
 
     handleChange = name => event => {
@@ -118,6 +119,7 @@ class AccountSetup extends Component {
     }
 
     componentDidMount() {
+
         if (this.refs.boardingStatus) {
             this.setState({ boardingStatus: this.refs.boardingStatus.value })
         }
@@ -125,11 +127,20 @@ class AccountSetup extends Component {
         if (this.refs.termsCheckedYes) {
             this.setState({ termsCheckedYes: this.refs.termsCheckedYes.value })
         }
+
+        
     }
 
     render() {
 
         const { myProps } = this.props;
+
+        if(this.refs.ipAddress === undefined){
+
+            // publicIp.v4().then(ip => {
+            //     myProps.change('ipAddress', ip)
+            // });
+        }
 
         return (
             <div style={{ paddingBottom: '20px' }}>
@@ -261,7 +272,14 @@ class AccountSetup extends Component {
                                         IP Address
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-3">
-                                        <Field myType="text" name="ipAddress" fullWidth={true} component={InputField} validate={ipAddressMatch} />
+                                        <Field 
+                                            myType="text" 
+                                            name="ipAddress" 
+                                            ref="ipAddress"
+                                            fullWidth={true} 
+                                            component={InputField} 
+                                            validate={ipAddressMatch} 
+                                        />
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-6">
                                         <FormControlLabel
@@ -372,11 +390,5 @@ class AccountSetup extends Component {
         );
     }
 }
-
-// function mapStateToProps(state) {
-//     return {
-//         initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
-//     }
-// }
 
 export default connect(null, null)(AccountSetup);

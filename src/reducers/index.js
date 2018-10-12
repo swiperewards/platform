@@ -8,6 +8,7 @@ import admin from './adminReducer';
 import ticket from './ticketReducer';
 import userAccount from './userReducer';
 import redeem from './redeemReducer';
+import dashboard from './dashboardReducer'
 
 const appReducer = combineReducers({
     account,
@@ -18,6 +19,7 @@ const appReducer = combineReducers({
     ticket,
     userAccount,
     redeem,
+    dashboard,
     form: formReducer,
 });
 

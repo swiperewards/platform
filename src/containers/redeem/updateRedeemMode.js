@@ -23,7 +23,7 @@ import {renderSelectField} from '../../components/selectControl';
 import { updateRedeemMode, clearUpdateRedeemDetailsResponse } from '../../actions/redeemAction';
 
 //Validation
-import {required, dropDownRequired} from '../../utilities/validation'
+import {required, dropDownRequired, between1to100} from '../../utilities/validation'
 
 //Data
 import Data from '../../staticData';
@@ -85,7 +85,7 @@ const styles = {
                                 name={`${member}.optionName`} 
                                 fullWidth={true} 
                                 component={InputField} 
-                                validate={required}
+                                validate={[required, between1to100]}
                             />  
                         </div>
                     </div>
@@ -118,16 +118,17 @@ class UpdateRedeemMode extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps) {
             if (nextProps.updateRedeemResponse){
-              this.setState({showLoader:false})
               if(nextProps.updateRedeemResponse.status === 200){
                   this.setState({message: nextProps.updateRedeemResponse.message})
                   this.setState({ dialogOpen: true });
+                  this.setState({showLoader:false})
               }
               else{
                 errorMessage =
                 <div 
                     className="errorDiv"
                 >{nextProps.updateRedeemResponse.message}</div>
+                this.setState({showLoader:false})
               }
 
               this.props.clearUpdateRedeemDetailsResponse();
@@ -192,7 +193,7 @@ class UpdateRedeemMode extends Component {
                                     name="modeName" 
                                     fullWidth={true} 
                                     component={InputField} 
-                                    validate={required}
+                                    validate={[required,between1to100]}
                                     disabled={true}
                                 />  
                             </div>
