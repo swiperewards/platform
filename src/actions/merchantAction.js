@@ -155,9 +155,9 @@ export function deleteMerchant(merchantId, inactive, token) {
 }
 
 //Function to fetch list of all merchants from splash payment system
-export function getMerchantListWithFilter(name, inactive, statePrefix, token) {
+export function getMerchantListWithFilter(userId ,name, inactive, statePrefix, token) {
     var requestData = {
-        "userId" : "252",
+        "userId" : userId.toString(),
         "nameFilter" : name === undefined ? "" : name,
         "inactiveFilter" : inactive === undefined ? "" : inactive,
         "stateFilter": statePrefix === undefined ? "" : statePrefix

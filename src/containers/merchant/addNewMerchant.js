@@ -162,7 +162,7 @@ class AddMerchant extends Component {
       handleClose = () => {
         this.setState({ open: false });
         if(this.props.userData.user.responseData.role === 'merchant'){
-          this.props.history.push('/merchantdashboard');
+          this.props.history.push('/paymentprocessing');
         }
         else{
           this.props.history.push('/managemerchants');

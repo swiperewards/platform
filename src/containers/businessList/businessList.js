@@ -1,14 +1,12 @@
 //react redux
 import React, { Component } from 'react';
-import { Field, reduxForm } from 'redux-form'
+import { reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import NumberFormat from "react-number-format";
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -16,77 +14,66 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+import Button from '@material-ui/core/Button';
 import FormLabel from '@material-ui/core/FormLabel';
 
 //Components
-import InputField from '../../components/inputField';
 import TablePaginationActions from '../../components/tableGrid';
-import {renderSelectField} from '../../components/selectControl';
+import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 
 //Actions
-import { getMerchantListWithFilter } from '../../actions/merchantAction';
+import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
 
-//Data
-import Data from '../../staticData';
-
-const styles = {
-    formControl: {
-        minWidth: '100%',
-        marginLeft:'0px',
-      },
-      selectControl:{
-        fontSize: '12px',
-      },
-};
-
-class MerchantsList extends Component {
+class BusinessList extends Component {
 
     state = {
-        name:'',
-        status: '',
-        location:'',
         merchantList:undefined,
         page: 0,
         rowsPerPage: 5,
+        dialogOpen: false,
+        permissionDisplayBox: false,
         disableReset: true,
+        merchantId:'',
+        message:'',
     };
 
     componentWillMount()
     {
+        this.props.onRef(this)
         this.getAllMerchants();
     }
+
+    componentWillUnmount() {
+        this.props.onRef(undefined)
+     }
 
     componentWillReceiveProps(nextProps) {
 
         if (nextProps) {
           if (nextProps.merchantPayload){
             if(nextProps.merchantPayload.status === 200){
+                this.setState({showLoader:false})
                 this.setState({merchantList: nextProps.merchantPayload.responseData})
             }
+            else{
+                this.setState({showLoader:false})
+            }
           }
-           
+        
           if(nextProps.merchantDelete){
             if(nextProps.merchantDelete.status === 200){
                 this.setState({showLoader:false})
                 this.setState({ dialogOpen: true });
+                this.setState({message:nextProps.merchantDelete.message});
                 this.getAllMerchants();
+            }
+            else{                
+                this.setState({showLoader:false})
             }
           }
         }
     }
-
-    //Method to handle change event for dropdown
-    handleChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
-
-        if(this.state.name!=="" && this.state.status!=="" && this.state.location!==""){
-            this.setState({disableReset: true});
-        }
-        else{
-            this.setState({disableReset:false});
-        }
-    };
 
     handleChangePage = (event, page) => {
         this.setState({ page });
@@ -98,25 +85,34 @@ class MerchantsList extends Component {
 
     getAllMerchants(){
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.props.userData.user.responseData.userId, this.state.name, "0", this.state.location, this.props.userData.user.responseData.token)
+            this.setState({showLoader:true})
+            this.props.getMerchantListWithFilter(this.props.userData.user.responseData.userId,this.props.name,this.props.status,this.props.location,this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
         }
     }
 
-    onHandleSearch(){
+    searchHandler(){
         this.getAllMerchants();
     }
 
-    deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
+
+    deleteMerchant = (merchantId, inactive) => {
+        if (this.state.permissionDisplayBox) {
+            this.handleClose();
+            if(this.props.userData.user.responseData.token){
+                this.setState({showLoader:true})
+                this.props.deleteMerchant(this.state.merchantId, this.state.inactive, this.props.userData.user.responseData.token);
+            }
+            else{
+                //#TODO: Handle token expire case here
+            }
         }
         else{
-            //#TODO: Handle token expire case here
+            this.setState({ permissionDisplayBox: true, merchantId: merchantId, inactive : inactive });
         }
+        
     }
 
     updateMerchant = (merchantId) => {
@@ -125,110 +121,57 @@ class MerchantsList extends Component {
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
+        this.setState({ permissionDisplayBox: false });
     };
 
-    addNewMerchant(){
-        this.props.history.push('/addNewMerchant')
-    }
-
-    onHandleReset(){
-        this.setState({name:''});
-        this.setState({status:''});
-        this.setState({location:''});
-        this.setState({disableReset:true});
-        this.props.reset();
+    resetHandler(){
 
         if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
+            this.setState({showLoader:true})
+            this.props.getMerchantListWithFilter(this.props.userData.user.responseData.userId,"", "", "",this.props.userData.user.responseData.token)
         }
+    
     }
 
-    handleClick = (event, id) => {
-        this.props.history.push({pathname:'/addNewDeal',state: { detail: id }})
-
-    }
+    
 
     render() {
 
-        const { merchantList, rowsPerPage, page } = this.state;
+        const { merchantList, rowsPerPage, page, dialogOpen, permissionDisplayBox, inactive } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, (merchantList !== undefined ? merchantList.length : 0) - page * rowsPerPage);
+
+        const actions = [
+            <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
+                OK
+            </Button>
+        ];
+
+        const permissionActions = [
+            <Button key="no" onClick={this.handleClose} color="primary">
+                No
+            </Button>,
+            <Button key="yes" onClick={this.deleteMerchant} color="primary" autoFocus>
+                Yes
+            </Button>,
+        ];
 
         return (
           <div className="row">
             <div className="col-xs-12">
             <Loader status={this.state.showLoader} />
 
-            <div className="row">
-            <div className="col-xs-12">
-            <Paper className="pagePaper">
-                <form size='large' className="form-horizontal">
-                    <div className="appTitleLabel row">
-                            <div className="col-xs-12 col-md-2">
-                            <FormLabel component="legend">ADD DEAL</FormLabel>
-                            </div>  
-                            <div className="col-xs-12 col-md-10">
-                                <div className="appDescriptionLabel">
-                                    Select a merchant from list to proceed add new Deal.
-                                </div>
-                            </div>                           
-                    </div>
-                    <div className="row middle-md">
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <Field 
-                            type="text"
-                            name="name" 
-                            myPlaceHolder="Name" 
-                            fullWidth={true} 
-                            component={InputField} 
-                            onChange={this.handleChange}
-                            />
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <FormControl style={styles.formControl}>
-                                <Field
-                                    name="location"
-                                    component={renderSelectField}
-                                    fullWidth={true}
-                                    onChange={this.handleChange}
-                                    displayEmpty
-                                    >
-                                    <MenuItem value="" disabled>
-                                        Location
-                                    </MenuItem>
-                                    {
-                                    Data.states.map((item) =>{
-                                        return <MenuItem 
-                                            style={styles.selectControl}
-                                            key={item.id}
-                                            value={item.prefix}>
-                                            {item.name}
-                                        </MenuItem>
-                                    })
-                                    }
-                                </Field>    
-                            </FormControl>  
-                        </div>    
-                        <div className="col-xs-12 col-sm-6 col-md-6">
-                            <button 
-                                type="button"
-                                onClick={this.onHandleReset.bind(this)}
-                                style={{backgroundColor:'#BCBCBC'}}
-                                disabled={this.state.disableReset}
-                                className={this.state.disableReset ? "disabledButton button" : "enabledButton button"}
-                                > Reset
-                            </button>
-                            <button 
-                                type="button"
-                                onClick={this.onHandleSearch.bind(this)}
-                                className="button"
-                                > Filter
-                            </button> 
-                        </div>       
-                    </div>
-                </form>
-            </Paper> 
-            </div>
-            </div>
+            <div>
+                <DialogBox 
+                    displayDialogBox={dialogOpen} 
+                    message={this.state.message} 
+                    actions={actions} 
+                />
+                <DialogBox 
+                    displayDialogBox={permissionDisplayBox} 
+                    message=  {inactive === true ? "Are you sure to deactivate merchant account?" : "Are you sure to activate merchant account?"}
+                    actions={permissionActions} 
+                />
+            </div> 
 
             <div className="row">
             <div className="col-xs-12">
@@ -243,6 +186,7 @@ class MerchantsList extends Component {
                                 <TableCell>Email Address</TableCell>
                                 <TableCell>Phone Number</TableCell>
                                 <TableCell>Status</TableCell>
+                                <TableCell>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -251,7 +195,7 @@ class MerchantsList extends Component {
                             (merchantList.length === 0) ? 
                                 (
                                     <TableRow style={{ height: 48 * emptyRows }}>
-                                        <TableCell colSpan={6}>
+                                        <TableCell colSpan={7}>
                                             <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
                                         </TableCell>
                                     </TableRow>                                
@@ -261,7 +205,7 @@ class MerchantsList extends Component {
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
-                                    <TableRow className="tableRow" key={object.id} hover onClick={event => this.handleClick(event, object.id)}>
+                                    <TableRow className="tableRow" key={object.id}>
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.first_v + " " + object.last_v}</TableCell>
                                         <TableCell>{object.city_v}</TableCell>
@@ -270,13 +214,43 @@ class MerchantsList extends Component {
                                         <TableCell>
                                             <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
                                         </TableCell>
+                                        <TableCell> 
+                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        disabled={object.inactive_v === 1 ? true : false} 
+                                                        onClick={() => this.updateMerchant(object.id)} 
+                                                        className={object.inactive_v === 1 ? "disabledButton" : "enabledButton"}
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                        > 
+                                                        <img src="../images/ic_edit.svg" alt="" /> 
+                                                    </button>
+                                                </div>
+                                                <div className="col-xs-6">
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => this.deleteMerchant(object.id, !object.inactive_v)} 
+                                                        className="enabledButton"
+                                                        style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                        > 
+                                                        {
+                                                            object.inactive_v === 1 ?
+                                                                <img src="../images/switch_off.svg" alt="" />
+                                                            :
+                                                                <img src="../images/switch_on.svg" alt="" />
+                                                        }
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </TableCell>    
                                     </TableRow>
                                     );
                                 })
                                 )
                                 ):(
                                     <TableRow style={{ height: 48 * emptyRows }}>
-                                        <TableCell colSpan={6}>
+                                        <TableCell colSpan={7}>
                                             <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
                                         </TableCell>
                                     </TableRow>
@@ -286,7 +260,7 @@ class MerchantsList extends Component {
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                colSpan={6}
+                                colSpan={7}
                                 count={(merchantList !== undefined) ? merchantList.length : 0}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
@@ -309,15 +283,16 @@ class MerchantsList extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getMerchantListWithFilter }, dispatch)
+    return bindActionCreators({ getMerchantListWithFilter, deleteMerchant }, dispatch)
   }
   
-  MerchantsList = connect(
+  BusinessList = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
+      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
     }),
     mapDispatchToProps,
-  )(MerchantsList)
+  )(BusinessList)
   
-  export default reduxForm({form: 'FrmMerchantsList'})(MerchantsList)
+  export default reduxForm({form: 'FrmBusinessList'})(BusinessList)
