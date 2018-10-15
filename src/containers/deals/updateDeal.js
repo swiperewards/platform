@@ -153,10 +153,10 @@ class UpdateDeal extends Component {
 
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Merchant Id
+                                Business Name
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                {this.props.initialValues !== undefined ? this.props.initialValues.merchantId : ""}
+                                {this.props.initialValues !== undefined ? this.props.initialValues.entityName : ""}
                             </div>
                         </div>
                         <div className="row middle-md">

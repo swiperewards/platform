@@ -20,6 +20,7 @@ import Loader from '../../components/loader'
 import DatePickerControl from '../../components/datePickerControl';
 
 //Actions
+import { getMerchantListWithFilter } from '../../actions/merchantAction';
 import { addNewDeal, getCitiesList } from '../../actions/dealAction';
 
 //Validation
@@ -53,6 +54,7 @@ class AddNewDeal extends Component {
             citiesList:'',
             fromDate: new Date(),
             toDate:'',
+            merchantList:undefined,
         }
     }
 
@@ -63,6 +65,7 @@ class AddNewDeal extends Component {
 
         if(this.props.userData.user.responseData.token){
             this.props.getCitiesList(this.props.userData.user.responseData.token)
+            this.props.getMerchantListWithFilter(this.props.userData.user.responseData.userId,"","","",this.props.userData.user.responseData.token);
         }
     }
 
@@ -72,6 +75,16 @@ class AddNewDeal extends Component {
 
       componentWillReceiveProps(nextProps) {
         if (nextProps) {
+
+            if (nextProps.merchantPayload){
+                if(nextProps.merchantPayload.status === 200){
+                    this.setState({showLoader:false})
+                    this.setState({merchantList: nextProps.merchantPayload.responseData})
+                }
+                else{
+                    this.setState({showLoader:false})
+                }
+            }
 
           if (nextProps.newDealResponse){
             if(nextProps.newDealResponse.status === 200){
@@ -106,11 +119,8 @@ class AddNewDeal extends Component {
       onSubmit(values) {
 
         if(this.props.userData.user.responseData.token){
-            let merchantId = this.props.location.state !== undefined ? this.props.location.state.detail : undefined
-            if(merchantId !== undefined){
-                this.setState({showLoader:true})
-                this.props.addNewDeal(values, merchantId, this.props.userData.user.responseData.token)
-            }
+            this.setState({showLoader:true})
+            this.props.addNewDeal(values, this.props.userData.user.responseData.token)
         }
       }
 
@@ -154,15 +164,37 @@ class AddNewDeal extends Component {
 
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Merchant Id
+                                Business Name*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                {this.props.location.state !== undefined ? this.props.location.state.detail : undefined}
+                                <FormControl style={styles.formControl}>
+                                    <Field
+                                        name="merchantId"
+                                        component={renderSelectField}
+                                        fullWidth={true}
+                                        onChange={this.handleChange}
+                                        validate={dropDownRequired}
+                                    >
+                                    {
+                                            (this.state.merchantList) ? 
+                                            this.state.merchantList.map((item) =>{
+                                                return <MenuItem 
+                                                        style={styles.selectControl}
+                                                        key={item.id}
+                                                        value={item.id}>
+                                                        {item.name_v + " " + item.last_v}
+                                                </MenuItem>
+                                                })
+                                            :
+                                            null
+                                    }
+                                    </Field>    
+                                </FormControl>
                             </div>
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                City
+                                City*
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControl style={styles.formControl}>
@@ -300,7 +332,7 @@ class AddNewDeal extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ addNewDeal, getCitiesList }, dispatch)
+    return bindActionCreators({ addNewDeal, getCitiesList, getMerchantListWithFilter }, dispatch)
   }
 
   AddNewDeal = reduxForm({
@@ -312,7 +344,7 @@ AddNewDeal = connect(
        userData: state.account === undefined ? undefined : state.account,
        newDealResponse: state.deal === undefined ? undefined : state.deal.addDeal,
        citiesPayload: state.deal.citiesList === undefined ? undefined : state.deal.citiesList,
- 
+       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
     }),
     mapDispatchToProps,
   )(AddNewDeal)
