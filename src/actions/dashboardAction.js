@@ -74,7 +74,7 @@ function getFormattedData(dataArray) {
 
         var color = randomColor({
             count: dataArray.length,
-            luminosity: 'dark',
+            luminosity: 'bright',
             alpha: 0.7,
             hue: 'random'
         });

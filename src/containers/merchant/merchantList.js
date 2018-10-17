@@ -3,24 +3,16 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import NumberFormat from "react-number-format";
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
 import FormLabel from '@material-ui/core/FormLabel';
 
-//Components
+//Componentsgit 
+import UserList from '../../containers/user/userList';
 import InputField from '../../components/inputField';
-import TablePaginationActions from '../../components/tableGrid';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
 
@@ -46,35 +38,10 @@ class MerchantsList extends Component {
         name:'',
         status: '',
         location:'',
-        merchantList:undefined,
         page: 0,
         rowsPerPage: 5,
         disableReset: true,
     };
-
-    componentWillMount()
-    {
-        this.getAllMerchants();
-    }
-
-    componentWillReceiveProps(nextProps) {
-
-        if (nextProps) {
-          if (nextProps.merchantPayload){
-            if(nextProps.merchantPayload.status === 200){
-                this.setState({merchantList: nextProps.merchantPayload.responseData})
-            }
-          }
-           
-          if(nextProps.merchantDelete){
-            if(nextProps.merchantDelete.status === 200){
-                this.setState({showLoader:false})
-                this.setState({ dialogOpen: true });
-                this.getAllMerchants();
-            }
-          }
-        }
-    }
 
     //Method to handle change event for dropdown
     handleChange = event => {
@@ -88,48 +55,13 @@ class MerchantsList extends Component {
         }
     };
 
-    handleChangePage = (event, page) => {
-        this.setState({ page });
-    };
-    
-    handleChangeRowsPerPage = event => {
-        this.setState({ rowsPerPage: event.target.value });
-    };
-
-    getAllMerchants(){
-        if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter(this.props.userData.user.responseData.userId, this.state.name, "0", this.state.location, this.props.userData.user.responseData.token)
-        }
-        else{
-            //#TODO : Handle token expire case
-        }
-    }
-
     onHandleSearch(){
         this.getAllMerchants();
-    }
-
-    deleteMerchant = (merchantId) => {
-        if(this.props.userData.user.responseData.token){
-            this.setState({showLoader:true})
-            this.props.deleteMerchant(merchantId, this.props.userData.user.responseData.token);
-        }
-        else{
-            //#TODO: Handle token expire case here
-        }
-    }
-
-    updateMerchant = (merchantId) => {
-        this.props.history.push({pathname:'/updateMerchant',state: { detail: merchantId }})
     }
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
     };
-
-    addNewMerchant(){
-        this.props.history.push('/addNewMerchant')
-    }
 
     onHandleReset(){
         this.setState({name:''});
@@ -137,10 +69,6 @@ class MerchantsList extends Component {
         this.setState({location:''});
         this.setState({disableReset:true});
         this.props.reset();
-
-        if(this.props.userData.user.responseData.token){
-            this.props.getMerchantListWithFilter("", "", "", this.props.userData.user.responseData.token)
-        }
     }
 
     handleClick = (event, id) => {
@@ -149,9 +77,6 @@ class MerchantsList extends Component {
     }
 
     render() {
-
-        const { merchantList, rowsPerPage, page } = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, (merchantList !== undefined ? merchantList.length : 0) - page * rowsPerPage);
 
         return (
           <div className="row">
@@ -168,7 +93,7 @@ class MerchantsList extends Component {
                             </div>  
                             <div className="col-xs-12 col-md-10">
                                 <div className="appDescriptionLabel">
-                                    Select a merchant from list to proceed add new Deal.
+                                    Select a user from list to proceed add new Deal.
                                 </div>
                             </div>                           
                     </div>
@@ -230,77 +155,17 @@ class MerchantsList extends Component {
             </div>
             </div>
 
-            <div className="row">
-            <div className="col-xs-12">
-                    <Paper className="pagePaper">
-                    <div className="tableWrapperMaterial">
-                    <Table className="tableMaterial">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell numeric>#</TableCell>
-                                <TableCell>Merchant Name</TableCell>
-                                <TableCell>Location</TableCell>
-                                <TableCell>Email Address</TableCell>
-                                <TableCell>Phone Number</TableCell>
-                                <TableCell>Status</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                        { 
-                            (merchantList !== undefined) ? (
-                            (merchantList.length === 0) ? 
-                                (
-                                    <TableRow style={{ height: 48 * emptyRows }}>
-                                        <TableCell colSpan={6}>
-                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Found</b></div>
-                                        </TableCell>
-                                    </TableRow>                                
-                                )
-                                : (
-                                merchantList
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((object, index) => {
-                                    return (
-                                    <TableRow className="tableRow" key={object.id} hover onClick={event => this.handleClick(event, object.id)}>
-                                        <TableCell numeric>{object.serial_number}</TableCell>
-                                        <TableCell>{object.first_v + " " + object.last_v}</TableCell>
-                                        <TableCell>{object.city_v}</TableCell>
-                                        <TableCell>{object.email_v}</TableCell>
-                                        <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>
-                                        <TableCell>
-                                            <div className={object.inactive_v === 1 ? "titleRed" : "titleGreen"}><FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status}</FormLabel></div>
-                                        </TableCell>
-                                    </TableRow>
-                                    );
-                                })
-                                )
-                                ):(
-                                    <TableRow style={{ height: 48 * emptyRows }}>
-                                        <TableCell colSpan={6}>
-                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
-                                        </TableCell>
-                                    </TableRow>
-                                )
-                            }
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                colSpan={6}
-                                count={(merchantList !== undefined) ? merchantList.length : 0}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onChangePage={this.handleChangePage}
-                                onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                                ActionsComponent={TablePaginationActions}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                    </div>
-                </Paper>
-              </div>
-            </div>   
+           <UserList 
+                name={this.state.name}
+                status={this.state.status}
+                userType={this.state.userType} 
+                resetUserType={true}
+                history={this.props.history}
+                isHover={true}
+                isClick={true}
+                onRef={ref => (this.child = ref)} 
+            />
+
         </div> 
         </div>
         );

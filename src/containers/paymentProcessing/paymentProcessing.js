@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import Paper from '@material-ui/core/Paper';
 
 //Components
-import BusinessList from '../../containers/businessList/businessList'
+import BusinessList from '../../containers/business/businessList'
 
 //Actions
 import { getMerchantListWithFilter, deleteMerchant } from '../../actions/merchantAction';
@@ -92,6 +92,7 @@ class PaymentProcessing extends Component {
             </div>
 
             <BusinessList 
+                userId={this.props.userData.user.responseData.userId} 
                 name={this.state.name}
                 status={this.state.status}
                 location={this.state.location} 

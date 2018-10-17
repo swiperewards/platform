@@ -147,7 +147,7 @@ class AddMerchant extends Component {
             registerEmailId = this.props.userData.user.responseData.emailId
           }
           else{
-            registerEmailId = undefined
+            registerEmailId = this.props.location.state ? this.props.location.state.emailId : ""
           }
 
           this.props.addNewMerchant(values, registerEmailId , this.props.userData.user.responseData.token)

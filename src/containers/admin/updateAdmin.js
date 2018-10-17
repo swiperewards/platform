@@ -212,7 +212,7 @@ class updateAdmin extends Component {
                                     onChange={this.onImageChange.bind(this)} 
                                     accept=".jpg"
                                     />
-
+                                <span style={{fontSize:'8pt', color:'grey'}}>File must be less than 2 MB</span>
                             </div>            
                         </div>
                         <div className="row end-xs">

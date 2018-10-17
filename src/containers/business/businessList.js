@@ -86,7 +86,7 @@ class BusinessList extends Component {
     getAllMerchants(){
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
-            this.props.getMerchantListWithFilter(this.props.userData.user.responseData.userId,this.props.name,this.props.status,this.props.location,this.props.userData.user.responseData.token)
+            this.props.getMerchantListWithFilter(this.props.userId,this.props.name,this.props.status,this.props.location,this.props.userData.user.responseData.token)
         }
         else{
             //#TODO : Handle token expire case
@@ -128,7 +128,7 @@ class BusinessList extends Component {
 
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
-            this.props.getMerchantListWithFilter(this.props.userData.user.responseData.userId,"", "", "",this.props.userData.user.responseData.token)
+            this.props.getMerchantListWithFilter(this.props.userId,"", "", "",this.props.userData.user.responseData.token)
         }
     
     }
@@ -205,7 +205,10 @@ class BusinessList extends Component {
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((object, index) => {
                                     return (
-                                    <TableRow className="tableRow" key={object.id}>
+                                    <TableRow 
+                                        className="tableRow" 
+                                        key={object.id}                                        
+                                    >
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.first_v + " " + object.last_v}</TableCell>
                                         <TableCell>{object.city_v}</TableCell>

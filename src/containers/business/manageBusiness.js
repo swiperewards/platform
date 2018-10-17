@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 //material-ui
 import Paper from '@material-ui/core/Paper';
@@ -12,15 +11,10 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 
 //Components
-import InputField from '../../components/inputField';
+import BusinessList from '../../containers/business/businessList'
 import {renderSelectField} from '../../components/selectControl';
+import InputField from '../../components/inputField';
 import Loader from '../../components/loader'
-import OverLayMessage from '../../components/overlayMessage';
-import DealList from '../../containers/deals/dealList';
-
-//Actions
-import { getUserProfile } from '../../actions/accountAction';
-import { getDealsListWithFilter, deleteDeal, getDealDetails, getCitiesList } from '../../actions/dealAction';
 
 //Data
 import Data from '../../staticData';
@@ -35,50 +29,13 @@ const styles = {
       },
 };
 
-class ManageDeals extends Component {
+class ManageBusiness extends Component {
 
     state = {
         name:'',
         status: '',
         location:'',
-        fromDate:'',
-        toDate:'',
-        citiesList:'',
-        disableReset: true,
     };
-
-    componentWillMount()
-    {
-        if(this.props.userData.user.responseData.token){
-            this.props.getCitiesList(this.props.userData.user.responseData.token)
-        }
-
-        if(this.props.userData.user.responseData.role === 'merchant'){
-            if(this.props.userData.user.responseData.token){
-                this.setState({showLoader:true})
-                this.props.getUserProfile(this.props.userData.user.responseData.token);
-            }
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-
-        if (nextProps) {
-    
-          if(nextProps.citiesPayload){
-            if(nextProps.citiesPayload.status === 200){
-                this.setState({citiesList:nextProps.citiesPayload.responseData})
-            }
-          }
-
-          if(nextProps.userProfile){
-            this.setState({showLoader:false})
-            if(nextProps.userProfile.status === 1092){
-                this.setState({showOverlay:true});
-            }
-          }
-        }
-    }
 
     //Method to handle change event for dropdown
     handleChange = event => {
@@ -96,14 +53,12 @@ class ManageDeals extends Component {
         this.child.searchHandler();
     }
 
-    addNewDeal(){
+    addNewMerchant(){
+        this.props.history.push(
+            {pathname:'/addNewMerchant',
+            state: { emailId: this.props.location.state ? this.props.location.state.emailId : ""}}
+        )
 
-        if(this.props.userData.user.responseData.role === 'merchant'){
-            this.props.history.push({pathname:'/addNewDeal',state: { detail: this.props.userData.user.responseData.userId }})
-        }
-        else{
-            this.props.history.push('/merchantList');
-        }
     }
 
     onHandleReset(){
@@ -114,24 +69,20 @@ class ManageDeals extends Component {
         this.props.reset();
         this.child.resetHandler();
     }
-
+    
     render() {
 
         return (
           <div className="row">
             <div className="col-xs-12">
             <Loader status={this.state.showLoader} />
-            <OverLayMessage 
-                status={this.state.showOverlay} 
-                history={this.props.history}
-            />
 
             <div className="row">
             <div className="col-xs-12">
             <Paper className="pagePaper">
                 <form size='large' className="form-horizontal">
                     <div className="row appTitleLabel">
-                        MANAGE DEALS
+                        MANAGE BUSINESS
                     </div>
                     <div className="row middle-md">
                         <div className="col-xs-12 col-sm-6 col-md-2">
@@ -157,7 +108,7 @@ class ManageDeals extends Component {
                                         Status
                                     </MenuItem>
                                     {
-                                    Data.dealStatus.map((item) =>{
+                                    Data.searchStatus.map((item) =>{
                                         return <MenuItem 
                                             style={styles.selectControl}
                                             key={item.id}
@@ -182,40 +133,19 @@ class ManageDeals extends Component {
                                         Location
                                     </MenuItem>
                                     {
-                                        (this.state.citiesList) ? 
-                                            this.state.citiesList.map((item) =>{
-                                            return <MenuItem 
-                                                    style={styles.selectControl}
-                                                    key={item.id}
-                                                    value={item.name}>
-                                                    {item.name}
-                                                </MenuItem>
-                                            })
-                                        : null    
+                                    Data.states.map((item) =>{
+                                        return <MenuItem 
+                                            style={styles.selectControl}
+                                            key={item.id}
+                                            value={item.prefix}>
+                                            {item.name}
+                                        </MenuItem>
+                                    })
                                     }
                                 </Field>    
                             </FormControl>  
                         </div>    
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <Field 
-                            myType="date"
-                            name="fromDate" 
-                            fullWidth={true} 
-                            component={InputField} 
-                            onChange={this.handleChange}
-                            />
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-2">
-                            <Field 
-                            myType="date"
-                            name="toDate" 
-                            myPlaceHolder="To Date" 
-                            fullWidth={true} 
-                            component={InputField} 
-                            onChange={this.handleChange}
-                            />
-                        </div>
-                        <div className="col-xs-12 col-sm-6 col-md-1">
+                        <div className="col-xs-12 col-sm-6 col-md-3">
                             <button 
                                 type="button"
                                 onClick={this.onHandleReset.bind(this)}
@@ -230,51 +160,44 @@ class ManageDeals extends Component {
                                 className="button"
                                 > Filter
                             </button> 
-                        </div>        
-                        <div className="col-xs-12 col-sm-6 col-md-1 end-md">
+                        </div>       
+                        <div className="col-xs-12 col-sm-6 col-md-3 end-md">
                             <Button 
-                            variant="fab"
-                            type="button"
-                            color="primary"
-                            onClick={this.addNewDeal.bind(this)}
-                            style={{backgroundColor:'#27A24F'}}
-                            > <AddIcon /></Button> 
+                                variant="fab"
+                                type="button"
+                                color="primary"
+                                onClick={this.addNewMerchant.bind(this)}
+                                style={{backgroundColor:'#27A24F'}}
+                                > 
+                                <AddIcon />
+                            </Button> 
                         </div>
                     </div>
                 </form>
             </Paper> 
             </div>
             </div>
-
-             <DealList 
+            <BusinessList 
+                userId={this.props.location.state ? this.props.location.state.userId : 0} 
                 name={this.state.name}
                 status={this.state.status}
                 location={this.state.location} 
-                fromDate={this.state.fromDate}
-                toDate={this.state.toDate}
                 history={this.props.history}
                 onRef={ref => (this.child = ref)} 
             />
+            
         </div> 
         </div>
         );
     }
 }
-
-
-const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getDealsListWithFilter, deleteDeal, getUserProfile, getDealDetails, getCitiesList }, dispatch)
-  }
   
-  ManageDeals = connect(
+ManageBusiness = connect(
     state => ({
       userData: state.account === undefined ? undefined : state.account,
-      dealsPayload: state.deal.dealList === undefined ? undefined : state.deal.dealList,
-      dealDelete: state.deal.deleteDeal === undefined ? undefined : state.deal.deleteDeal,
-      userProfile: state.account.userProfile === undefined ? undefined : state.account.userProfile, 
-      citiesPayload: state.deal.citiesList === undefined ? undefined : state.deal.citiesList,
+      merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
+      merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
     }),
-    mapDispatchToProps,
-  )(ManageDeals)
+  )(ManageBusiness)
   
-  export default reduxForm({form: 'FrmManageDeals'})(ManageDeals)
+  export default reduxForm({form: 'FrmManageBusiness'})(ManageBusiness)
