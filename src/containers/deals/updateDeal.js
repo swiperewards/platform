@@ -202,6 +202,7 @@ class UpdateDeal extends Component {
                                     validate={[required, intMaxRangeMatch]}
                                     masked={true}
                                     myMaskType="number"
+                                    disabled={true}
                                 />  
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">

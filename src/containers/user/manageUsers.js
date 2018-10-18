@@ -164,8 +164,8 @@ class ManageUsers extends Component {
                 userType={this.state.userType} 
                 resetUserType={true}
                 history={this.props.history}
-                isHover={false}
                 isClick={false}
+                source={"ManageUsers"}
                 onRef={ref => (this.child = ref)} 
             />
         </div> 

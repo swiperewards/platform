@@ -65,7 +65,15 @@ class AddNewDeal extends Component {
 
         if(this.props.userData.user.responseData.token){
             this.props.getCitiesList(this.props.userData.user.responseData.token)
-            this.props.getMerchantListWithFilter(this.props.userData.user.responseData.userId,"","","",this.props.userData.user.responseData.token);
+            var userId
+            if(this.props.userData.user.responseData.role === 'merchant'){
+                userId = this.props.userData.user.responseData.userId
+            }
+            else{
+                userId = this.props.location.state !== undefined ? this.props.location.state.userId : undefined
+            }
+
+            this.props.getMerchantListWithFilter(userId,"","","",this.props.userData.user.responseData.token);
         }
     }
 

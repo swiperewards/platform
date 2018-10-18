@@ -132,8 +132,13 @@ class UserList extends Component {
         }
     }
 
-    handleClick = (event, id, email) => {
-        this.props.history.push({pathname:'/manageBusiness',state: { userId: id, emailId: email }})
+    handleClick = (event, id, email, source) => {
+        if(source === "ManageMerchant"){
+            this.props.history.push({pathname:'/manageBusiness',state: { userId: id, emailId: email }})
+        }
+        else if(source === "MerchantList"){
+            this.props.history.push({pathname:'/addNewDeal',state: { userId: id, emailId: email }})
+        }
     }
 
     render() {
@@ -210,8 +215,8 @@ class UserList extends Component {
                                     <TableRow 
                                         className="tableRow" 
                                         key={object.serial_number}
-                                        hover={this.props.isHover ? true : false}
-                                        onClick={this.props.isClick ? event => this.handleClick(event, object.userId, object.emailId) : null} 
+                                        hover={this.props.isClick ? true : false}
+                                        onClick={this.props.isClick ? event => this.handleClick(event, object.userId, object.emailId, this.props.source) : null} 
                                     >
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.fullName}</TableCell>

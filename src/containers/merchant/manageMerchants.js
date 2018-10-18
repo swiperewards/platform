@@ -198,8 +198,8 @@ class ManageMerchants extends Component {
                 userType="Merchant"
                 resetUserType={false}
                 history={this.props.history}
-                isHover={true}
                 isClick={true}
+                source={"ManageMerchant"}
                 onRef={ref => (this.child = ref)} 
             />
             
