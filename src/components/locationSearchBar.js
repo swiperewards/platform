@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import Popover from '@material-ui/core/Popover'
 
 const isObject = val => {
     return typeof val === 'object' && val !== null;
@@ -117,7 +113,7 @@ class LocationSearchBar extends Component {
                     <div>
                         <TextField {...this.props.input}
                             {...getInputProps({
-                                placeholder: 'Search Places ...',
+                                placeholder: 'Search Store ...',
                                 className: 'location-search-input',
                             })}
                             error={this.props.meta.touched ? this.props.meta.invalid : false}
@@ -134,37 +130,18 @@ class LocationSearchBar extends Component {
                                     'suggestion-item--active': suggestion.active,
                                 });
 
-                            return (
-                                /* eslint-disable react/jsx-key */
-                                <div key={index}>
-                                    <Popover 
-                                        open={true} 
-                                        anchorEl={this.state.anchorEl} 
-                                        anchorOrigin={{
-                                        vertical: 'bottom',
-                                        horizontal: 'center',
-                                        }}
-                                    >
-                                        <Paper>
-                                            <MenuList>
-                                                <MenuItem onClick={this.handleClose}>
-                                                    <div
-                                                        {...getSuggestionItemProps(suggestion, { className })}>
-                                                        <strong>
-                                                            {suggestion.formattedSuggestion.mainText}
-                                                        </strong>{' '}
-                                                        <small>
-                                                            {suggestion.formattedSuggestion.secondaryText}
-                                                        </small>
-                                                    </div>
-                                                </MenuItem>
-                                            </MenuList>
-                                        </Paper>
-                                    </Popover>
-                                    
-                                </div>
+                            return (                                
+                              <div
+                                  {...getSuggestionItemProps(suggestion, { className })}>
+                                  <strong>
+                                      {suggestion.formattedSuggestion.mainText}
+                                  </strong>{' '}
+                                  <small>
+                                      {suggestion.formattedSuggestion.secondaryText}
+                                  </small>
+                              </div>
+                                            
                             );
-                            /* eslint-enable react/jsx-key */
                             })}
                         </div>
                     )}

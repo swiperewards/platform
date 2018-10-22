@@ -268,7 +268,7 @@ const mapDispatchToProps = (dispatch) => {
   
   ManageDeals = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       dealsPayload: state.deal.dealList === undefined ? undefined : state.deal.dealList,
       dealDelete: state.deal.deleteDeal === undefined ? undefined : state.deal.deleteDeal,
       userProfile: state.account.userProfile === undefined ? undefined : state.account.userProfile, 

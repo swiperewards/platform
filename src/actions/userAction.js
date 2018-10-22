@@ -95,7 +95,7 @@ export function clearUserDeleteResponse() {
 //Function to get user details by user id
 export function getUserDetails(userId, token) {
     var requestData = {
-        "id": userId, 
+        "id": userId !== undefined ? userId.toString() : userId, 
     }
     
     var setting = {

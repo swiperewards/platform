@@ -313,7 +313,7 @@ const mapDispatchToProps = (dispatch) => {
 
 ContactUs = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        queryTypeResponse: state.ticket === undefined ? undefined : state.ticket.queryType,
        generateTicketResponse : state.ticket.generateTicket === undefined ? undefined : state.ticket.generateTicket, 
        merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,

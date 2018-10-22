@@ -177,7 +177,7 @@ class ManageUsers extends Component {
   
   ManageUsers = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
     }),
   )(ManageUsers)
   

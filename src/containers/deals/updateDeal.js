@@ -161,7 +161,7 @@ class UpdateDeal extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Location
+                                City
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControl style={styles.formControl}>
@@ -187,7 +187,18 @@ class UpdateDeal extends Component {
                                     </Field>    
                                 </FormControl>  
                             </div>  
-                            
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                Store Location
+                            </div> 
+                            <div className="col-xs-12 col-sm-6 col-md-3">      
+                                <Field 
+                                    myType="text" 
+                                    name="storeLocation" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    disabled={true}
+                                /> 
+                            </div>
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
@@ -299,7 +310,7 @@ const mapDispatchToProps = (dispatch) => {
 
 UpdateDeal = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        updateDealResponse: state.deal === undefined ? undefined : state.deal.updateDeal, 
        initialValues: state.deal.dealDetails === undefined ? undefined : state.deal.dealDetails.responseData,
        citiesPayload: state.deal.citiesList === undefined ? undefined : state.deal.citiesList,

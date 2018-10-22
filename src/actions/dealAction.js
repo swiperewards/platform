@@ -6,7 +6,7 @@ import {encryptData, decryptData} from '../utilities/encryptDecryptData'
 var axios = require('axios');
 
 //Function to add new deal to processing system
-export function addNewDeal(values, token) {
+export function addNewDeal(values, latitude, longitude, token) {
     var requestData = {
         "merchantId": values.merchantId, 
         "startDate": values.fromDate === undefined ? undefined : moment(values.fromDate).format('YYYY-MM-DD'),
@@ -16,6 +16,9 @@ export function addNewDeal(values, token) {
         "status": values.status,
         "shortDescription": "Deal New",
         "longDescription": "New Deal",
+        "latitude":latitude,
+        "longitude":longitude,
+        "storeLocation": values.storeLocation,
     }
 
     var setting = {
@@ -169,7 +172,8 @@ export function getDealDetails(dealId,token) {
                     "endDate": (responseDetails.endDate !== null ) ? moment(responseDetails.endDate).format('YYYY-MM-DD') : undefined ,
                     "status": (responseDetails.status).toString(),
                     "location":responseDetails.location, 
-                    "cashBonus":(responseDetails.cashBonus).toString(),   
+                    "cashBonus":(responseDetails.cashBonus).toString(),
+                    "storeLocation":responseDetails.storeLocation   
                 }
             }
 

@@ -194,7 +194,7 @@ class ManageBusiness extends Component {
   
 ManageBusiness = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
       merchantDelete: state.merchant.deleteMerchant === undefined ? undefined : state.merchant.deleteMerchant
     }),

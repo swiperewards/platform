@@ -527,7 +527,7 @@ const mapDispatchToProps = (dispatch) => {
   
   TicketList = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       queryTypeResponse: state.ticket === undefined ? undefined : state.ticket.queryType,
       CustomerQueriesResponse: state.ticket.customerQueriesList === undefined ? undefined : state.ticket.customerQueriesList,
       initialValues: state.ticket.customerQueryDetails === undefined ? undefined : state.ticket.customerQueryDetails.responseData,

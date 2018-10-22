@@ -287,7 +287,7 @@ const mapDispatchToProps = (dispatch) => {
   
   ManageTickets = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       ticketTypePayload: state.ticket.ticketTypeList === undefined ? undefined : state.ticket.ticketTypeList,
       deleteTicketResponse: state.ticket.deleteTicketType === undefined ? undefined : state.ticket.deleteTicketType
     }),

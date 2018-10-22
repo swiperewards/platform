@@ -328,7 +328,7 @@ UpdateUserDetails = reduxForm({
 
 UpdateUserDetails = connect(
     state => ({
-        userData: state.account === undefined ? undefined : state.account,
+        userData: state.accountValidate === undefined ? undefined : state.accountValidate,
         initialValues: state.userAccount.userDetails === undefined ? undefined : state.userAccount.userDetails.responseData,
         updateUserResponse : state.userAccount.updateUser === undefined ? undefined : state.userAccount.updateUser,
 

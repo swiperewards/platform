@@ -439,7 +439,7 @@ UpdateOwnerDetails = reduxForm({
 
 UpdateOwnerDetails = connect(
     state => ({
-        userData: state.account === undefined ? undefined : state.account,
+        userData: state.accountValidate === undefined ? undefined : state.accountValidate,
         updateOwnerResponse: state.merchant.updateMerchant === undefined ? undefined : state.merchant.updateMerchant.responseData,
         initialValues: {
             owners: state.merchant.merchantDetails === undefined 

@@ -19,6 +19,7 @@ import DialogBox from '../../components/alertDialog';
 
 //Action
 import { updateUserProfile, clearUpdateProfileResponse } from '../../actions/accountAction';
+import { getUserDetails } from '../../actions/userAction';
 
 //Validation
 import {required, minimum8} from '../../utilities/validation'
@@ -44,6 +45,9 @@ class UserProfile extends Component {
 
     componentWillMount() {
         errorMessage = ""
+        if(this.props.userData.user.responseData.token){
+            this.props.getUserDetails(this.props.userData.user.responseData.userId, this.props.userData.user.responseData.token)
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -75,6 +79,10 @@ class UserProfile extends Component {
         this.setState({[name]: event.target.checked});
     };
 
+    handleClose = () => {
+        this.setState({ dialogOpen: false });
+    };
+     
     onSubmit(values) {
 
         if(this.props.userData.user.responseData.token){
@@ -218,7 +226,7 @@ class UserProfile extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ updateUserProfile, clearUpdateProfileResponse }, dispatch)
+    return bindActionCreators({ updateUserProfile, clearUpdateProfileResponse, getUserDetails }, dispatch)
   }
 
 UserProfile = reduxForm({
@@ -227,8 +235,8 @@ UserProfile = reduxForm({
 
 UserProfile = connect(
     state => ({
-        userData: state.account === undefined ? undefined : state.account,
-        initialValues: state.account === undefined ? undefined : state.account.user.responseData,
+        userData: state.accountValidate === undefined ? undefined : state.accountValidate,
+        initialValues : state.userAccount.userDetails === undefined ? undefined : state.userAccount.userDetails.responseData,
         updateProfileResponse: state.account.updateProfile === undefined ? undefined : state.account.updateProfile
     }),
     mapDispatchToProps,

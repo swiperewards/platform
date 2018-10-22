@@ -316,7 +316,7 @@ const selector = formValueSelector('FrmAddMerchant') // <-- same as form name
 
 AddMerchant = connect(
   state => ({
-    userData: state.account === undefined ? undefined : state.account,
+    userData: state.accountValidate === undefined ? undefined : state.accountValidate,
     merchantPayload: state.merchant === undefined ? undefined : state.merchant,
     businessType: selector(state, 'businessType')
 

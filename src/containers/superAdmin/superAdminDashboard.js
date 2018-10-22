@@ -146,7 +146,7 @@ const mapDispatchToProps = (dispatch) => {
   
   superAdminDashboard = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       initialValues: state.dashboard.dashboardDetails === undefined ? undefined : state.dashboard.dashboardDetails,
     }),
     mapDispatchToProps,

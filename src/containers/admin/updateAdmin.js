@@ -255,7 +255,7 @@ const mapDispatchToProps = (dispatch) => {
 
 updateAdmin = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        updateAdminResponse: state.admin.updateAdmin === undefined ? undefined : state.admin.updateAdmin,
        initialValues: state.admin.adminDetails === undefined ? undefined : state.admin.adminDetails.responseData,
     }),

@@ -195,7 +195,7 @@ class Login extends Component {
 const mapStateToProps = (state) => {
 
     return {
-            validateAction_Data: state.account,
+            validateAction_Data: state.accountValidate,
             loadStatus: state.common.data
         }
 }

@@ -161,7 +161,7 @@ UpdateMerchant.propTypes = {
 
 UpdateMerchant = connect(
   state => ({
-    userData: state.account === undefined ? undefined : state.account,
+    userData: state.accountValidate === undefined ? undefined : state.accountValidate,
   }),
 )(UpdateMerchant)
 

@@ -506,7 +506,7 @@ const mapDispatchToProps = (dispatch) => {
   
   RedeemRequestList = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       redeemRequestPayload: state.redeem.redeemRequestList === undefined ? undefined : state.redeem.redeemRequestList,
       redeemModePayload: state.redeem.redeemModeList === undefined ? undefined : state.redeem.redeemModeList,
       initialValues: state.redeem.redeemRequestDetails === undefined ? undefined : state.redeem.redeemRequestDetails.responseData,

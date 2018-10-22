@@ -82,7 +82,7 @@ class App extends Component {
     }
     else{
       return (        
-            <Login/>
+            <Login history={this.props.history}/>
       );
     }
   }
@@ -90,7 +90,7 @@ class App extends Component {
 
 function mapStateToProps(state) {
   return {
-    userData: state.account === undefined ? undefined : state.account
+    userData: state.accountValidate === undefined ? undefined : state.accountValidate
   }
 }
 

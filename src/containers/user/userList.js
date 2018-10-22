@@ -301,7 +301,7 @@ const mapDispatchToProps = (dispatch) => {
   
   UserList = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       deleteUserResponse: state.userAccount.deleteUser === undefined ? undefined : state.userAccount.deleteUser,
       userPayload: state.userAccount.userList === undefined ? undefined : state.userAccount.userList,
     }),

@@ -4,7 +4,7 @@ const CryptoJS = require("crypto-js");
 
 export const LoadState = () => {
     try {
-        const bytes  = CryptoJS.AES.decrypt(localStorage.getItem('state').toString(), secretKey);
+        const bytes  = CryptoJS.AES.decrypt(localStorage.getItem('state') ? localStorage.getItem('state').toString() : "", secretKey);
         const serializedState =  JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
         if (serializedState === null) {

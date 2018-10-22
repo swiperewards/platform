@@ -394,7 +394,7 @@ const mapDispatchToProps = (dispatch) => {
   
   ManageAdmins = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       adminPayload: state.admin.adminList === undefined ? undefined : state.admin.adminList,
       adminDelete: state.admin.deleteAdmin === undefined ? undefined : state.admin.deleteAdmin
     }),
