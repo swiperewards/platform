@@ -72,7 +72,7 @@ class Register extends Component {
                     if(this.props.userData){
                         if(this.props.userData.user){
                             if(this.props.userData.user.responseData.role !== 'merchant'){
-                                this.props.history.push('/managemerchants')
+                                this.props.dismissPopUp()
                             }
                         }
                         else{

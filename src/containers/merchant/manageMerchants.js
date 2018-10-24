@@ -78,6 +78,7 @@ class ManageMerchants extends Component {
 
     handleClose = () => {
         this.setState({ openSignupPopUp: false });
+        this.onHandleReset();
     };
 
     onHandleReset(){
@@ -105,7 +106,7 @@ class ManageMerchants extends Component {
                     scroll = 'paper'
                     TransitionComponent={Transition}
                 >
-                    <AppBar style={styles.appBar} backgroundColor="#5CBBFF">
+                    <AppBar style={styles.appBar} backgroundcolor="#5CBBFF">
                         <Toolbar>
                         <IconButton color="inherit" onClick={this.handleClose} aria-label="Close">
                             <CloseIcon />
@@ -114,7 +115,10 @@ class ManageMerchants extends Component {
                     </AppBar>
                     <div>
                         <DialogContent>
-                            <Register history={this.props.history} /> 
+                            <Register 
+                                history={this.props.history} 
+                                dismissPopUp={this.handleClose}
+                            /> 
                         </DialogContent>
                     </div>
                 </Dialog>

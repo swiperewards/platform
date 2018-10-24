@@ -199,7 +199,12 @@ class UserList extends Component {
                                 <TableCell>Phone Number</TableCell>
                                 <TableCell>User Type</TableCell>
                                 <TableCell>Status</TableCell>
-                                <TableCell>Actions</TableCell>
+                                {
+                                    this.props.source === "ManageUsers" ?
+                                        <TableCell>Actions</TableCell>
+                                    :
+                                    null
+                                }
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -234,35 +239,42 @@ class UserList extends Component {
                                                 <FormLabel component="label" style={{color:'white', fontSize:'12px'}}>{object.status === 0 ? "Deactive" : "Active"}</FormLabel>
                                             </div>
                                         </TableCell>
-                                        <TableCell> 
-                                            <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
-                                                <div className="col-xs-6">
-                                                        <button 
-                                                            type="button" 
-                                                            onClick={() => this.updateUser(object.userId)} 
-                                                            className="enabledButton"
-                                                            style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
-                                                            > 
-                                                            <img src="../images/ic_edit.svg" alt="" /> 
-                                                        </button>
-                                                    </div>
-                                                    <div className="col-xs-6">
-                                                        <button 
-                                                            type="button" 
-                                                            onClick={() => this.deleteUserById(object.userId, !object.status)} 
-                                                            className="enabledButton"
-                                                            style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
-                                                            > 
-                                                            {
-                                                                object.status === 0 ?
-                                                                    <img src="../images/switch_off.svg" alt="" />
-                                                                :
-                                                                    <img src="../images/switch_on.svg" alt="" />
-                                                            }
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                        </TableCell>     
+
+                                        {
+                                            this.props.source === "ManageUsers" ?
+                                                <TableCell> 
+                                                    <div className="row start-xs" style={{marginRight:'0px',marginBottom:'0px'}}>
+                                                        <div className="col-xs-6">
+                                                                <button 
+                                                                    type="button" 
+                                                                    onClick={() => this.updateUser(object.userId)} 
+                                                                    className="enabledButton"
+                                                                    style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                                    > 
+                                                                    <img src="../images/ic_edit.svg" alt="" /> 
+                                                                </button>
+                                                            </div>
+                                                            <div className="col-xs-6">
+                                                                <button 
+                                                                    type="button" 
+                                                                    onClick={() => this.deleteUserById(object.userId, !object.status)} 
+                                                                    className="enabledButton"
+                                                                    style={ ((index%2 !== 0) ? {backgroundColor:'#ffffff', height: '100%'} : {backgroundColor:'#f2f6f2', height:'100%'})}
+                                                                    > 
+                                                                    {
+                                                                        object.status === 0 ?
+                                                                            <img src="../images/switch_off.svg" alt="" />
+                                                                        :
+                                                                            <img src="../images/switch_on.svg" alt="" />
+                                                                    }
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                </TableCell>    
+                                            :
+                                            null
+                                        }
+                                         
                                     </TableRow>
                                     );
                                 })

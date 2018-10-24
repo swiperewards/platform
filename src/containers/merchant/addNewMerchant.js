@@ -100,7 +100,7 @@ class AddMerchant extends Component {
           case 1:
             return (<OwnerDetails myProps={this.props.businessType} />);
           case 2:
-            return (<AccountSetup  myProps={this.props} />);
+            return (<AccountSetup myProps={this.props} />);
           case 3:
             return (<BankAccount />);
           default:
@@ -150,7 +150,7 @@ class AddMerchant extends Component {
             registerEmailId = this.props.location.state ? this.props.location.state.emailId : ""
           }
 
-          this.props.addNewMerchant(values, registerEmailId , this.props.userData.user.responseData.token)
+          this.props.addNewMerchant(values, registerEmailId, this.props.userData.user.responseData.token)
 
         }
       }
@@ -318,8 +318,8 @@ AddMerchant = connect(
   state => ({
     userData: state.accountValidate === undefined ? undefined : state.accountValidate,
     merchantPayload: state.merchant === undefined ? undefined : state.merchant,
-    businessType: selector(state, 'businessType')
-
+    businessType: selector(state, 'businessType'),
+    businessLogo: selector(state,'businessLogo'),
   }),
   mapDispatchToProps,
 )(AddMerchant)

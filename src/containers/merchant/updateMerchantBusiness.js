@@ -12,6 +12,7 @@ import Divider from '@material-ui/core/Divider';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 
 //Components
 import InputField from '../../components/inputField';
@@ -48,6 +49,8 @@ const styles = {
 class UpdateBusinessDetails extends Component {
 
     state = {
+        image:'',
+        defaultImage:'../images/profile.png',
         businessType: '',
         stateName:'',
         creditCheckedYes: false,
@@ -129,6 +132,29 @@ class UpdateBusinessDetails extends Component {
           }
         }
       }
+
+      onImageChange(event) {
+
+        errorMessage = ""
+
+        if (event.target.files && event.target.files[0]) {
+            var FileSize = event.target.files[0].size / 1024 / 1024; // in MB
+            if (FileSize > 2) {
+                errorMessage =
+                        <div 
+                            className="errorDiv"
+                        >{"File size exceeds 2 MB"}</div>
+                        event.target.value = null;
+                        this.setState({image: this.state.defaultImage});
+            } else {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    this.setState({image: e.target.result});
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
+    }
 
       getMerchantDetails(){
         if(this.props.userData.user.responseData.token && this.props.merchant){
@@ -490,6 +516,24 @@ class UpdateBusinessDetails extends Component {
                                 validate={[required, email, between1to100]}
                                 />  
                             </div>
+                        </div>
+                        <div className="row middle-md">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Avatar
+                                    alt="profile"
+                                    src={this.state.image === '' ? this.state.defaultImage : this.state.image} 
+                                    className="bigAvatar"
+                                />
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <input 
+                                    name="businessLogo"
+                                    type="file" 
+                                    onChange={this.onImageChange.bind(this)} 
+                                    accept=".jpg"
+                                    />
+                                    <span style={{fontSize:'8pt', color:'grey'}}>File must be less than 2 MB</span>
+                            </div>            
                         </div>
                     </div>            
                 </Paper> 
