@@ -128,16 +128,22 @@ class UserList extends Component {
 
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
-            this.props.getUsersByFilter("", "", this.props.resetUserType === true ? "" : "Merchant" ,this.props.userData.user.responseData.token)
+            this.props.getUsersByFilter("", this.props.resetStatus === true ? "" : "1", this.props.resetUserType === true ? "" : "Merchant" ,this.props.userData.user.responseData.token)
         }
     }
 
-    handleClick = (event, id, email, source) => {
+    handleClick = (event, id, email, source, businessCount) => {
         if(source === "ManageMerchant"){
             this.props.history.push({pathname:'/manageBusiness',state: { userId: id, emailId: email }})
         }
         else if(source === "MerchantList"){
-            this.props.history.push({pathname:'/addNewDeal',state: { userId: id, emailId: email }})
+            if(businessCount > 0){
+                this.props.history.push({pathname:'/addNewDeal',state: { userId: id, emailId: email }})
+            }
+            else{
+                this.setState({message:"Business unavailable for selected user, user should have an active business to add new deal."});
+                this.setState({ dialogOpen: true })
+            }
         }
     }
 
@@ -216,7 +222,7 @@ class UserList extends Component {
                                         className="tableRow" 
                                         key={object.serial_number}
                                         hover={this.props.isClick ? true : false}
-                                        onClick={this.props.isClick ? event => this.handleClick(event, object.userId, object.emailId, this.props.source) : null} 
+                                        onClick={this.props.isClick ? event => this.handleClick(event, object.userId, object.emailId, this.props.source, object.businessCount) : null} 
                                     >
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.fullName}</TableCell>

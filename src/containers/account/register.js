@@ -69,7 +69,16 @@ class Register extends Component {
                 if (nextProps.registerUserResponse.status === 200) {
                     errorMessage = undefined
                     this.setState({showLoader:false})
-                    this.props.history.push({pathname:'/accountActivate',state: { detail: nextProps.registerUserResponse.responseData.emailId }})
+                    if(this.props.userData){
+                        if(this.props.userData.user){
+                            if(this.props.userData.user.responseData.role !== 'merchant'){
+                                this.props.history.push('/managemerchants')
+                            }
+                        }
+                        else{
+                            this.props.history.push({pathname:'/accountActivate',state: { detail: nextProps.registerUserResponse.responseData.emailId }})
+                        }
+                    }                
                 }
                 else{
                     errorMessage =
@@ -178,19 +187,21 @@ class Register extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-
-    return {
-            registerUserResponse: state.account.registerUser,
-        }
-}
-
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({ registerUser, clearRegisterUserState }, dispatch)
-}
+  }
 
-export default reduxForm({
-    form: 'FrmRegister',
+Register = reduxForm({
+    form: 'frmRegister',
     validate
-}
-)(connect(mapStateToProps, mapDispatchToProps)(Register))
+})(Register)
+
+Register = connect(
+    state => ({
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
+       registerUserResponse: state.account.registerUser,
+    }),
+    mapDispatchToProps,
+  )(Register)
+
+export default Register;

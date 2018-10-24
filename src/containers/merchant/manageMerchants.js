@@ -52,6 +52,10 @@ class ManageMerchants extends Component {
         openSignupPopUp: false,
     };
 
+    componentWillMount(){
+        this.setState({ openSignupPopUp: false });
+    }
+        
     //Method to handle change event for dropdown
     handleChange = event => {
         this.setState({ [event.target.name]: event.target.value });
@@ -197,6 +201,7 @@ class ManageMerchants extends Component {
                 status={this.state.status}
                 userType="Merchant"
                 resetUserType={false}
+                resetStatus={true}
                 history={this.props.history}
                 isClick={true}
                 source={"ManageMerchant"}

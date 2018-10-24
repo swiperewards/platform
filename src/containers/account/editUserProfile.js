@@ -39,7 +39,7 @@ const passwordsMatch = (value, allValues) =>
 class UserProfile extends Component {
     
     state = {
-        passwordUpdate: '',
+        passwordUpdate: false,
         dialogOpen: false,
     };
 

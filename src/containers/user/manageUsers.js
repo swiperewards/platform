@@ -163,6 +163,7 @@ class ManageUsers extends Component {
                 status={this.state.status}
                 userType={this.state.userType} 
                 resetUserType={true}
+                resetStatus={true}
                 history={this.props.history}
                 isClick={false}
                 source={"ManageUsers"}

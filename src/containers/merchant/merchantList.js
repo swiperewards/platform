@@ -101,8 +101,9 @@ class MerchantsList extends Component {
            <UserList 
                 name={this.state.name}
                 status="1"
-                userType={this.state.userType} 
-                resetUserType={true}
+                userType="Merchant"
+                resetUserType={false}
+                resetStatus={false}
                 history={this.props.history}
                 isClick={true}
                 source={"MerchantList"}

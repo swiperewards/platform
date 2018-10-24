@@ -334,7 +334,8 @@ class RedeemRequestList extends Component {
                                         component={renderSelectField}
                                         fullWidth={true}
                                         onChange={this.handleChange}
-                                        disabled={openApproveRequestPopUp ? false : true}
+                                        disabled={true}
+
                                         >                                            
                                         {
                                             this.state.redeemModeList ?
