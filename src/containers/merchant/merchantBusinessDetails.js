@@ -99,6 +99,7 @@ class BusinessDetails extends Component {
                 let reader = new FileReader();
                 reader.onload = (e) => {
                     this.setState({image: e.target.result});
+                    this.props.imageData(e.target.result); 
                 };
                 reader.readAsDataURL(file);
             }
@@ -396,7 +397,6 @@ class BusinessDetails extends Component {
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
                                     name="businessLogo" 
-                                    ref="businessLogo"
                                     label="" 
                                     type="file" 
                                     component={FieldFileInput} 

@@ -21,6 +21,7 @@ import RenderCheckbox from '../../components/renderCheckbox'
 import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 import RenderSwitch from '../../components/switchControl';
+import FieldFileInput from '../../components/fieldFileInput';
 
 //Actions
 import { getMerchantDetailsAPI, updateMerchantDetails, clearMerchantUpdateState } from '../../actions/merchantAction';
@@ -133,25 +134,25 @@ class UpdateBusinessDetails extends Component {
         }
       }
 
-      onImageChange(event) {
+      onImageChange = (file) =>{
 
         errorMessage = ""
 
-        if (event.target.files && event.target.files[0]) {
-            var FileSize = event.target.files[0].size / 1024 / 1024; // in MB
+        if (file) {
+            var FileSize = file.size / 1024 / 1024; // in MB
             if (FileSize > 2) {
                 errorMessage =
                         <div 
                             className="errorDiv"
                         >{"File size exceeds 2 MB"}</div>
-                        event.target.value = null;
+                        //event.target.value = null;
                         this.setState({image: this.state.defaultImage});
             } else {
                 let reader = new FileReader();
                 reader.onload = (e) => {
                     this.setState({image: e.target.result});
                 };
-                reader.readAsDataURL(event.target.files[0]);
+                reader.readAsDataURL(file);
             }
         }
     }
@@ -174,13 +175,12 @@ class UpdateBusinessDetails extends Component {
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
             errorMessage = undefined
-            this.props.updateMerchantDetails(values, "businessDetails", this.props.userData.user.responseData.token)
+            this.props.updateMerchantDetails(values, "businessDetails", this.state.image, this.props.userData.user.responseData.token)
         }
       }
 
     render() {
 
-        const { pristine, submitting } = this.props
         const actions = [
             <Button key="ok" onClick={this.handleCloseAlert} color="primary" autoFocus>
                 OK
@@ -206,8 +206,9 @@ class UpdateBusinessDetails extends Component {
                             <div className="col-xs-2 col-md-2">
                             <button 
                                 type="submit"
-                                disabled={pristine || submitting}
-                                className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
+                                className={"enabledButton button"}
+                                //disabled={pristine || submitting}
+                                //className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
                             >
                                 Update
                             </button>
@@ -520,20 +521,23 @@ class UpdateBusinessDetails extends Component {
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Avatar
+                                    name="logoUrl"
                                     alt="profile"
-                                    src={this.state.image === '' ? this.state.defaultImage : this.state.image} 
+                                    src={this.state.image === '' ? (this.props.initialValues !== undefined ? (this.props.initialValues.merchantLogo !== "" ? this.props.initialValues.merchantLogo : this.state.defaultImage) : this.state.defaultImage) : this.state.image} 
                                     className="bigAvatar"
                                 />
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <input 
-                                    name="businessLogo"
+                                <Field 
+                                    name="businessLogo" 
+                                    ref="businessLogo"
+                                    label="" 
                                     type="file" 
-                                    onChange={this.onImageChange.bind(this)} 
-                                    accept=".jpg"
-                                    />
-                                    <span style={{fontSize:'8pt', color:'grey'}}>File must be less than 2 MB</span>
-                            </div>            
+                                    component={FieldFileInput} 
+                                    imageChange={this.onImageChange} 
+                                />
+                                <span style={{fontSize:'8pt', color:'grey'}}>File must be less than 2 MB</span>
+                            </div>           
                         </div>
                     </div>            
                 </Paper> 

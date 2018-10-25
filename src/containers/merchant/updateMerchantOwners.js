@@ -377,7 +377,7 @@ class UpdateOwnerDetails extends Component {
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
             errorMessage=undefined
-            this.props.updateMerchantDetails(values, "memberDetails" ,this.props.userData.user.responseData.token)
+            this.props.updateMerchantDetails(values, "memberDetails", "", this.props.userData.user.responseData.token)
         }
     }
 

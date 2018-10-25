@@ -228,7 +228,7 @@ class ManageDeals extends Component {
                                 type="button"
                                 onClick={this.onHandleSearch.bind(this)}
                                 className="button"
-                                > Filter
+                                > Search
                             </button> 
                         </div>        
                         <div className="col-xs-12 col-sm-6 col-md-1 end-md">

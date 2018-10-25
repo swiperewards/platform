@@ -90,13 +90,19 @@ class AddMerchant extends Component {
         location:'',
         activeStep: 0,
         open: false,
+        merchantLogo: undefined,
       };
+
+      onImageChange = (file) =>{
+
+        this.setState({merchantLogo: file});
+      }
 
       //Function to navigate to respective step based on active index
       getStepContent(stepIndex) {
         switch (stepIndex) {
           case 0:            
-            return (<BusinessDetails />);
+            return (<BusinessDetails imageData={this.onImageChange} />);
           case 1:
             return (<OwnerDetails myProps={this.props.businessType} />);
           case 2:
@@ -150,8 +156,7 @@ class AddMerchant extends Component {
             registerEmailId = this.props.location.state ? this.props.location.state.emailId : ""
           }
 
-          this.props.addNewMerchant(values, registerEmailId, this.props.userData.user.responseData.token)
-
+          this.props.addNewMerchant(values, registerEmailId, this.state.merchantLogo, this.props.userData.user.responseData.token)
         }
       }
 
@@ -319,7 +324,6 @@ AddMerchant = connect(
     userData: state.accountValidate === undefined ? undefined : state.accountValidate,
     merchantPayload: state.merchant === undefined ? undefined : state.merchant,
     businessType: selector(state, 'businessType'),
-    businessLogo: selector(state,'businessLogo'),
   }),
   mapDispatchToProps,
 )(AddMerchant)

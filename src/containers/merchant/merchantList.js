@@ -89,7 +89,7 @@ class MerchantsList extends Component {
                                 type="button"
                                 onClick={this.onHandleSearch.bind(this)}
                                 className="button"
-                                > Filter
+                                > Search
                             </button> 
                         </div>       
                     </div>

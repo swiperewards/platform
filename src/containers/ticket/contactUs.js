@@ -222,7 +222,6 @@ class ContactUs extends Component {
                                                     component={renderSelectField}
                                                     fullWidth={true}
                                                     onChange={this.handleChange}
-                                                    validate={dropDownRequired}
                                                 >
                                                 {
                                                      (this.state.merchantList) ? 

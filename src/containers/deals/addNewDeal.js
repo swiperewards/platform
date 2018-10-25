@@ -111,7 +111,7 @@ class AddNewDeal extends Component {
                 userId = this.props.location.state !== undefined ? this.props.location.state.userId : undefined
             }
 
-            this.props.getMerchantListWithFilter(userId,"","","",this.props.userData.user.responseData.token);
+            this.props.getMerchantListWithFilter(userId,"","0","",this.props.userData.user.responseData.token);
         }
     }
 

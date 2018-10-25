@@ -149,7 +149,7 @@ class UserList extends Component {
 
     render() {
 
-        const { usersList, rowsPerPage, page, dialogOpen, permissionDisplayBox } = this.state;
+        const { usersList, rowsPerPage, page, dialogOpen, permissionDisplayBox,inactive } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, (usersList !== undefined ? usersList.length : 0) - page * rowsPerPage);
         
         const actions = [
@@ -181,7 +181,7 @@ class UserList extends Component {
 
                 <DialogBox 
                     displayDialogBox={permissionDisplayBox} 
-                    message="Are you sure to deactivate user?" 
+                    message={inactive === false ? "Are you sure to deactivate user?" : "Are you sure to activate user?"}
                     actions={permissionActions} 
                 />
             </div> 
@@ -194,7 +194,7 @@ class UserList extends Component {
                         <TableHead>
                             <TableRow>
                                 <TableCell numeric>#</TableCell>
-                                <TableCell>User Name</TableCell>
+                                <TableCell>Full Name</TableCell>
                                 <TableCell>Email Address</TableCell>
                                 <TableCell>Phone Number</TableCell>
                                 <TableCell>User Type</TableCell>
