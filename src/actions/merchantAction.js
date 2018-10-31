@@ -6,7 +6,7 @@ import moment from 'moment'
 var axios = require('axios');
 
 //Function to add new merchant to processing system
-export function addNewMerchant(values, registeredEmail, token) {
+export function addNewMerchant(values, registeredEmail, merchantLogo, token) {
 
     var acceptanceDateTime = moment().format('YYYYMMDDHHMM')
     var requestData = {
@@ -34,6 +34,7 @@ export function addNewMerchant(values, registeredEmail, token) {
         "entityWebsite": values.businessWebsite,
         "registeredWithNouvo": registeredEmail !== undefined ? true : false,
         "registeredEmail": registeredEmail !== undefined ? registeredEmail : undefined,
+        "image":merchantLogo,
         "entityaccounts": [{
             "primary": "1",
             "accountMethod": values.bankAccountType,
@@ -155,8 +156,9 @@ export function deleteMerchant(merchantId, inactive, token) {
 }
 
 //Function to fetch list of all merchants from splash payment system
-export function getMerchantListWithFilter(name, inactive, statePrefix, token) {
+export function getMerchantListWithFilter(userId ,name, inactive, statePrefix, token) {
     var requestData = {
+        "userId" : userId !== undefined ? userId.toString() : userId,
         "nameFilter" : name === undefined ? "" : name,
         "inactiveFilter" : inactive === undefined ? "" : inactive,
         "stateFilter": statePrefix === undefined ? "" : statePrefix
@@ -253,6 +255,7 @@ export function getMerchantDetailsAPI(merchantId,token) {
                     "accountId": responseDetails.accounts.id,
                     "merchantId":responseDetails.id,
                     "termsCheckedYes":responseDetails.status_v === "0" ? false : true,
+                    "merchantLogo":responseDetails.logoUrl === undefined ? "" : responseDetails.logoUrl,
                     "members": 
                     responseDetails.members.map((owner)=>(
                     {
@@ -297,10 +300,13 @@ export function getMerchantDetailsAPI(merchantId,token) {
 }
 
 //Function to update merchant details to processing system
-export function updateMerchantDetails(values, screenType, token) {
+export function updateMerchantDetails(values, screenType, merchantLogo, token) {
 
     var acceptanceDateTime = moment().format('YYYYMMDDHHMM')
     var requestData = {
+        "merchantId": values.merchantId,
+        "isLogoUpdated": (merchantLogo !== "") ? "1" : "0",
+        "image": merchantLogo,
         "accountData": {
             "accountId": values.accountId,
             "account": {

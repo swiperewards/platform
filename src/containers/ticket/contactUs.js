@@ -18,6 +18,7 @@ import Loader from '../../components/loader'
 import TextAreaControl from '../../components/textAreaControl';
 
 //Actions
+import { getMerchantListWithFilter } from '../../actions/merchantAction';
 import { getQueryType, generateTicket, clearGenerateTicketResponse } from '../../actions/ticketAction';
 
 //Validation
@@ -40,6 +41,7 @@ class ContactUs extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            merchantList:undefined,
             dialogOpen: false,
             message:'',
             queryTypeList:'',
@@ -51,6 +53,7 @@ class ContactUs extends Component {
 
         if(this.props.userData.user.responseData.token){
             this.props.getQueryType(this.props.userData.user.responseData.token);
+            this.props.getMerchantListWithFilter(this.props.userData.user.responseData.userId,"","","",this.props.userData.user.responseData.token);
         }
     }
 
@@ -60,10 +63,23 @@ class ContactUs extends Component {
 
       componentWillReceiveProps(nextProps) {
         if (nextProps) {
+            if (nextProps.merchantPayload){
+                if(nextProps.merchantPayload.status === 200){
+                    this.setState({showLoader:false})
+                    this.setState({merchantList: nextProps.merchantPayload.responseData})
+                }
+                else{
+                    this.setState({showLoader:false})
+                }
+            }
+
           if (nextProps.queryTypeResponse){
             if(nextProps.queryTypeResponse.status === 200){
                 this.setState({showLoader:false})
                 this.setState({queryTypeList: nextProps.queryTypeResponse.responseData})
+            }
+            else{
+                this.setState({showLoader:false})
             }
           }
 
@@ -135,12 +151,12 @@ class ContactUs extends Component {
                           <div className="row">
                                 <div className="col-md-6">
                                     <div className="row">
-                                        <div className="col-md-12 titleLabel">
+                                        <div className="col-xs-12 titleLabel">
                                             Contact us
                                         </div> 
                                     </div>   
                                     <div className="row">
-                                        <div className="col-md-12">
+                                        <div className="col-xs-12">
                                             <span>
                                                 Our mission is simple -
                                                 <br/>we aim to empower the small business with unrivaled analytics, retention, and processing.
@@ -152,12 +168,12 @@ class ContactUs extends Component {
                                         </div> 
                                     </div>  
                                     <div className="row">
-                                        <div className="col-md-12 titleLabel">
+                                        <div className="col-xs-12 titleLabel">
                                             Details
                                         </div> 
                                     </div> 
                                     <div className="row">
-                                        <div className="col-md-12">
+                                        <div className="col-xs-12">
                                             <span>
                                                 youremailid@nouvo.com
                                                 <br/>+1 555 5555 6521
@@ -168,35 +184,65 @@ class ContactUs extends Component {
                                         </div> 
                                     </div>  
                                 </div>
-                                <div className="col-md-6">
+                                <div className="col-xs-6">
                                     <div className="row">
-                                        <div className="col-md-12 titleLabel">
+                                        <div className="col-xs-12 titleLabel">
                                             Send a Message
                                         </div>
                                     </div>    
                                     <div className="row">
-                                        <div className="col-md-12">
+                                        <div className="col-xs-12">
                                             <label className="controlLabel">Name</label>
                                             <Field 
                                                 name="fullName" 
                                                 fullWidth={true} 
                                                 component={InputField} 
+                                                disabled={true}
                                             />
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col-md-12">
+                                        <div className="col-xs-12">
                                             <label className="controlLabel">Email</label>
                                             <Field 
                                                 name="email" 
                                                 fullWidth={true} 
                                                 component={InputField} 
+                                                disabled={true}
                                             />
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col-md-12">
-                                             <label className="controlLabel">Query Type</label>
+                                        <div className="col-xs-12">
+                                             <label className="controlLabel">Business Name*</label>
+
+                                            <FormControl style={styles.formControl}>
+                                                <Field
+                                                    name="merchantId"
+                                                    component={renderSelectField}
+                                                    fullWidth={true}
+                                                    onChange={this.handleChange}
+                                                >
+                                                {
+                                                     (this.state.merchantList) ? 
+                                                        this.state.merchantList.map((item) =>{
+                                                            return <MenuItem 
+                                                                    style={styles.selectControl}
+                                                                    key={item.id}
+                                                                    value={item.id}>
+                                                                    {item.name_v + " " + item.last_v}
+                                                            </MenuItem>
+                                                            })
+                                                        :
+                                                        null
+                                                }
+                                                </Field>    
+                                            </FormControl>  
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-xs-12">
+                                             <label className="controlLabel">Query Type*</label>
 
                                             <FormControl style={styles.formControl}>
                                                 <Field
@@ -224,8 +270,8 @@ class ContactUs extends Component {
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col-md-12">
-                                            <label className="controlLabel">Message</label>
+                                        <div className="col-xs-12">
+                                            <label className="controlLabel">Message*</label>
                                             <Field 
                                                 name="message" 
                                                 fullWidth={true} 
@@ -235,7 +281,7 @@ class ContactUs extends Component {
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col-md-12">
+                                        <div className="col-xs-12">
                                             <button 
                                                 type="submit"
                                                 className="button"
@@ -257,7 +303,7 @@ class ContactUs extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getQueryType, generateTicket, clearGenerateTicketResponse }, dispatch)
+    return bindActionCreators({ getQueryType, generateTicket, clearGenerateTicketResponse, getMerchantListWithFilter }, dispatch)
   }
 
   ContactUs = reduxForm({
@@ -266,9 +312,10 @@ const mapDispatchToProps = (dispatch) => {
 
 ContactUs = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        queryTypeResponse: state.ticket === undefined ? undefined : state.ticket.queryType,
        generateTicketResponse : state.ticket.generateTicket === undefined ? undefined : state.ticket.generateTicket, 
+       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
     }),
     mapDispatchToProps,
   )(ContactUs)

@@ -189,7 +189,7 @@ class UpdateAccountSetup extends Component {
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
             errorMessage = undefined
-            this.props.updateMerchantDetails(values, "businessDetails" ,this.props.userData.user.responseData.token)
+            this.props.updateMerchantDetails(values, "businessDetails", "", this.props.userData.user.responseData.token)
         }
       }
 
@@ -391,7 +391,7 @@ UpdateAccountSetup = reduxForm({
 
 UpdateAccountSetup = connect(
     state => ({
-        userData: state.account === undefined ? undefined : state.account,
+        userData: state.accountValidate === undefined ? undefined : state.accountValidate,
         updateAccountResponse: state.merchant.updateMerchant === undefined ? undefined : state.merchant.updateMerchant.responseData,
         initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
     }),

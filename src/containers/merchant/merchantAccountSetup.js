@@ -34,7 +34,6 @@ import RenderCheckbox from '../../components/renderCheckbox';
 import Data from '../../staticData'
 // const PublicIp = require('nodejs-publicip');
 
-
 const styles = {
     formControl: {
         minWidth: '100%',

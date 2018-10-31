@@ -478,13 +478,14 @@ class TicketList extends Component {
                                     );
                                 })
                                 )
-                                ):(null)
+                                ):(
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={8}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
                             }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={8} />
-                                </TableRow>
-                            )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
@@ -526,7 +527,7 @@ const mapDispatchToProps = (dispatch) => {
   
   TicketList = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       queryTypeResponse: state.ticket === undefined ? undefined : state.ticket.queryType,
       CustomerQueriesResponse: state.ticket.customerQueriesList === undefined ? undefined : state.ticket.customerQueriesList,
       initialValues: state.ticket.customerQueryDetails === undefined ? undefined : state.ticket.customerQueryDetails.responseData,

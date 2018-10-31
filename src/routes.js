@@ -43,6 +43,8 @@ import UpdateTicket from './containers/ticket/updateTicket'
 
 import SuperAdminDashboard from './containers/superAdmin/superAdminDashboard'
 
+import ManageBusiness from './containers/business/manageBusiness'
+
 //Ticket
 import ContactUs from './containers/ticket/contactUs'
 
@@ -99,6 +101,7 @@ class Routes extends Component {
                             <Route exact path="/updateUser" component={UpdateUserDetails} />
                             <Route exact path="/updateTicket" component={UpdateTicket} />
                             <Route exact path="/updateRedeemMode" component={UpdateRedeemMode} />
+                            <Route exact path="/manageBusiness" component={ManageBusiness} />
                         </App>
                     </Switch>
                 </div>

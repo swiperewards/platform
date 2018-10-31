@@ -212,7 +212,7 @@ class updateAdmin extends Component {
                                     onChange={this.onImageChange.bind(this)} 
                                     accept=".jpg"
                                     />
-
+                                <span style={{fontSize:'8pt', color:'grey'}}>File must be less than 2 MB</span>
                             </div>            
                         </div>
                         <div className="row end-xs">
@@ -255,7 +255,7 @@ const mapDispatchToProps = (dispatch) => {
 
 updateAdmin = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        updateAdminResponse: state.admin.updateAdmin === undefined ? undefined : state.admin.updateAdmin,
        initialValues: state.admin.adminDetails === undefined ? undefined : state.admin.adminDetails.responseData,
     }),

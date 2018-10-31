@@ -54,7 +54,8 @@ export function generateTicket(values, token) {
     var requestData = {
         "ticketTypeId":values.ticketType,
         "feedback": values.message,
-        "userCategory": "Merchant"
+        "userCategory": "Merchant",
+        "merchantId": values.merchantId
     }
     
     var setting = {

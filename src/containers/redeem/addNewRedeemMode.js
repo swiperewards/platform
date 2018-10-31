@@ -227,7 +227,7 @@ const mapDispatchToProps = (dispatch) => {
 
 AddNewRedeemMode = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        redeemModeResponse : state.redeem.createRedeemMode === undefined ? undefined : state.redeem.createRedeemMode,
     }),
     mapDispatchToProps,

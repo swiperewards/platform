@@ -23,6 +23,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import { logout } from '../actions/accountAction';
+import { getUserDetails } from '../actions/userAction';
 
 const drawerWidth = 200;
 
@@ -116,6 +117,12 @@ class ResponsiveDrawer extends React.Component {
     auth: true,
     anchorEl: null,
   };
+
+  componentWillMount() {
+    if(this.props.userData.user.responseData.token){
+        this.props.getUserDetails(this.props.userData.user.responseData.userId, this.props.userData.user.responseData.token)
+    }
+}
 
   handleChange = (event, checked) => {
     this.setState({ auth: checked });
@@ -217,14 +224,14 @@ class ResponsiveDrawer extends React.Component {
                 <div style={{float:'right', position:'relative', margin:'0px'}}>
                     <div className={classes.avatarDiv}>
                     <NavLink to={'/editUserProfile'}>
-                      <Avatar src={this.props.userData.user !== undefined ? this.props.userData.user.responseData.profilePicUrl : ""}
+                      <Avatar src={this.props.initialValues !== undefined ? this.props.initialValues.profilePicUrl : ""}
                         className={classes.avatarIcon} />
                     </NavLink>
                         
                     </div>
                     {auth && (
                     <div style={{float:'right',verticalAlign:'middle'}}>
-                        <span className={classes.avatarSpan} onClick={this.handleMenu}>{this.props.userData.user !== undefined ? this.props.userData.user.responseData.fullName : ""}</span> 
+                        <span className={classes.avatarSpan} onClick={this.handleMenu}>{this.props.initialValues !== undefined ? this.props.initialValues.fullName : ""}</span> 
                         <IconButton
                         aria-owns={open ? 'menu-appbar' : null}
                         aria-haspopup="true"
@@ -304,13 +311,14 @@ ResponsiveDrawer.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-function mapDispatchToProps(dispatch){
-  return bindActionCreators({logout});
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({ logout, getUserDetails }, dispatch)
 }
 
 ResponsiveDrawer = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
+      initialValues : state.userAccount.userDetails === undefined ? undefined : state.userAccount.userDetails.responseData
     }),
     mapDispatchToProps  //bind logout action creator
 )(ResponsiveDrawer)

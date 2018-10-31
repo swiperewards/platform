@@ -260,7 +260,7 @@ class ManageAdmins extends Component {
                                 type="button"
                                 onClick={this.onHandleSearch.bind(this)}
                                 className="button"
-                                > Filter
+                                > Search
                             </button> 
                         </div>       
                         <div className="col-xs-12 col-sm-6 col-md-3 end-md">
@@ -354,13 +354,14 @@ class ManageAdmins extends Component {
                                     );
                                 })
                                 )
-                                ):(null)
+                                ):(
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={7}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
                             }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={7} />
-                                </TableRow>
-                            )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
@@ -393,7 +394,7 @@ const mapDispatchToProps = (dispatch) => {
   
   ManageAdmins = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       adminPayload: state.admin.adminList === undefined ? undefined : state.admin.adminList,
       adminDelete: state.admin.deleteAdmin === undefined ? undefined : state.admin.deleteAdmin
     }),

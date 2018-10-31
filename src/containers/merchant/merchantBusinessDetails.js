@@ -9,13 +9,14 @@ import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
+import Avatar from '@material-ui/core/Avatar';
 
 //Components
 import InputField from '../../components/inputField';
 import {renderSelectField} from '../../components/selectControl';
 import RenderCheckbox from '../../components/renderCheckbox';
 import RenderSwitch from '../../components/switchControl';
-
+import FieldFileInput from '../../components/fieldFileInput';
 
 //Validation
 import {required, exact9, between1to100, dropDownRequired, email, website, phoneMask, taxNumberMask, zipMask, normalizedPhone} from '../../utilities/validation'
@@ -36,9 +37,13 @@ const styles = {
       }
 };
   
+var errorMessage
+
 class BusinessDetails extends Component {
 
     state = {
+        image:'',
+        defaultImage:'../images/profile.png',
         businessType: '',
         stateName:'',
         creditCheckedNo: true,
@@ -74,6 +79,30 @@ class BusinessDetails extends Component {
 
         if(this.refs.businessType){
             this.setState({businessType:this.refs.businessType.value})
+        }
+    }
+
+    onImageChange = (file) =>{
+
+        errorMessage = ""
+
+        if (file) {
+            var FileSize = file.size / 1024 / 1024; // in MB
+            if (FileSize > 2) {
+                errorMessage =
+                        <div 
+                            className="errorDiv"
+                        >{"File size exceeds 2 MB"}</div>
+                        //event.target.value = null;
+                        this.setState({image: this.state.defaultImage});
+            } else {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    this.setState({image: e.target.result});
+                    this.props.imageData(e.target.result); 
+                };
+                reader.readAsDataURL(file);
+            }
         }
     }
 
@@ -215,7 +244,7 @@ class BusinessDetails extends Component {
                                 />  
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Currently accept credit cards
                             </div>
@@ -357,8 +386,30 @@ class BusinessDetails extends Component {
                                 />  
                             </div>
                         </div>
+                        <div className="row middle-md">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Avatar
+                                    alt="profile"
+                                    src={this.state.image === '' ? this.state.defaultImage : this.state.image} 
+                                    className="bigAvatar"
+                                />
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    name="businessLogo" 
+                                    label="" 
+                                    type="file" 
+                                    component={FieldFileInput} 
+                                    imageChange={this.onImageChange} 
+                                />
+                                <span style={{fontSize:'8pt', color:'grey'}}>File must be less than 2 MB</span>
+                            </div>            
+                        </div>
                     </div>            
-                </Paper>                    
+                </Paper>  
+                <div>
+                    {errorMessage}
+                </div>                  
             </div>
         );
     }
