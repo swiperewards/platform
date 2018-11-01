@@ -155,6 +155,8 @@ AddNewTicket = connect(
        newTicketResponse: state.ticket.createTicketType === undefined ? undefined : state.ticket.createTicketType,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(AddNewTicket)
 
 export default AddNewTicket;

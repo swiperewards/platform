@@ -212,6 +212,7 @@ class AddAdmin extends Component {
                         </div> 
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
+                                <span>Upload Logo</span>
                                 <Avatar
                                     alt="profile"
                                     src={this.state.image === '' ? this.state.defaultImage : this.state.image} 
@@ -269,6 +270,8 @@ AddAdmin = connect(
        newAdminResponse: state.admin.addAdmin === undefined ? undefined : state.admin.addAdmin,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(AddAdmin)
 
 export default AddAdmin;

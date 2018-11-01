@@ -151,6 +151,7 @@ class UpdateBusinessDetails extends Component {
                 let reader = new FileReader();
                 reader.onload = (e) => {
                     this.setState({image: e.target.result});
+                    this.props.change('submitting',true);
                 };
                 reader.readAsDataURL(file);
             }
@@ -180,6 +181,7 @@ class UpdateBusinessDetails extends Component {
       }
 
     render() {
+        const { pristine, submitting } = this.props
 
         const actions = [
             <Button key="ok" onClick={this.handleCloseAlert} color="primary" autoFocus>
@@ -206,9 +208,8 @@ class UpdateBusinessDetails extends Component {
                             <div className="col-xs-2 col-md-2">
                             <button 
                                 type="submit"
-                                className={"enabledButton button"}
-                                //disabled={pristine || submitting}
-                                //className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
+                                disabled={pristine || submitting}
+                                className={(pristine || submitting) === true ? "disabledButton button" : "enabledButton button"}
                             >
                                 Update
                             </button>
@@ -520,6 +521,7 @@ class UpdateBusinessDetails extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
+                                <span>Upload Logo</span>
                                 <Avatar
                                     name="logoUrl"
                                     alt="profile"
@@ -565,6 +567,8 @@ UpdateBusinessDetails = connect(
        initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(UpdateBusinessDetails)
 
 export default UpdateBusinessDetails;

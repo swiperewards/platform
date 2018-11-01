@@ -142,7 +142,7 @@ class Login extends Component {
             <div>
                 <Loader status={this.state.showLoader} />
 
-                <div className="pageContainer">
+                <div className="loginPageContainer">
                     <Paper className="pagePaper">
                         <div className="logo">
                             <img src="../images/logo.png" alt="Logo" />

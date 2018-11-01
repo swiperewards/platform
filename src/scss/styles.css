@@ -127,6 +127,16 @@ FormLabel {
   right: 0%;
   margin: auto; }
 
+.loginPageContainer {
+  min-width: 320px;
+  max-width: 400px;
+  height: auto;
+  top: 10%;
+  left: 0%;
+  right: 0%;
+  margin: auto;
+  position: absolute; }
+
 .pagePaper {
   background: #ffffff;
   padding: 20px 25px;

@@ -274,6 +274,8 @@ UpdateRedeemMode = connect(
        updateRedeemResponse : state.redeem.updateRedeemMode === undefined ? undefined : state.redeem.updateRedeemMode,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(UpdateRedeemMode)
 
 export default UpdateRedeemMode;

@@ -236,6 +236,8 @@ UpdateBankAccount = connect(
         initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(UpdateBankAccount)
 
 

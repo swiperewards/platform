@@ -56,7 +56,7 @@ class UserProfile extends Component {
               if(nextProps.updateProfileResponse.status === 200){
                   this.setState({message: nextProps.updateProfileResponse.message})
                   this.setState({ dialogOpen: true });
-                  this.setState({showLoader:false})
+                  this.setState({ showLoader: false });
               }
               else{
                   errorMessage =

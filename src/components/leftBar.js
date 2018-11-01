@@ -189,7 +189,7 @@ class ResponsiveDrawer extends React.Component {
             <div style={{ color: '#FFFFFF', fontSize:'12px', paddingLeft: '0px' }}> 
               {
                 this.props.userData.user !== undefined ? (this.props.userData.user.responseData.menuList
-                .sort(((a,b) => a.displayOrder > b.displayOrder))
+                .sort(((a,b) => a.displayOrder - b.displayOrder))
                 .map((value, index) => (
                   <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}} className= {this.enabledOption(value.link) !== true ? 'disabled-link' : null}>
                     <ListItem button disableGutters className={classes.ListItem}>
