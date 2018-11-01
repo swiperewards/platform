@@ -214,7 +214,7 @@ class updateAdmin extends Component {
                         </div> 
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <span>Upload Logo</span>
+                                <span>Upload Profile Picture</span>
                                 <Avatar
                                     alt="Adelle Charles"
                                     src={this.state.image === '' ? (this.props.initialValues !== undefined ? this.props.initialValues.profilePicUrl : "../images/profile.png") : this.state.image} 

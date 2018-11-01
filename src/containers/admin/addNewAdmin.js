@@ -212,7 +212,7 @@ class AddAdmin extends Component {
                         </div> 
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <span>Upload Logo</span>
+                                <span>Upload Profile Picture</span>
                                 <Avatar
                                     alt="profile"
                                     src={this.state.image === '' ? this.state.defaultImage : this.state.image} 

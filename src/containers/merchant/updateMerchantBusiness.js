@@ -521,7 +521,7 @@ class UpdateBusinessDetails extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <span>Upload Logo</span>
+                                <span>Upload Business Logo</span>
                                 <Avatar
                                     name="logoUrl"
                                     alt="profile"
