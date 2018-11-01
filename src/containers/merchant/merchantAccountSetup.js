@@ -32,7 +32,7 @@ import RenderCheckbox from '../../components/renderCheckbox';
 
 //Data
 import Data from '../../staticData'
-// const PublicIp = require('nodejs-publicip');
+const ipify = require('ipify');
 
 const styles = {
     formControl: {
@@ -136,9 +136,9 @@ class AccountSetup extends Component {
 
         if(this.refs.ipAddress === undefined){
 
-            // publicIp.v4().then(ip => {
-            //     myProps.change('ipAddress', ip)
-            // });
+            ipify().then(ip => {
+                myProps.change('ipAddress', ip)
+            });
         }
 
         return (
