@@ -171,11 +171,11 @@ $primary-Text-Color:#231f20;
     min-width: 320px;
     max-width: 400px;
     height: auto;
-    top: 10%;
-    left: 0%;
-    right: 0%;
-    margin: auto;
     position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: auto;
+    transform: translate(-50%, -50%);
   }
 
   .pagePaper{

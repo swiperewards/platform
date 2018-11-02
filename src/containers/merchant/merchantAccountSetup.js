@@ -21,7 +21,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 
 //Validation
-import { required, requiredCheckbox, dropDownRequired, ipAddressMatch } from '../../utilities/validation'
+import { required, requiredCheckbox, dropDownRequired } from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
@@ -32,7 +32,7 @@ import RenderCheckbox from '../../components/renderCheckbox';
 
 //Data
 import Data from '../../staticData'
-const ipify = require('ipify');
+var http = require('http');
 
 const styles = {
     formControl: {
@@ -63,6 +63,7 @@ class AccountSetup extends Component {
             openTermsPopUp: false,
             updatedList: Data.mccCodes,
             mccNumber: '',
+            publicIp: undefined,
         };
     }
 
@@ -134,11 +135,14 @@ class AccountSetup extends Component {
 
         const { myProps } = this.props;
 
-        if(this.refs.ipAddress === undefined){
+        if(this.refs.ipAddress === undefined && this.state.publicIp === undefined){
 
-            ipify().then(ip => {
-                myProps.change('ipAddress', ip)
-            });
+            http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
+                resp.on('data', function(ip) {
+                  this.setState({publicIp:ip})
+                  myProps.change('ipAddress',String.fromCharCode.apply(null, ip))
+                }.bind(this));
+            }.bind(this));
         }
 
         return (
@@ -277,7 +281,7 @@ class AccountSetup extends Component {
                                             ref="ipAddress"
                                             fullWidth={true} 
                                             component={InputField} 
-                                            validate={ipAddressMatch} 
+                                            disabled={true}
                                         />
                                     </div>
                                     <div className="col-xs-12 col-sm-6 col-md-6">
