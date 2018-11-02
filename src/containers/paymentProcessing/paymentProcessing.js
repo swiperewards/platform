@@ -102,7 +102,7 @@ class PaymentProcessing extends Component {
                         <div className="row middle-md">
                             <div className="col-md-12">
                                 By filling out this form, you agree to the terms and conditions located  
-                                &nbsp;<Link to='/paymentprocessing' onClick={this.handleTermsPopUp('term')}><a>here</a></Link>.
+                                &nbsp;<Link to='/paymentprocessing' onClick={this.handleTermsPopUp('term')}>here</Link>.
                             </div>   
                             <div>
                             <Dialog

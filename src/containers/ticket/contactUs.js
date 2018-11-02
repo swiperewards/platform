@@ -198,34 +198,47 @@ class ContactUs extends Component {
                                             />
                                         </div>
                                     </div>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                             <label className="controlLabel">Business Name</label>
+                                    {
+                                        (this.state.merchantList) ? 
+                                            (this.state.merchantList.length !== 0) ? 
+                                                <div className="row">
+                                                    <div className="col-xs-12">
+                                                        <label className="controlLabel">Business Name</label>
 
-                                            <FormControl style={styles.formControl}>
-                                                <Field
-                                                    name="merchantId"
-                                                    component={renderSelectField}
-                                                    fullWidth={true}
-                                                    onChange={this.handleChange}
-                                                >
-                                                {
-                                                     (this.state.merchantList) ? 
-                                                        this.state.merchantList.map((item) =>{
-                                                            return <MenuItem 
-                                                                    style={styles.selectControl}
-                                                                    key={item.id}
-                                                                    value={item.id}>
-                                                                    {item.name_v + " " + item.last_v}
-                                                            </MenuItem>
-                                                            })
-                                                        :
-                                                        null
-                                                }
-                                                </Field>    
-                                            </FormControl>  
-                                        </div>
-                                    </div>
+                                                        <FormControl style={styles.formControl}>
+                                                            <Field
+                                                                name="merchantId"
+                                                                component={renderSelectField}
+                                                                fullWidth={true}
+                                                                onChange={this.handleChange}
+                                                            >
+                                                            {
+                                                                (this.state.merchantList) ? 
+                                                                    this.state.merchantList.map((item) =>{
+                                                                        return <MenuItem 
+                                                                                style={styles.selectControl}
+                                                                                key={item.id}
+                                                                                value={item.id}>
+                                                                                {item.name_v + " " + item.last_v}
+                                                                        </MenuItem>
+                                                                        })
+                                                                    :
+                                                                        <MenuItem 
+                                                                                style={styles.selectControl}
+                                                                                key="none"
+                                                                                value="None">
+                                                                                {"None"}
+                                                                        </MenuItem>
+                                                            }
+                                                            </Field>    
+                                                        </FormControl>  
+                                                    </div>
+                                                </div>
+                                            :
+                                                null
+                                        :
+                                            null
+                                    }
                                     <div className="row">
                                         <div className="col-xs-12">
                                              <label className="controlLabel">Query Type</label>

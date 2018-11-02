@@ -182,6 +182,7 @@ class BusinessList extends Component {
                             <TableRow>
                                 <TableCell numeric>#</TableCell>
                                 <TableCell>Merchant Name</TableCell>
+                                <TableCell>Business Name</TableCell>
                                 <TableCell>Location</TableCell>
                                 <TableCell>Email Address</TableCell>
                                 <TableCell>Phone Number</TableCell>
@@ -211,6 +212,7 @@ class BusinessList extends Component {
                                     >
                                         <TableCell numeric>{object.serial_number}</TableCell>
                                         <TableCell>{object.first_v + " " + object.last_v}</TableCell>
+                                        <TableCell>{object.name_v}</TableCell>
                                         <TableCell>{object.city_v}</TableCell>
                                         <TableCell>{object.email_v}</TableCell>
                                         <TableCell><NumberFormat value={object.phone_v} displayType={'text'} format="+1 (###) ###-####" /></TableCell>

@@ -45,6 +45,10 @@ class UserProfile extends Component {
 
     componentWillMount() {
         errorMessage = ""
+        this.fetchUserDetails()
+    }
+
+    fetchUserDetails(){
         if(this.props.userData.user.responseData.token){
             this.props.getUserDetails(this.props.userData.user.responseData.userId, this.props.userData.user.responseData.token)
         }
@@ -57,6 +61,7 @@ class UserProfile extends Component {
                   this.setState({message: nextProps.updateProfileResponse.message})
                   this.setState({ dialogOpen: true });
                   this.setState({ showLoader: false });
+                  this.fetchUserDetails()
               }
               else{
                   errorMessage =
