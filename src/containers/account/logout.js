@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { logout } from '../../actions/accountAction';
+import { logout, userLogout } from '../../actions/accountAction';
 
 class Logout extends Component {
 
@@ -10,6 +10,12 @@ class Logout extends Component {
         this.props.logout();
         window.history.pushState("", "", window.location.pathname);
         this.props.history.push('/login');
+
+        if(this.props.authError === false){
+            if(this.props.userData.user.responseData.token){
+                this.props.userLogout(this.props.userData.user.responseData.token)
+            }
+        }
     }
 
     render() {
@@ -20,9 +26,18 @@ class Logout extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ logout }, dispatch)
+    return bindActionCreators({ logout, userLogout }, dispatch)
 }
 
+Logout = connect(
+    state => ({
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
+       authError: state.account.authError === undefined ? false : state.account.authError,
+    }),
+    mapDispatchToProps,
+    null,
+    { pure: false },
+  )(Logout)
 
-export default connect(null, mapDispatchToProps)(Logout)
 
+export default Logout;

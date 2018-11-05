@@ -5,6 +5,7 @@ import './scss/styles.css';
 
 import LeftBar from './components/leftBar'
 import Login from './containers/account/login';
+import AuthError from './containers/account/authError';
 
 import {LARGE} from '@material-ui/core/utils/ownerWindow'
 
@@ -73,6 +74,7 @@ class App extends Component {
     if (this.props.userData.user) {      
       return(
             <div>
+              <AuthError/>
               <LeftBar navDrawerOpen={window.innerWidth > 1025 ? true : navDrawerOpen}
               handleDrawerToggle={this.handleChangeRequestNavDrawer.bind(this)}
               children={this.props.children}

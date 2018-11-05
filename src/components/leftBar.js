@@ -140,29 +140,6 @@ class ResponsiveDrawer extends React.Component {
     this.setState({ mobileOpen: !this.state.mobileOpen });
   };
 
-  enabledOption(option) {
-    switch(option) {
-      case '/paymentprocessing':
-        return true;
-      case '/managemerchants':
-        return true;  
-      case '/manageadmins':
-        return true;  
-      case '/managedeals':
-        return true;
-      case '/contactus':
-        return true;
-      case '/manageusers':
-        return true;  
-      case '/managetickets':
-        return true;  
-      case '/manageredeemmode':
-        return true;  
-      default:
-        return true;
-    }
-  }
-
   render() {
     const { classes, theme } = this.props;
     const children = this.props.children;
@@ -191,7 +168,7 @@ class ResponsiveDrawer extends React.Component {
                 this.props.userData.user !== undefined ? (this.props.userData.user.responseData.menuList
                 .sort(((a,b) => a.displayOrder - b.displayOrder))
                 .map((value, index) => (
-                  <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}} className= {this.enabledOption(value.link) !== true ? 'disabled-link' : null}>
+                  <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}}>
                     <ListItem button disableGutters className={classes.ListItem}>
                       <img src={"../images/" + value.iconName + ".svg"} height="20px" alt="" style={{paddingLeft:'15px'}} />
                       <ListItemText disableTypography primary={value.text} />

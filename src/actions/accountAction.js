@@ -9,6 +9,7 @@ import
     forgotPasswordAPI, 
     setPasswordAPI,
     updateUserProfileAPI, 
+    userLogoutAPI,
 } from '../app.config';
 
 import {encryptData, decryptData} from '../utilities/encryptDecryptData'
@@ -375,3 +376,39 @@ export function clearUpdateProfileResponse() {
         payload: undefined
     }
 }
+
+//Function to logout user which will expires token
+export function userLogout(token) {
+
+    var setting = {
+        method: 'post',
+        url: hostURL + userLogoutAPI,
+        data: {
+            "platform": 'Web',
+	    },
+        headers: {
+            'content-type': 'application/json',
+            'auth' : token
+        }
+    }
+
+    var response = axios(setting).then(
+        response => {
+            response.data.responseData = decryptData(response.data.responseData)
+            return response.data
+        }
+    )
+
+        .catch(response => response = {
+            success: 500,
+            message: "Your submission could not be completed. Please Try Again!",
+            data: ""
+        }
+        );
+
+    return {
+        type: 'GET_CITIES',
+        payload: response
+    }
+}
+
