@@ -396,6 +396,8 @@ UpdateAccountSetup = connect(
         initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(UpdateAccountSetup)
 
 export default UpdateAccountSetup;

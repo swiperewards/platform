@@ -448,6 +448,8 @@ UpdateOwnerDetails = connect(
           }
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(UpdateOwnerDetails)
 
 export default UpdateOwnerDetails;

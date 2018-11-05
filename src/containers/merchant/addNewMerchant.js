@@ -326,6 +326,8 @@ AddMerchant = connect(
     businessType: selector(state, 'businessType'),
   }),
   mapDispatchToProps,
+  null,
+    { pure: false },
 )(AddMerchant)
 
 export default reduxForm({form: 'FrmAddMerchant'})(withStyles(styles)(AddMerchant))

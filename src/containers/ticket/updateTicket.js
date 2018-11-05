@@ -200,6 +200,8 @@ UpdateTicket = connect(
        updateTicketResponse: state.ticket.updateTicketType === undefined ? undefined : state.ticket.updateTicketType,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(UpdateTicket)
 
 export default UpdateTicket;

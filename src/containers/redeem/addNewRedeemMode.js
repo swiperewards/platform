@@ -231,6 +231,8 @@ AddNewRedeemMode = connect(
        redeemModeResponse : state.redeem.createRedeemMode === undefined ? undefined : state.redeem.createRedeemMode,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(AddNewRedeemMode)
 
 export default AddNewRedeemMode;

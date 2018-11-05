@@ -92,12 +92,26 @@ class updateAdmin extends Component {
     };
 
     onImageChange(event) {
+
+        errorMessage = ""
+
         if (event.target.files && event.target.files[0]) {
-            let reader = new FileReader();
-            reader.onload = (e) => {
-                this.setState({image: e.target.result});
-            };
-            reader.readAsDataURL(event.target.files[0]);
+            var FileSize = event.target.files[0].size / 1024 / 1024; // in MB
+            if (FileSize > 2) {
+                errorMessage =
+                        <div 
+                            className="errorDiv"
+                        >{"File size exceeds 2 MB"}</div>
+                        event.target.value = null;
+                        this.setState({image: this.state.defaultImage});
+            } else {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    this.setState({image: e.target.result});
+                    this.props.change('submitting',true);
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
         }
     }
 
@@ -200,6 +214,7 @@ class updateAdmin extends Component {
                         </div> 
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
+                                <span>Upload Profile Picture</span>
                                 <Avatar
                                     alt="Adelle Charles"
                                     src={this.state.image === '' ? (this.props.initialValues !== undefined ? this.props.initialValues.profilePicUrl : "../images/profile.png") : this.state.image} 
@@ -260,6 +275,8 @@ updateAdmin = connect(
        initialValues: state.admin.adminDetails === undefined ? undefined : state.admin.adminDetails.responseData,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(updateAdmin)
 
 export default updateAdmin;

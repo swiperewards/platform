@@ -317,6 +317,8 @@ UpdateDeal = connect(
 
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(UpdateDeal)
 
 export default UpdateDeal;

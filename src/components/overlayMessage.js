@@ -66,7 +66,7 @@ class OverLayMessage extends Component {
                                     </div>        
                                     <div className="row">
                                         <div className="col-xs-12 center-xs">
-                                            <span>Come join the {appName}! Lets set up your account to access advanced features such as Deals.</span>
+                                            <span>Register for {appName} to begin boosting your sales.</span>
 
                                         </div>    
                                     </div>

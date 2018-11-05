@@ -547,6 +547,8 @@ AddNewDeal = connect(
        merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(AddNewDeal)
 
 export default AddNewDeal;

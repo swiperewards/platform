@@ -21,9 +21,6 @@ import TextAreaControl from '../../components/textAreaControl';
 import { getMerchantListWithFilter } from '../../actions/merchantAction';
 import { getQueryType, generateTicket, clearGenerateTicketResponse } from '../../actions/ticketAction';
 
-//Validation
-import { dropDownRequired, required} from '../../utilities/validation'
-
 let errorMessage
 
 const styles = {
@@ -99,14 +96,6 @@ class ContactUs extends Component {
 
             this.props.clearGenerateTicketResponse()
           }
-
-          if(nextProps.userData){
-            if(nextProps.userData.user){
-                this.setState({showLoader:false})
-                nextProps.change('fullName', nextProps.userData.user.responseData.fullName);
-                nextProps.change('email', nextProps.userData.user.responseData.emailId);
-            }
-          }
         }
     }
 
@@ -158,12 +147,7 @@ class ContactUs extends Component {
                                     <div className="row">
                                         <div className="col-xs-12">
                                             <span>
-                                                Our mission is simple -
-                                                <br/>we aim to empower the small business with unrivaled analytics, retention, and processing.
-                                                <span className="highlight">
-                                                <br/>
-                                                <i>And we do it all for free.</i>
-                                                </span>
+                                                We help make your business succeed. That includes immediate support. Have an issue? Send a ticket, and get it resolved fast.
                                             </span>
                                         </div> 
                                     </div>  
@@ -175,10 +159,12 @@ class ContactUs extends Component {
                                     <div className="row">
                                         <div className="col-xs-12">
                                             <span>
-                                                youremailid@nouvo.com
-                                                <br/>+1 555 5555 6521
-                                                <br/>1234, Mandup Street, Unit 000,
-                                                <br/>Somecity, NC, 12345
+                                                <a href="mailto:contact@nouvo.io">contact@nouvo.io</a><br/>
+                                                <span className="dashboardText">
+                                                323-386-9100<br/>
+                                                1433 N Harper Ave,<br/>
+                                                West Hollywood, CA 90046
+                                                </span>
 
                                             </span>
                                         </div> 
@@ -205,44 +191,57 @@ class ContactUs extends Component {
                                         <div className="col-xs-12">
                                             <label className="controlLabel">Email</label>
                                             <Field 
-                                                name="email" 
+                                                name="emailId" 
                                                 fullWidth={true} 
                                                 component={InputField} 
                                                 disabled={true}
                                             />
                                         </div>
                                     </div>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                             <label className="controlLabel">Business Name*</label>
+                                    {
+                                        (this.state.merchantList) ? 
+                                            (this.state.merchantList.length !== 0) ? 
+                                                <div className="row">
+                                                    <div className="col-xs-12">
+                                                        <label className="controlLabel">Business Name</label>
 
-                                            <FormControl style={styles.formControl}>
-                                                <Field
-                                                    name="merchantId"
-                                                    component={renderSelectField}
-                                                    fullWidth={true}
-                                                    onChange={this.handleChange}
-                                                >
-                                                {
-                                                     (this.state.merchantList) ? 
-                                                        this.state.merchantList.map((item) =>{
-                                                            return <MenuItem 
-                                                                    style={styles.selectControl}
-                                                                    key={item.id}
-                                                                    value={item.id}>
-                                                                    {item.name_v + " " + item.last_v}
-                                                            </MenuItem>
-                                                            })
-                                                        :
-                                                        null
-                                                }
-                                                </Field>    
-                                            </FormControl>  
-                                        </div>
-                                    </div>
+                                                        <FormControl style={styles.formControl}>
+                                                            <Field
+                                                                name="merchantId"
+                                                                component={renderSelectField}
+                                                                fullWidth={true}
+                                                                onChange={this.handleChange}
+                                                            >
+                                                            {
+                                                                (this.state.merchantList) ? 
+                                                                    this.state.merchantList.map((item) =>{
+                                                                        return <MenuItem 
+                                                                                style={styles.selectControl}
+                                                                                key={item.id}
+                                                                                value={item.id}>
+                                                                                {item.name_v + " " + item.last_v}
+                                                                        </MenuItem>
+                                                                        })
+                                                                    :
+                                                                        <MenuItem 
+                                                                                style={styles.selectControl}
+                                                                                key="none"
+                                                                                value="None">
+                                                                                {"None"}
+                                                                        </MenuItem>
+                                                            }
+                                                            </Field>    
+                                                        </FormControl>  
+                                                    </div>
+                                                </div>
+                                            :
+                                                null
+                                        :
+                                            null
+                                    }
                                     <div className="row">
                                         <div className="col-xs-12">
-                                             <label className="controlLabel">Query Type*</label>
+                                             <label className="controlLabel">Query Type</label>
 
                                             <FormControl style={styles.formControl}>
                                                 <Field
@@ -250,7 +249,6 @@ class ContactUs extends Component {
                                                     component={renderSelectField}
                                                     fullWidth={true}
                                                     onChange={this.handleChange}
-                                                    validate={dropDownRequired}
                                                 >
                                                 {
                                                      (this.state.queryTypeList) ? 
@@ -271,12 +269,11 @@ class ContactUs extends Component {
                                     </div>
                                     <div className="row">
                                         <div className="col-xs-12">
-                                            <label className="controlLabel">Message*</label>
+                                            <label className="controlLabel">Message</label>
                                             <Field 
                                                 name="message" 
                                                 fullWidth={true} 
                                                 component={TextAreaControl} 
-                                                validate={required}
                                             />
                                         </div>
                                     </div>
@@ -312,12 +309,15 @@ const mapDispatchToProps = (dispatch) => {
 
 ContactUs = connect(
     state => ({
+       initialValues: state.accountValidate === undefined ? undefined : state.accountValidate.user.responseData,
        userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        queryTypeResponse: state.ticket === undefined ? undefined : state.ticket.queryType,
        generateTicketResponse : state.ticket.generateTicket === undefined ? undefined : state.ticket.generateTicket, 
        merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(ContactUs)
 
 export default ContactUs;
