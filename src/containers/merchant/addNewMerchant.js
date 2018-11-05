@@ -90,17 +90,23 @@ class AddMerchant extends Component {
         location:'',
         activeStep: 0,
         open: false,
+        merchantLogo: undefined,
       };
+
+      onImageChange = (file) =>{
+
+        this.setState({merchantLogo: file});
+      }
 
       //Function to navigate to respective step based on active index
       getStepContent(stepIndex) {
         switch (stepIndex) {
           case 0:            
-            return (<BusinessDetails />);
+            return (<BusinessDetails imageData={this.onImageChange} />);
           case 1:
             return (<OwnerDetails myProps={this.props.businessType} />);
           case 2:
-            return (<AccountSetup  myProps={this.props} />);
+            return (<AccountSetup myProps={this.props} />);
           case 3:
             return (<BankAccount />);
           default:
@@ -147,11 +153,10 @@ class AddMerchant extends Component {
             registerEmailId = this.props.userData.user.responseData.emailId
           }
           else{
-            registerEmailId = undefined
+            registerEmailId = this.props.location.state ? this.props.location.state.emailId : ""
           }
 
-          this.props.addNewMerchant(values, registerEmailId , this.props.userData.user.responseData.token)
-
+          this.props.addNewMerchant(values, registerEmailId, this.state.merchantLogo, this.props.userData.user.responseData.token)
         }
       }
 
@@ -162,7 +167,7 @@ class AddMerchant extends Component {
       handleClose = () => {
         this.setState({ open: false });
         if(this.props.userData.user.responseData.role === 'merchant'){
-          this.props.history.push('/merchantdashboard');
+          this.props.history.push('/paymentprocessing');
         }
         else{
           this.props.history.push('/managemerchants');
@@ -316,12 +321,13 @@ const selector = formValueSelector('FrmAddMerchant') // <-- same as form name
 
 AddMerchant = connect(
   state => ({
-    userData: state.account === undefined ? undefined : state.account,
+    userData: state.accountValidate === undefined ? undefined : state.accountValidate,
     merchantPayload: state.merchant === undefined ? undefined : state.merchant,
-    businessType: selector(state, 'businessType')
-
+    businessType: selector(state, 'businessType'),
   }),
   mapDispatchToProps,
+  null,
+    { pure: false },
 )(AddMerchant)
 
 export default reduxForm({form: 'FrmAddMerchant'})(withStyles(styles)(AddMerchant))

@@ -264,13 +264,14 @@ class DealList extends Component {
                                     );
                                 })
                                 )
-                                ):(null)
+                                ):(
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={7}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
                             }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={7} />
-                                </TableRow>
-                            )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
@@ -303,7 +304,7 @@ const mapDispatchToProps = (dispatch) => {
   
   DealList = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       dealsPayload: state.deal.dealList === undefined ? undefined : state.deal.dealList,
       dealDelete: state.deal.deleteDeal === undefined ? undefined : state.deal.deleteDeal,
       citiesPayload: state.deal.citiesList === undefined ? undefined : state.deal.citiesList,

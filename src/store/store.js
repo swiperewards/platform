@@ -16,11 +16,11 @@ const store = createStore(
 
 store.subscribe(() => {
     
-    var user = store.getState().account.user;
+    var user = store.getState().accountValidate.user;
     if (user) {
         if (user.status === 200 || user.status === 802) {
             var accountData = {
-                account: store.getState().account
+                accountValidate: store.getState().accountValidate
             }
             SaveState(accountData)
         }

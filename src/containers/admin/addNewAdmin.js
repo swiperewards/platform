@@ -212,6 +212,7 @@ class AddAdmin extends Component {
                         </div> 
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
+                                <span>Upload Profile Picture</span>
                                 <Avatar
                                     alt="profile"
                                     src={this.state.image === '' ? this.state.defaultImage : this.state.image} 
@@ -224,7 +225,7 @@ class AddAdmin extends Component {
                                     onChange={this.onImageChange.bind(this)} 
                                     accept=".jpg"
                                     />
-
+                                    <span style={{fontSize:'8pt', color:'grey'}}>File must be less than 2 MB</span>
                             </div>            
                         </div>
                         <div className="row end-xs">
@@ -265,10 +266,12 @@ const mapDispatchToProps = (dispatch) => {
 
 AddAdmin = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        newAdminResponse: state.admin.addAdmin === undefined ? undefined : state.admin.addAdmin,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(AddAdmin)
 
 export default AddAdmin;

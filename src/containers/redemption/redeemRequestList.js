@@ -334,7 +334,8 @@ class RedeemRequestList extends Component {
                                         component={renderSelectField}
                                         fullWidth={true}
                                         onChange={this.handleChange}
-                                        disabled={openApproveRequestPopUp ? false : true}
+                                        disabled={true}
+
                                         >                                            
                                         {
                                             this.state.redeemModeList ?
@@ -458,13 +459,14 @@ class RedeemRequestList extends Component {
                                     );
                                 })
                                 )
-                                ):(null)
+                                ):(
+                                    <TableRow style={{ height: 48 * emptyRows }}>
+                                        <TableCell colSpan={8}>
+                                            <div className="dashboardText" style={{textAlign:"center", width:"100%"}} ><b>No Record Available</b></div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
                             }
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 48 * emptyRows }}>
-                                <TableCell colSpan={8} />
-                                </TableRow>
-                            )}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
@@ -505,7 +507,7 @@ const mapDispatchToProps = (dispatch) => {
   
   RedeemRequestList = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       redeemRequestPayload: state.redeem.redeemRequestList === undefined ? undefined : state.redeem.redeemRequestList,
       redeemModePayload: state.redeem.redeemModeList === undefined ? undefined : state.redeem.redeemModeList,
       initialValues: state.redeem.redeemRequestDetails === undefined ? undefined : state.redeem.redeemRequestDetails.responseData,

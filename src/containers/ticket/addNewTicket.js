@@ -151,10 +151,12 @@ const mapDispatchToProps = (dispatch) => {
 
 AddNewTicket = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        newTicketResponse: state.ticket.createTicketType === undefined ? undefined : state.ticket.createTicketType,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(AddNewTicket)
 
 export default AddNewTicket;

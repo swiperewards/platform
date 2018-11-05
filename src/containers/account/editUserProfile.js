@@ -19,6 +19,7 @@ import DialogBox from '../../components/alertDialog';
 
 //Action
 import { updateUserProfile, clearUpdateProfileResponse } from '../../actions/accountAction';
+import { getUserDetails } from '../../actions/userAction';
 
 //Validation
 import {required, minimum8} from '../../utilities/validation'
@@ -38,12 +39,19 @@ const passwordsMatch = (value, allValues) =>
 class UserProfile extends Component {
     
     state = {
-        passwordUpdate: '',
+        passwordUpdate: false,
         dialogOpen: false,
     };
 
     componentWillMount() {
         errorMessage = ""
+        this.fetchUserDetails()
+    }
+
+    fetchUserDetails(){
+        if(this.props.userData.user.responseData.token){
+            this.props.getUserDetails(this.props.userData.user.responseData.userId, this.props.userData.user.responseData.token)
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -52,7 +60,8 @@ class UserProfile extends Component {
               if(nextProps.updateProfileResponse.status === 200){
                   this.setState({message: nextProps.updateProfileResponse.message})
                   this.setState({ dialogOpen: true });
-                  this.setState({showLoader:false})
+                  this.setState({ showLoader: false });
+                  this.fetchUserDetails()
               }
               else{
                   errorMessage =
@@ -75,6 +84,10 @@ class UserProfile extends Component {
         this.setState({[name]: event.target.checked});
     };
 
+    handleClose = () => {
+        this.setState({ dialogOpen: false });
+    };
+     
     onSubmit(values) {
 
         if(this.props.userData.user.responseData.token){
@@ -218,7 +231,7 @@ class UserProfile extends Component {
 
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ updateUserProfile, clearUpdateProfileResponse }, dispatch)
+    return bindActionCreators({ updateUserProfile, clearUpdateProfileResponse, getUserDetails }, dispatch)
   }
 
 UserProfile = reduxForm({
@@ -227,8 +240,8 @@ UserProfile = reduxForm({
 
 UserProfile = connect(
     state => ({
-        userData: state.account === undefined ? undefined : state.account,
-        initialValues: state.account === undefined ? undefined : state.account.user.responseData,
+        userData: state.accountValidate === undefined ? undefined : state.accountValidate,
+        initialValues : state.userAccount.userDetails === undefined ? undefined : state.userAccount.userDetails.responseData,
         updateProfileResponse: state.account.updateProfile === undefined ? undefined : state.account.updateProfile
     }),
     mapDispatchToProps,

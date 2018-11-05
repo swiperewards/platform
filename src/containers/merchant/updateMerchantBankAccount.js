@@ -122,7 +122,7 @@ class UpdateBankAccount extends Component {
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
             errorMessage = undefined
-            this.props.updateMerchantDetails(values, "bankAccount" ,this.props.userData.user.responseData.token)
+            this.props.updateMerchantDetails(values, "bankAccount", "", this.props.userData.user.responseData.token)
         }
       }
 
@@ -231,11 +231,13 @@ UpdateBankAccount = reduxForm({
 
 UpdateBankAccount = connect(
     state => ({
-        userData: state.account === undefined ? undefined : state.account,
+        userData: state.accountValidate === undefined ? undefined : state.accountValidate,
         updateBankResponse: state.merchant.updateMerchant === undefined ? undefined : state.merchant.updateMerchant.responseData,
         initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(UpdateBankAccount)
 
 

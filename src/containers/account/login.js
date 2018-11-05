@@ -142,7 +142,7 @@ class Login extends Component {
             <div>
                 <Loader status={this.state.showLoader} />
 
-                <div className="pageContainer">
+                <div className="loginPageContainer">
                     <Paper className="pagePaper">
                         <div className="logo">
                             <img src="../images/logo.png" alt="Logo" />
@@ -195,7 +195,7 @@ class Login extends Component {
 const mapStateToProps = (state) => {
 
     return {
-            validateAction_Data: state.account,
+            validateAction_Data: state.accountValidate,
             loadStatus: state.common.data
         }
 }

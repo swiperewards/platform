@@ -12,6 +12,7 @@ import Divider from '@material-ui/core/Divider';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 
 //Components
 import InputField from '../../components/inputField';
@@ -20,6 +21,7 @@ import RenderCheckbox from '../../components/renderCheckbox'
 import DialogBox from '../../components/alertDialog'
 import Loader from '../../components/loader'
 import RenderSwitch from '../../components/switchControl';
+import FieldFileInput from '../../components/fieldFileInput';
 
 //Actions
 import { getMerchantDetailsAPI, updateMerchantDetails, clearMerchantUpdateState } from '../../actions/merchantAction';
@@ -48,6 +50,8 @@ const styles = {
 class UpdateBusinessDetails extends Component {
 
     state = {
+        image:'',
+        defaultImage:'../images/profile.png',
         businessType: '',
         stateName:'',
         creditCheckedYes: false,
@@ -130,6 +134,30 @@ class UpdateBusinessDetails extends Component {
         }
       }
 
+      onImageChange = (file) =>{
+
+        errorMessage = ""
+
+        if (file) {
+            var FileSize = file.size / 1024 / 1024; // in MB
+            if (FileSize > 2) {
+                errorMessage =
+                        <div 
+                            className="errorDiv"
+                        >{"File size exceeds 2 MB"}</div>
+                        //event.target.value = null;
+                        this.setState({image: this.state.defaultImage});
+            } else {
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    this.setState({image: e.target.result});
+                    this.props.change('submitting',true);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    }
+
       getMerchantDetails(){
         if(this.props.userData.user.responseData.token && this.props.merchant){
             this.props.getMerchantDetailsAPI(this.props.merchant, this.props.userData.user.responseData.token)
@@ -148,13 +176,13 @@ class UpdateBusinessDetails extends Component {
         if(this.props.userData.user.responseData.token){
             this.setState({showLoader:true})
             errorMessage = undefined
-            this.props.updateMerchantDetails(values, "businessDetails", this.props.userData.user.responseData.token)
+            this.props.updateMerchantDetails(values, "businessDetails", this.state.image, this.props.userData.user.responseData.token)
         }
       }
 
     render() {
-
         const { pristine, submitting } = this.props
+
         const actions = [
             <Button key="ok" onClick={this.handleCloseAlert} color="primary" autoFocus>
                 OK
@@ -491,6 +519,28 @@ class UpdateBusinessDetails extends Component {
                                 />  
                             </div>
                         </div>
+                        <div className="row middle-md">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <span>Upload Business Logo</span>
+                                <Avatar
+                                    name="logoUrl"
+                                    alt="profile"
+                                    src={this.state.image === '' ? (this.props.initialValues !== undefined ? (this.props.initialValues.merchantLogo !== "" ? this.props.initialValues.merchantLogo : this.state.defaultImage) : this.state.defaultImage) : this.state.image} 
+                                    className="bigAvatar"
+                                />
+                            </div>
+                            <div className="col-xs-12 col-sm-6 col-md-3">
+                                <Field 
+                                    name="businessLogo" 
+                                    ref="businessLogo"
+                                    label="" 
+                                    type="file" 
+                                    component={FieldFileInput} 
+                                    imageChange={this.onImageChange} 
+                                />
+                                <span style={{fontSize:'8pt', color:'grey'}}>File must be less than 2 MB</span>
+                            </div>           
+                        </div>
                     </div>            
                 </Paper> 
                 </form>
@@ -512,11 +562,13 @@ UpdateBusinessDetails = reduxForm({
 
 UpdateBusinessDetails = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        updateBusinessResponse: state.merchant.updateMerchant === undefined ? undefined : state.merchant.updateMerchant.responseData,
        initialValues: state.merchant.merchantDetails === undefined ? undefined : state.merchant.merchantDetails.responseData
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(UpdateBusinessDetails)
 
 export default UpdateBusinessDetails;

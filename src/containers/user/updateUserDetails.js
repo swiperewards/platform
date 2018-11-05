@@ -232,55 +232,61 @@ class UpdateUserDetails extends Component {
                                 </FormControl>  
                             </div>
                         </div>
-                        <div className="row start-md">
-                            <div className="col-xs-12 col-sm-6 col-md-3">
-                                Update Password
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-3">  
-                                <Field
-                                    name="passwordUpdate" 
-                                    ref="passwordUpdate"
-                                    id="passwordUpdate" 
-                                    component={RenderSwitch}
-                                    onChange={this.handleCheckboxChange('passwordUpdate')}
-                                />                             
-                            </div>
-                            <div className="col-xs-12 col-sm-6 col-md-6">
-                                {this.state.passwordUpdate === true ? (
-                                <React.Fragment>  
-                                <div className="row">
-                                    <div className="col-xs-6">
-                                        New Password
-                                    </div>
-                                    <div className="col-xs-6">
-                                        <Field 
-                                            name="newPassword" 
-                                            myType="password" 
-                                            fullWidth={true} 
-                                            component={InputField} 
-                                            validate={[required, minimum8]} 
-                                        />
-                                    </div>
+                        {
+                            this.props.initialValues ?
+                            !this.props.initialValues.isSocialLogin ?
+                            <div className="row start-md">
+                                <div className="col-xs-12 col-sm-6 col-md-3">
+                                    Update Password
                                 </div>
-                                <div className="row">                            
-                                    <div className="col-xs-6">
-                                        Confirm Password
-                                    </div>
-                                    <div className="col-xs-6">
-                                        <Field 
-                                            name="confirmPassword" 
-                                            myType="password" 
-                                            fullWidth={true} 
-                                            component={InputField} 
-                                            validate={[required, passwordsMatch]} 
-                                        />
-                                    </div>
+                                <div className="col-xs-12 col-sm-6 col-md-3">  
+                                    <Field
+                                        name="passwordUpdate" 
+                                        ref="passwordUpdate"
+                                        id="passwordUpdate" 
+                                        component={RenderSwitch}
+                                        onChange={this.handleCheckboxChange('passwordUpdate')}
+                                    />                             
                                 </div>
-                                </React.Fragment>
+                                <div className="col-xs-12 col-sm-6 col-md-6">
+                                    {this.state.passwordUpdate === true ? (
+                                    <React.Fragment>  
+                                    <div className="row">
+                                        <div className="col-xs-6">
+                                            New Password
+                                        </div>
+                                        <div className="col-xs-6">
+                                            <Field 
+                                                name="newPassword" 
+                                                myType="password" 
+                                                fullWidth={true} 
+                                                component={InputField} 
+                                                validate={[required, minimum8]} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="row">                            
+                                        <div className="col-xs-6">
+                                            Confirm Password
+                                        </div>
+                                        <div className="col-xs-6">
+                                            <Field 
+                                                name="confirmPassword" 
+                                                myType="password" 
+                                                fullWidth={true} 
+                                                component={InputField} 
+                                                validate={[required, passwordsMatch]} 
+                                            />
+                                        </div>
+                                    </div>
+                                    </React.Fragment>
                                 ) : null
                             }
                             </div>
                         </div>
+                        : null
+                        : null
+                        }
                         <div className="row end-xs">
                             <div className="col-xs-12 col-sm-6 col-md-6">
                                 <button 
@@ -322,7 +328,7 @@ UpdateUserDetails = reduxForm({
 
 UpdateUserDetails = connect(
     state => ({
-        userData: state.account === undefined ? undefined : state.account,
+        userData: state.accountValidate === undefined ? undefined : state.accountValidate,
         initialValues: state.userAccount.userDetails === undefined ? undefined : state.userAccount.userDetails.responseData,
         updateUserResponse : state.userAccount.updateUser === undefined ? undefined : state.userAccount.updateUser,
 

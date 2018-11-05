@@ -231,7 +231,7 @@ const mapDispatchToProps = (dispatch) => {
   
   CustomerQueries = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       queryTypeResponse: state.ticket === undefined ? undefined : state.ticket.queryType,
     }),
     mapDispatchToProps,

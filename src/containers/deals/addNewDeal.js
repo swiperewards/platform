@@ -11,15 +11,21 @@ import FormControl from '@material-ui/core/FormControl';
 import Divider from '@material-ui/core/Divider';
 import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 //Components
 import DialogBox from '../../components/alertDialog'
 import InputField from '../../components/inputField';
+import TextField from '@material-ui/core/TextField';
 import {renderSelectField} from '../../components/selectControl';
 import Loader from '../../components/loader'
 import DatePickerControl from '../../components/datePickerControl';
+import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 
 //Actions
+import { getMerchantListWithFilter } from '../../actions/merchantAction';
 import { addNewDeal, getCitiesList } from '../../actions/dealAction';
 
 //Validation
@@ -43,6 +49,32 @@ const styles = {
       }
 };
 
+const isObject = val => {
+    return typeof val === 'object' && val !== null;
+  };
+  
+  export const classnames = (...args) => {
+    const classes = [];
+    args.forEach(arg => {
+      if (typeof arg === 'string') {
+        classes.push(arg);
+      } else if (isObject(arg)) {
+        Object.keys(arg).forEach(key => {
+          if (arg[key]) {
+            classes.push(key);
+          }
+        });
+      } else {
+        throw new Error(
+          '`classnames` only accepts string or object as arguments'
+        );
+      }
+    });
+  
+    return classes.join(' ');
+  };
+
+
 class AddNewDeal extends Component {
 
     constructor(props) {
@@ -53,6 +85,14 @@ class AddNewDeal extends Component {
             citiesList:'',
             fromDate: new Date(),
             toDate:'',
+            merchantList:undefined,
+            openStoreLocator: false,
+            address: '',
+            storeErrorMessage: '',
+            latitude: null,
+            longitude: null,
+            isGeocoding: false,
+            anchorEl: null,
         }
     }
 
@@ -63,6 +103,15 @@ class AddNewDeal extends Component {
 
         if(this.props.userData.user.responseData.token){
             this.props.getCitiesList(this.props.userData.user.responseData.token)
+            var userId
+            if(this.props.userData.user.responseData.role === 'merchant'){
+                userId = this.props.userData.user.responseData.userId
+            }
+            else{
+                userId = this.props.location.state !== undefined ? this.props.location.state.userId : undefined
+            }
+
+            this.props.getMerchantListWithFilter(userId,"","0","",this.props.userData.user.responseData.token);
         }
     }
 
@@ -70,8 +119,28 @@ class AddNewDeal extends Component {
         this.setState({ [event.target.name]: event.target.value });
       };
 
+      handleStoreLocation = (event) => {
+        event.target.blur()
+        this.props.change('searchStore','');
+        this.setState({ openStoreLocator: true });
+    };
+
+    handleClosePopup = () => {
+        this.setState({ openStoreLocator: false });
+    };
+
       componentWillReceiveProps(nextProps) {
         if (nextProps) {
+
+            if (nextProps.merchantPayload){
+                if(nextProps.merchantPayload.status === 200){
+                    this.setState({showLoader:false})
+                    this.setState({merchantList: nextProps.merchantPayload.responseData})
+                }
+                else{
+                    this.setState({showLoader:false})
+                }
+            }
 
           if (nextProps.newDealResponse){
             if(nextProps.newDealResponse.status === 200){
@@ -106,11 +175,8 @@ class AddNewDeal extends Component {
       onSubmit(values) {
 
         if(this.props.userData.user.responseData.token){
-            let merchantId = this.props.location.state !== undefined ? this.props.location.state.detail : undefined
-            if(merchantId !== undefined){
-                this.setState({showLoader:true})
-                this.props.addNewDeal(values, merchantId, this.props.userData.user.responseData.token)
-            }
+            this.setState({showLoader:true})
+            this.props.addNewDeal(values, this.state.latitude, this.state.longitude, this.props.userData.user.responseData.token)
         }
       }
 
@@ -123,8 +189,64 @@ class AddNewDeal extends Component {
         this.props.history.goBack();
     }
 
+    handleStoreChange = address => {
+        this.setState({
+          address,
+          latitude: null,
+          longitude: null,
+          storeErrorMessage: '',
+        });
+      };
+    
+      handleSelect = selected => {
+        this.setState({ openStoreLocator: false });
+        this.props.change('storeLocation',selected)
+        this.setState({ isGeocoding: true, address: selected });
+        geocodeByAddress(selected)
+          .then(res => getLatLng(res[0]))
+          .then(({ lat, lng }) => {
+            this.setState({
+              latitude: lat,
+              longitude: lng,
+              isGeocoding: false,
+            });
+          })
+          .catch(error => {
+            this.setState({ isGeocoding: false });
+            console.log('error', error); // eslint-disable-line no-console
+          });
+      };
+    
+      handleCloseClick = () => {
+        this.setState({
+          address: '',
+          latitude: null,
+          longitude: null,
+        });
+      };
+    
+      handleError = (status, clearSuggestions) => {
+        console.log('Error from Google Maps API', status); // eslint-disable-line no-console
+        this.setState({ storeErrorMessage: status }, () => {
+          clearSuggestions();
+        });
+      };
+    
+      handleClick = event => {
+        this.setState({
+          anchorEl: event.currentTarget,
+        });
+      };
+    
+
     render() {
-        const {  dialogOpen } = this.state;
+        const {  dialogOpen,
+                address,
+                storeErrorMessage,
+                latitude,
+                longitude,
+                isGeocoding, 
+            } = this.state;
 
         const actions = [
             <Button key="ok" onClick={this.handleClose} color="primary" autoFocus>
@@ -154,15 +276,37 @@ class AddNewDeal extends Component {
 
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Merchant Id
+                                Business Name*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                {this.props.location.state !== undefined ? this.props.location.state.detail : undefined}
+                                <FormControl style={styles.formControl}>
+                                    <Field
+                                        name="merchantId"
+                                        component={renderSelectField}
+                                        fullWidth={true}
+                                        onChange={this.handleChange}
+                                        validate={dropDownRequired}
+                                    >
+                                    {
+                                            (this.state.merchantList) ? 
+                                            this.state.merchantList.map((item) =>{
+                                                return <MenuItem 
+                                                        style={styles.selectControl}
+                                                        key={item.id}
+                                                        value={item.id}>
+                                                        {item.name_v + " " + item.last_v}
+                                                </MenuItem>
+                                                })
+                                            :
+                                            null
+                                    }
+                                    </Field>    
+                                </FormControl>
                             </div>
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                City
+                                City*
                             </div>    
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <FormControl style={styles.formControl}>
@@ -188,18 +332,106 @@ class AddNewDeal extends Component {
                                     </Field>    
                                 </FormControl>  
                             </div>  
-                            {/* <div className="col-xs-12 col-sm-6 col-md-3">
+                            <div className="col-xs-12 col-sm-6 col-md-3">
                                 Store Location
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <Field 
-                                    myType="number" 
-                                    name="storeLocation" 
-                                    fullWidth={true} 
-                                    component={LocationSearchBar} 
-                                    validate={required}
-                                />  
-                            </div> */}
+                                <Field
+                                    myType="text"
+                                    name="storeLocation"
+                                    id="storeLocation"
+                                    ref="storeLocation"
+                                    fullWidth={true}
+                                    onFocus={this.handleStoreLocation}
+                                    component={InputField}
+                                />
+                                <Dialog
+                                    open={this.state.openStoreLocator}
+                                    onClose={this.handleClosePopup}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                    fullWidth={true}
+                                >
+                                    <DialogTitle id="alert-dialog-title">{"Store Locator"}</DialogTitle>
+                                    <DialogContent>
+                                        <div>
+                                            <PlacesAutocomplete
+                                            name="searchStore"
+                                            onChange={this.handleStoreChange}
+                                            value={address}
+                                            onSelect={this.handleSelect}
+                                            onError={this.handleError}
+                                            shouldFetchSuggestions={address.length > 2}
+                                            >
+                                            {({ getInputProps, suggestions, getSuggestionItemProps }) => {
+                                                return (
+                                                    <div>
+                                                        <div>
+                                                            <TextField {...this.props.input}
+                                                                {...getInputProps({
+                                                                    placeholder: 'Search Store ...',
+                                                                    className: 'location-search-input',
+                                                                })}
+                                                                fullWidth={true}
+                                                            />
+                                                        </div>
+                                                            
+                                                        {suggestions.length > 0 && (
+                                                            <div className="autocomplete-container">
+                                                            {
+                                                                suggestions.map((suggestion, index) => {
+                                                                    const className = classnames('suggestion-item', {
+                                                                        'suggestion-item--active': suggestion.active,
+                                                                    });
+
+                                                                return (                                
+                                                                <div
+                                                                    {...getSuggestionItemProps(suggestion, { className })}>
+                                                                    <strong>
+                                                                        {suggestion.formattedSuggestion.mainText}
+                                                                    </strong>{' '}
+                                                                    <small>
+                                                                        {suggestion.formattedSuggestion.secondaryText}
+                                                                    </small>
+                                                                </div>
+                                                                                
+                                                                );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            }}
+                                            </PlacesAutocomplete>
+                                            {storeErrorMessage.length > 0 && (
+                                            <div className="Demo__error-message">{this.state.storeErrorMessage}</div>
+                                            )}
+
+                                            {((latitude && longitude) || isGeocoding) && (
+                                            <div>
+                                                <h3 className="Demo__geocode-result-header">Geocode result</h3>
+                                                {isGeocoding ? (
+                                                <div>
+                                                    <i className="fa fa-spinner fa-pulse fa-3x fa-fw Demo__spinner" />
+                                                </div>
+                                                ) : (
+                                                <div>
+                                                    <div className="Demo__geocode-result-item--lat">
+                                                    <label>Latitude:</label>
+                                                    <span>{latitude}</span>
+                                                    </div>
+                                                    <div className="Demo__geocode-result-item--lng">
+                                                    <label>Longitude:</label>
+                                                    <span>{longitude}</span>
+                                                    </div>
+                                                </div>
+                                                )}
+                                            </div>
+                                            )}
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
@@ -300,7 +532,7 @@ class AddNewDeal extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ addNewDeal, getCitiesList }, dispatch)
+    return bindActionCreators({ addNewDeal, getCitiesList, getMerchantListWithFilter }, dispatch)
   }
 
   AddNewDeal = reduxForm({
@@ -309,12 +541,14 @@ const mapDispatchToProps = (dispatch) => {
 
 AddNewDeal = connect(
     state => ({
-       userData: state.account === undefined ? undefined : state.account,
+       userData: state.accountValidate === undefined ? undefined : state.accountValidate,
        newDealResponse: state.deal === undefined ? undefined : state.deal.addDeal,
        citiesPayload: state.deal.citiesList === undefined ? undefined : state.deal.citiesList,
- 
+       merchantPayload: state.merchant.merchantList === undefined ? undefined : state.merchant.merchantList,
     }),
     mapDispatchToProps,
+    null,
+    { pure: false },
   )(AddNewDeal)
 
 export default AddNewDeal;

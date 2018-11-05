@@ -23,6 +23,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import { logout } from '../actions/accountAction';
+import { getUserDetails } from '../actions/userAction';
 
 const drawerWidth = 200;
 
@@ -117,6 +118,12 @@ class ResponsiveDrawer extends React.Component {
     anchorEl: null,
   };
 
+  componentWillMount() {
+    if(this.props.userData.user.responseData.token){
+        this.props.getUserDetails(this.props.userData.user.responseData.userId, this.props.userData.user.responseData.token)
+    }
+}
+
   handleChange = (event, checked) => {
     this.setState({ auth: checked });
   };
@@ -132,29 +139,6 @@ class ResponsiveDrawer extends React.Component {
   handleDrawerToggle = () => {
     this.setState({ mobileOpen: !this.state.mobileOpen });
   };
-
-  enabledOption(option) {
-    switch(option) {
-      case '/paymentprocessing':
-        return true;
-      case '/managemerchants':
-        return true;  
-      case '/manageadmins':
-        return true;  
-      case '/managedeals':
-        return true;
-      case '/contactus':
-        return true;
-      case '/manageusers':
-        return true;  
-      case '/managetickets':
-        return true;  
-      case '/manageredeemmode':
-        return true;  
-      default:
-        return true;
-    }
-  }
 
   render() {
     const { classes, theme } = this.props;
@@ -182,9 +166,9 @@ class ResponsiveDrawer extends React.Component {
             <div style={{ color: '#FFFFFF', fontSize:'12px', paddingLeft: '0px' }}> 
               {
                 this.props.userData.user !== undefined ? (this.props.userData.user.responseData.menuList
-                .sort(((a,b) => a.displayOrder > b.displayOrder))
+                .sort(((a,b) => a.displayOrder - b.displayOrder))
                 .map((value, index) => (
-                  <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}} className= {this.enabledOption(value.link) !== true ? 'disabled-link' : null}>
+                  <Link to={value.link} key={index} style={{textDecoration:'none', color:'#fff'}}>
                     <ListItem button disableGutters className={classes.ListItem}>
                       <img src={"../images/" + value.iconName + ".svg"} height="20px" alt="" style={{paddingLeft:'15px'}} />
                       <ListItemText disableTypography primary={value.text} />
@@ -217,14 +201,17 @@ class ResponsiveDrawer extends React.Component {
                 <div style={{float:'right', position:'relative', margin:'0px'}}>
                     <div className={classes.avatarDiv}>
                     <NavLink to={'/editUserProfile'}>
-                      <Avatar src={this.props.userData.user !== undefined ? this.props.userData.user.responseData.profilePicUrl : ""}
+                      <Avatar src={
+                        this.props.initialValues !== undefined ? 
+                        (this.props.userData.user.responseData.userId === this.props.initialValues.userId ? 
+                          this.props.initialValues.profilePicUrl : this.props.userData.user.responseData.profilePicUrl) : ""}
                         className={classes.avatarIcon} />
                     </NavLink>
                         
                     </div>
                     {auth && (
                     <div style={{float:'right',verticalAlign:'middle'}}>
-                        <span className={classes.avatarSpan} onClick={this.handleMenu}>{this.props.userData.user !== undefined ? this.props.userData.user.responseData.fullName : ""}</span> 
+                        <span className={classes.avatarSpan} onClick={this.handleMenu}>{this.props.initialValues !== undefined ? (this.props.userData.user.responseData.userId === this.props.initialValues.userId ? this.props.initialValues.fullName : this.props.userData.user.responseData.fullName) : ""}</span> 
                         <IconButton
                         aria-owns={open ? 'menu-appbar' : null}
                         aria-haspopup="true"
@@ -304,13 +291,14 @@ ResponsiveDrawer.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-function mapDispatchToProps(dispatch){
-  return bindActionCreators({logout});
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({ logout, getUserDetails }, dispatch)
 }
 
 ResponsiveDrawer = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
+      initialValues : state.userAccount.userDetails === undefined ? undefined : state.userAccount.userDetails.responseData
     }),
     mapDispatchToProps  //bind logout action creator
 )(ResponsiveDrawer)

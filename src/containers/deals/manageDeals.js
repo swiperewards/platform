@@ -54,8 +54,7 @@ class ManageDeals extends Component {
         }
 
         if(this.props.userData.user.responseData.role === 'merchant'){
-            const profileMerchantId = this.props.userProfile === undefined ? null : this.props.userProfile.responseData.merchantId
-            if(this.props.userData.user.responseData.token && profileMerchantId === null){
+            if(this.props.userData.user.responseData.token){
                 this.setState({showLoader:true})
                 this.props.getUserProfile(this.props.userData.user.responseData.token);
             }
@@ -74,12 +73,8 @@ class ManageDeals extends Component {
 
           if(nextProps.userProfile){
             this.setState({showLoader:false})
-            if(nextProps.userProfile.status === 200){
-                if(nextProps.userProfile.responseData){
-                    if(nextProps.userProfile.responseData.merchantId === null){
-                        this.setState({showOverlay:true});
-                    }
-                }
+            if(nextProps.userProfile.status === 1092){
+                this.setState({showOverlay:true});
             }
           }
         }
@@ -97,23 +92,17 @@ class ManageDeals extends Component {
         }
     };
 
-    handleChangePage = (event, page) => {
-        this.setState({ page });
-    };
-    
-    handleChangeRowsPerPage = event => {
-        this.setState({ rowsPerPage: event.target.value });
-    };
-
     onHandleSearch(){
         this.child.searchHandler();
     }
 
     addNewDeal(){
-        if(this.props.userData.user.responseData.merchantId !== null){
-            this.props.history.push({pathname:'/addNewDeal',state: { detail: this.props.userData.user.responseData.merchantId }})
-        }else{
-            this.props.history.push('/merchantList')
+
+        if(this.props.userData.user.responseData.role === 'merchant'){
+            this.props.history.push({pathname:'/addNewDeal',state: { detail: this.props.userData.user.responseData.userId }})
+        }
+        else{
+            this.props.history.push('/merchantList');
         }
     }
 
@@ -239,7 +228,7 @@ class ManageDeals extends Component {
                                 type="button"
                                 onClick={this.onHandleSearch.bind(this)}
                                 className="button"
-                                > Filter
+                                > Search
                             </button> 
                         </div>        
                         <div className="col-xs-12 col-sm-6 col-md-1 end-md">
@@ -279,7 +268,7 @@ const mapDispatchToProps = (dispatch) => {
   
   ManageDeals = connect(
     state => ({
-      userData: state.account === undefined ? undefined : state.account,
+      userData: state.accountValidate === undefined ? undefined : state.accountValidate,
       dealsPayload: state.deal.dealList === undefined ? undefined : state.deal.dealList,
       dealDelete: state.deal.deleteDeal === undefined ? undefined : state.deal.deleteDeal,
       userProfile: state.account.userProfile === undefined ? undefined : state.account.userProfile, 
