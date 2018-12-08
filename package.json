@@ -15,7 +15,7 @@
     "randomcolor": "^0.5.3",
     "react": "^16.4.1",
     "react-chartjs-2": "^2.7.4",
-    "react-dom": "^16.4.1",
+    "react-dom": "^16.4.2",
     "react-grecaptcha": "^1.2.5",
     "react-number-format": "^3.5.1",
     "react-places-autocomplete": "^7.2.0",
