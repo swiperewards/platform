@@ -294,7 +294,7 @@ class AddNewDeal extends Component {
                                                         style={styles.selectControl}
                                                         key={item.id}
                                                         value={item.id}>
-                                                        {item.name_v + " " + item.last_v}
+                                                        {item.name_v}
                                                 </MenuItem>
                                                 })
                                             :

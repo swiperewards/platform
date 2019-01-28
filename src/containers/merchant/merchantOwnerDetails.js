@@ -166,7 +166,6 @@ const styles = {
                                             name={`${member}.ownerDlState`}
                                             component={renderSelectField}
                                             fullWidth={true}
-                                            onChange={this.handleChange}
                                         >
                                         {
                                             Data.states.map((item) =>{
@@ -212,7 +211,6 @@ const styles = {
                                             name={`${member}.ownerState`}
                                             component={renderSelectField}
                                             fullWidth={true}
-                                            onChange={this.handleChange}
                                             validate={dropDownRequired}
                                         >
                                         {

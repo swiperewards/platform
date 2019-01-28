@@ -329,7 +329,7 @@ class UpdateBusinessDetails extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Years in Business
+                                Start Date of Business
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field 
@@ -357,7 +357,7 @@ class UpdateBusinessDetails extends Component {
                         </div>
                         <div className="row">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Currently accept credit cards
+                                Currently Accept Credit Cards
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field

@@ -15,7 +15,7 @@ export function addNewMerchant(values, registeredEmail, merchantLogo, token) {
         "annualCCSales": (values.ccSale === undefined || values.ccSale === null || values.ccSale === '') ? undefined : (values.ccSale).replace(normalizedNumber,''),
         "mcc": values.mccNumber,
         "dba": values.dba,
-        "status": values.boardingStatus,
+        "status": "1",
         "entityType": values.businessType,
         "entityName": values.businessName === undefined ? (values.owners[0].ownerFirstName + ' ' + values.owners[0].ownerLastName) : values.businessName,
         "entityEnvironment":values.merchantType,
