@@ -78,7 +78,7 @@ const data={
 
     ],
     boardingStatus: [
-        {id:'0', name: 'Not Ready'},
+        //{id:'0', name: 'Not Ready'},
         {id:'1', name: 'Board Immediately'}
     ],
     searchStatus: [
@@ -115,13 +115,13 @@ const data={
     ],
     mccCodes : [
         {
-          "mcc": "5812",
-          "edited_description": "Eating places and Restaurants",
-          "combined_description": "Eating places and Restaurants",
-          "usda_description": "Eating places and Restaurants",
-          "irs_description": "Eating Places, Restaurants",
+          "mcc": "5814",
+          "edited_description": "Fast Food Restaurants",
+          "combined_description": "Fast Food Restaurants",
+          "usda_description": "Fast Food Restaurants",
+          "irs_description": "Fast Food Restaurants",
           "irs_reportable": "No1.6041-3(c)",
-          "id": 802
+          "id": 804
         },
         {
           "mcc": "5999",

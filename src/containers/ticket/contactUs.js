@@ -41,6 +41,7 @@ class ContactUs extends Component {
             merchantList:undefined,
             dialogOpen: false,
             message:'',
+            showLoader: false,
             queryTypeList:'',
         }
     }
@@ -62,21 +63,13 @@ class ContactUs extends Component {
         if (nextProps) {
             if (nextProps.merchantPayload){
                 if(nextProps.merchantPayload.status === 200){
-                    this.setState({showLoader:false})
                     this.setState({merchantList: nextProps.merchantPayload.responseData})
-                }
-                else{
-                    this.setState({showLoader:false})
                 }
             }
 
           if (nextProps.queryTypeResponse){
             if(nextProps.queryTypeResponse.status === 200){
-                this.setState({showLoader:false})
                 this.setState({queryTypeList: nextProps.queryTypeResponse.responseData})
-            }
-            else{
-                this.setState({showLoader:false})
             }
           }
 
@@ -109,6 +102,7 @@ class ContactUs extends Component {
 
     handleClose = () => {
         this.setState({ dialogOpen: false });
+        window.location.reload();
     };
 
 
@@ -219,7 +213,7 @@ class ContactUs extends Component {
                                                                                 style={styles.selectControl}
                                                                                 key={item.id}
                                                                                 value={item.id}>
-                                                                                {item.name_v + " " + item.last_v}
+                                                                                {item.name_v}
                                                                         </MenuItem>
                                                                         })
                                                                     :

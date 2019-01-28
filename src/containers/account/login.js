@@ -152,7 +152,7 @@ class Login extends Component {
                                 <div className="titleLabel">LOGIN
                                 </div>
                                 <div className="formGroup">
-                                    <label className="controlLabel">Username or Email Address</label>
+                                    <label className="controlLabel">Email Address</label>
                                     <Field name="username"  fullWidth={true} component={InputField} validate={required} />
                                 </div>
                                 <div className="formGroup">

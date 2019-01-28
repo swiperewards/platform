@@ -225,7 +225,7 @@ class BusinessDetails extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Years in Business
+                                Start Date of Business
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 <Field myType="date" name="businessPeriod" fullWidth={true} component={InputField}/>  
@@ -246,7 +246,7 @@ class BusinessDetails extends Component {
                         </div>
                         <div className="row middle-md">
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                Currently accept credit cards
+                                Currently Accept Credit Cards
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">  
                                 <Field

@@ -59,6 +59,7 @@ class RedeemRequestList extends Component {
         redeemSummary:'',
         redeemModeList:undefined,
         errorMessage:'',
+        redeemModeId:'',
         page: 0,
         rowsPerPage: 5,
         dialogOpen: false,
@@ -154,6 +155,11 @@ class RedeemRequestList extends Component {
             this.props.change('fullName',nextProps.initialValues.fullName)
             this.props.change('amount', (nextProps.initialValues.amount).toString())
             this.props.change('modeName', nextProps.initialValues.redeemModeId)
+            this.props.change('details', nextProps.initialValues.details)
+            this.props.change('extraField', nextProps.initialValues.extraField)
+            this.props.change('modeOption', nextProps.initialValues.redeemModeOptionId)
+            this.setState({redeemModeId : nextProps.initialValues.redeemModeId})
+
             }
         }
     }
@@ -163,6 +169,10 @@ class RedeemRequestList extends Component {
         this.props.change('amount', '')
         this.props.change('modeName', '')
         this.props.change('note','')
+        this.props.change('details','')
+        this.props.change('extraField','')
+        this.props.change('modeOption','')
+
         this.setState({redeemId: redeemId})
 
         if(this.props.userData.user.responseData.token){
@@ -238,7 +248,7 @@ class RedeemRequestList extends Component {
     }
 
     render() {
-        const { redeemList, rowsPerPage, page, dialogOpen, permissionDisplayBox, errorMessage, openApproveRequestPopUp, openRejectRequestPopUp } = this.state;
+        const { redeemList, rowsPerPage, page, dialogOpen, permissionDisplayBox, errorMessage, openApproveRequestPopUp, openRejectRequestPopUp, redeemModeId } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, (redeemList !== undefined ? redeemList.length : 0) - page * rowsPerPage);
 
         const actions = [
@@ -297,7 +307,7 @@ class RedeemRequestList extends Component {
                             <div className="col-xs-4 end-xs"> 
                                 User Name :  
                             </div>
-                            <div className="col-xs-6 start-xs"> 
+                            <div className="col-xs-8 start-xs"> 
                                 <Field 
                                 type="text"
                                 name="fullName" 
@@ -312,7 +322,7 @@ class RedeemRequestList extends Component {
                             <div className="col-xs-4 end-xs"> 
                                 Amount :
                             </div>
-                            <div className="col-xs-6 start-xs"> 
+                            <div className="col-xs-8 start-xs"> 
                                 <Field 
                                     type="text"
                                     name="amount" 
@@ -327,7 +337,7 @@ class RedeemRequestList extends Component {
                             <div className="col-xs-4 end-xs"> 
                                 Mode :
                             </div>
-                            <div className="col-xs-6 start-xs">
+                            <div className="col-xs-8 start-xs">
                                 <FormControl style={styles.formControl}>
                                     <Field
                                         name="modeName"
@@ -353,11 +363,101 @@ class RedeemRequestList extends Component {
                                 </FormControl> 
                             </div>    
                         </div>
+                        {
+                            redeemModeId === 16 || redeemModeId ===  19 ?
+                                <div className="row middle-xs">
+                                    <div className="col-xs-4 end-xs"> 
+                                        Option :
+                                    </div>
+                                    <div className="col-xs-8 start-xs">
+                                        <FormControl style={styles.formControl}>
+                                            <Field
+                                                name="modeOption"
+                                                component={renderSelectField}
+                                                fullWidth={true}
+                                                onChange={this.handleChange}
+                                                disabled={true}
+
+                                                >                                            
+                                                {
+                                                    this.state.redeemModeList ?
+                                                        this.state.redeemModeList.map(element => {
+                                                            return (
+                                                                element.modeId === redeemModeId ?
+                                                                element.modeOptions.map(mode => {
+                                                                        return <MenuItem 
+                                                                            style={styles.selectControl}
+                                                                            key={mode.modeSubId}
+                                                                            value={mode.modeSubId}>
+                                                                            {mode.name}
+                                                                        </MenuItem>
+                                                                    })
+                                                                : null
+                                                            )
+                                                        })   
+                                                    : null    
+                                                }
+                                            </Field>    
+                                        </FormControl> 
+                                    </div>
+                                </div>    
+                                : null  
+                        }
                         <div className="row middle-xs">
-                        <div className="col-xs-4 end-xs"> 
+                            <div className="col-xs-4 end-xs"> 
+                                {
+                                    this.props.initialValues?
+                                        redeemModeId === 16 ? "Wallet Address :"
+                                        : redeemModeId === 17 ? "Full Name :"
+                                        : redeemModeId === 19 ? "Account Number :"
+                                        : redeemModeId === 26 ? "Email :"
+                                        : "Details"
+                                    : null    
+                                }
+                            </div>
+                            <div className="col-xs-8 start-xs">
+                                <Field 
+                                    type="text"
+                                    name="details" 
+                                    fullWidth={true} 
+                                    component={InputField} 
+                                    onChange={this.handleChange}
+                                    disabled={true}
+                                />
+                                
+                            </div>
+                        </div>
+                        {
+                            redeemModeId === 17 || redeemModeId ===  19 ?
+                                <div className="row middle-xs">
+                                    <div className="col-xs-4 end-xs"> 
+                                        {
+                                            this.props.initialValues?
+                                                redeemModeId === 17 ? "Address :"
+                                                : redeemModeId === 19 ? "Routing Number :"
+                                                : "Details"
+                                            : null    
+                                        }
+                                    </div>
+                                    <div className="col-xs-8 start-xs">
+                                        <Field 
+                                            type="text"
+                                            name="extraField" 
+                                            fullWidth={true} 
+                                            component={InputField} 
+                                            onChange={this.handleChange}
+                                            disabled={true}
+                                        />
+                                        
+                                    </div>
+                                </div>
+                                : null
+                        }    
+                        <div className="row middle-xs">
+                            <div className="col-xs-4 end-xs"> 
                                 Note :
                             </div>
-                            <div className="col-xs-6 start-xs">
+                            <div className="col-xs-8 start-xs">
                                 <Field 
                                     name="note" 
                                     fullWidth={true} 

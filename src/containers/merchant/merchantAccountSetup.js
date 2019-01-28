@@ -21,7 +21,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 
 //Validation
-import { required, requiredCheckbox, dropDownRequired } from '../../utilities/validation'
+import { required, requiredCheckbox } from '../../utilities/validation'
 
 //Components
 import InputField from '../../components/inputField';
@@ -55,7 +55,7 @@ class AccountSetup extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            boardingStatus: '',
+            boardingStatus: 'Board Immediately',
             merchanttype: '',
             termsCheckedNo: true,
             termsCheckedYes: false,
@@ -119,25 +119,23 @@ class AccountSetup extends Component {
     }
 
     componentDidMount() {
-
-        if (this.refs.boardingStatus) {
-            this.setState({ boardingStatus: this.refs.boardingStatus.value })
-        }
-
+        
         if (this.refs.termsCheckedYes) {
             this.setState({ termsCheckedYes: this.refs.termsCheckedYes.value })
         }
-
-        
     }
 
     render() {
 
         const { myProps } = this.props;
+        
+        if(this.refs.boardingStatus === undefined){
+            myProps.change('boardingStatus', 'Board Immediately')
+        }
 
         if(this.refs.ipAddress === undefined && this.state.publicIp === undefined){
 
-            http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
+            http.get({'host': 'api.ipify.org'}, function(resp) {
                 resp.on('data', function(ip) {
                   this.setState({publicIp:ip})
                   myProps.change('ipAddress',String.fromCharCode.apply(null, ip))
@@ -146,7 +144,7 @@ class AccountSetup extends Component {
         }
 
         return (
-            <div style={{ paddingBottom: '20px' }}>
+            <div style={{ paddingBtotom: '20px' }}>
                 <Loader status={this.state.showLoader} />
                 <Paper className="pagePaper">
                     <div className="formContent">
@@ -159,28 +157,36 @@ class AccountSetup extends Component {
                                 Boarding Status*
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
-                                <FormControl style={styles.formControl}>
+                                <Field
+                                        myType="text"
+                                        name="boardingStatus"
+                                        id="boardingStatus"
+                                        ref="boardingStatus"
+                                        fullWidth={true}
+                                        disabled={true}
+                                        component={InputField}
+                                        validate={required}
+                                />
+                                {/* <FormControl style={styles.formControl}>
                                     <Field
                                         name="boardingStatus"
                                         component={renderSelectField}
                                         fullWidth={true}
-                                        onChange={this.handleChange('boardingStatus')}
                                         label={this.state.boardingStatus}
                                         ref="boardingStatus"
-                                        validate={dropDownRequired}
+                                        defaultValue={1}
                                     >
-                                        {
-                                            Data.boardingStatus.map((item) => {
-                                                return <MenuItem
-                                                    style={styles.selectControl}
-                                                    key={item.id}
-                                                    value={item.id}>
-                                                    {item.name}
-                                                </MenuItem>
-                                            })
-                                        }
+                                        <MenuItem
+                                            style={styles.selectControl}
+                                            key="1"
+                                            value="1"
+                                            selected={0}
+                                            >
+                                            {"Board Immediately"}
+                                        </MenuItem>
+                                        
                                     </Field>
-                                </FormControl>
+                                </FormControl> */}
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3">
                                 Add MCC* 

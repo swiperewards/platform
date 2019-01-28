@@ -12,9 +12,12 @@ class Logout extends Component {
         this.props.history.push('/login');
 
         if(this.props.authError === false){
-            if(this.props.userData.user.responseData.token){
-                this.props.userLogout(this.props.userData.user.responseData.token)
+            if(this.props.userData.user){
+                if(this.props.userData.user.responseData.token){
+                    this.props.userLogout(this.props.userData.user.responseData.token)
+                }
             }
+            
         }
     }
 
